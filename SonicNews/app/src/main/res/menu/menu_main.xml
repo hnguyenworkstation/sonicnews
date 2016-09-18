@@ -15,7 +15,7 @@
     <item
         android:id="@+id/change_location_action"
         android:icon="@drawable/ic_pin_drop_white_24dp"
-        android:title="Search"
+        android:title="Places"
         app:showAsAction="always"
         android:orderInCategory="1"/>
 </menu>

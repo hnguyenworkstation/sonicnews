@@ -36,9 +36,9 @@
     </style>
 
     <style name="ActionBarThemeOverlay" parent="">
-        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorPrimary">@color/white_54</item>
         <item name="android:actionMenuTextColor">@color/white</item>
-        <item name="android:textColorSecondary">@color/white</item>
+        <item name="android:textColorSecondary">@color/colorPrimary</item>
         <item name="android:background">@color/colorPrimary</item>
         <item name="theme">@style/ThemeOverlay.SonicNews.ActionBar</item>
     </style>
@@ -52,21 +52,7 @@
         <item name="android:actionMenuTextColor">@color/white</item>
         <item name="android:textColorPrimary">@color/white</item>
         <item name="android:textColorSecondary">@color/white</item>
-        <item name="android:colorFocusedHighlight">@color/white</item>
+        <item name="android:colorFocusedHighlight">@color/white_54</item>
     </style>
-
-    <style name="Theme.Base" parent="Base.Theme.AppCompat">
-        <item name="colorPrimary">@color/SonicPrimaryTextColor</item>
-        <item name="colorPrimaryDark">@color/SonicPrimaryTextColorDark</item>
-        <item name="colorAccent">@color/SonicLightSecondaryTextColor</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowBackground">@color/SonicBackgroundColor</item>
-        <item name="android:homeAsUpIndicator">@color/SonicBackgroundColor</item>
-        <item name="homeAsUpIndicator">@color/SonicBackgroundColor</item>
-        <item name="actionMenuTextColor">@color/white</item>
-    </style>
-
-    <style name="Theme.SonicNews" parent="Theme.Base"/>
 
 </resources>

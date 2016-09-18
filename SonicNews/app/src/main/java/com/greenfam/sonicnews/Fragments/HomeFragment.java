@@ -2,6 +2,7 @@ package com.greenfam.sonicnews.Fragments;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.greenfam.sonicnews.MapsActivity;
 import com.greenfam.sonicnews.R;
 
 import java.util.ArrayList;
@@ -135,6 +137,8 @@ public class HomeFragment extends Fragment {
             return true;
         } else if (id == R.id.change_location_action) {
             Toast.makeText(this.getContext(), "Change Location", Toast.LENGTH_LONG).show();
+            Intent map = new Intent(this.getActivity(), MapsActivity.class);
+            getActivity().startActivity(map);
         }
 
         return super.onOptionsItemSelected(item);
