@@ -7,4 +7,13 @@
     <color name="white">#FFFFFFFF</color>
     <color name="white_87">#DEFFFFFF</color>
     <color name="white_54">#8AFFFFFF</color>
+
+    <!-- Styles -->
+    <color name="SonicPrimaryTextColor">#0196a7</color>
+    <color name="SonicPrimaryTextColorDark">#FF01798A</color>
+    <color name="SonicPrimaryTextColorLight">#ff01b7d1</color>
+    <color name="SonicSecondaryBackgroundColor">#449bdd</color>
+    <color name="SonicSecondaryTextColor">#aa111111</color>
+    <color name="SonicLightSecondaryTextColor">#f9a825</color>
+    <color name="SonicBackgroundColor">#f9f9f9</color>
 </resources>

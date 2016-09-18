@@ -35,4 +35,38 @@
         <item name="tabSelectedTextColor">?android:textColorPrimary</item>
     </style>
 
+    <style name="ActionBarThemeOverlay" parent="">
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:actionMenuTextColor">@color/white</item>
+        <item name="android:textColorSecondary">@color/white</item>
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="theme">@style/ThemeOverlay.SonicNews.ActionBar</item>
+    </style>
+
+    <style name="ThemeOverlay.SonicNews.ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@color/white</item>
+    </style>
+
+    <style name="TitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:actionMenuTextColor">@color/white</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/white</item>
+        <item name="android:colorFocusedHighlight">@color/white</item>
+    </style>
+
+    <style name="Theme.Base" parent="Base.Theme.AppCompat">
+        <item name="colorPrimary">@color/SonicPrimaryTextColor</item>
+        <item name="colorPrimaryDark">@color/SonicPrimaryTextColorDark</item>
+        <item name="colorAccent">@color/SonicLightSecondaryTextColor</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/SonicBackgroundColor</item>
+        <item name="android:homeAsUpIndicator">@color/SonicBackgroundColor</item>
+        <item name="homeAsUpIndicator">@color/SonicBackgroundColor</item>
+        <item name="actionMenuTextColor">@color/white</item>
+    </style>
+
+    <style name="Theme.SonicNews" parent="Theme.Base"/>
+
 </resources>
