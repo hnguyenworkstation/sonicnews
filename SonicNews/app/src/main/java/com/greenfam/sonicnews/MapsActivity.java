@@ -3,17 +3,24 @@ package com.greenfam.sonicnews;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity
+        implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private Button dropOffButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +29,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+
+        dropOffButton = (Button) findViewById(R.id.pick_location_button);
+        dropOffButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dropOff();
+            }
+        });
+
         mapFragment.getMapAsync(this);
     }
 
@@ -43,5 +59,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                mMap.clear();
+                mMap.addMarker( new MarkerOptions()
+                        .position( cameraPosition.target )
+                        .title( cameraPosition.toString() )
+                );
+
+                Toast.makeText(getBaseContext(),"Camera Changed", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void dropOff() {
+        // Todo: Write function to drop prople to this location
+        Toast.makeText(MapsActivity.this, "Dropped!", Toast.LENGTH_SHORT).show();
     }
 }
