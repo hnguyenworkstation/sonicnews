@@ -1,9 +1,21 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.greenfam.sonicnews.MainActivity" >
-    <item android:id="@+id/action_settings"
-        android:title="String"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
+    tools:context=".MainActivity">
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:title="Search"
+        app:showAsAction="always"
+        android:orderInCategory="1"
+        app:actionViewClass="android.support.v7.widget.SearchView"/>
+
+    <item
+        android:id="@+id/change_location_action"
+        android:icon="@drawable/ic_pin_drop_white_24dp"
+        android:title="Search"
+        app:showAsAction="always"
+        android:orderInCategory="1"/>
 </menu>

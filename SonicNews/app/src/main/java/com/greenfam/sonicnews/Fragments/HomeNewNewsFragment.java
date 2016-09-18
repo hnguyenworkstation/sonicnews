@@ -1,41 +1,24 @@
 package com.greenfam.sonicnews.Fragments;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RadioGroup;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.greenfam.sonicnews.R;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import info.hoang8f.android.segmented.SegmentedGroup;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link HomeFragment.OnFragmentInteractionListener} interface
+ * {@link HomeNewNewsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link HomeFragment#newInstance} factory method to
+ * Use the {@link HomeNewNewsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class HomeNewNewsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -44,14 +27,10 @@ public class HomeFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private Toolbar toolbar;
-    private TabLayout tabLayout;
-    private FragmentViewPagerAdapter adapter;
-    private ViewPager homeViewPager;
 
     private OnFragmentInteractionListener mListener;
 
-    public HomeFragment() {
+    public HomeNewNewsFragment() {
         // Required empty public constructor
     }
 
@@ -61,16 +40,15 @@ public class HomeFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
+     * @return A new instance of fragment HomeNewNewsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
+    public static HomeNewNewsFragment newInstance(String param1, String param2) {
+        HomeNewNewsFragment fragment = new HomeNewNewsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
-
         return fragment;
     }
 
@@ -87,26 +65,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
-
-        // View Pager
-        homeViewPager = (ViewPager)rootView.findViewById(R.id.viewpager);
-        if (homeViewPager != null)
-            setupFragmentViewPager(homeViewPager);
-
-        tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(homeViewPager);
-
-        return rootView;
-    }
-
-    private void setupFragmentViewPager(ViewPager viewPager) {
-        adapter = new FragmentViewPagerAdapter(this.getActivity(), getChildFragmentManager());
-        adapter.addFragment(new HomeHotNewsFragment(), "Hot");
-        adapter.addFragment(new HomeTrendingNewsFragment(), "Trending");
-        adapter.addFragment(new HomeNewNewsFragment(), "New");
-
-        viewPager.setAdapter(adapter);
+        return inflater.inflate(R.layout.fragment_home_new_news, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -146,37 +105,5 @@ public class HomeFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
-    }
-
-    private static class FragmentViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitle = new ArrayList<>();
-
-        public Context mContext;
-
-        public FragmentViewPagerAdapter(Context mContext, FragmentManager manager) {
-            super(manager);
-            this.mContext = mContext;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragmentList.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragmentList.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitle.get(position);
-        }
-
-        public void addFragment(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitle.add(title);
-        }
     }
 }

@@ -1,5 +1,6 @@
 package com.greenfam.sonicnews;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.IdRes;
@@ -7,35 +8,46 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.greenfam.sonicnews.Fragments.HomeFragment;
+import com.greenfam.sonicnews.Fragments.HomeHotNewsFragment;
+import com.greenfam.sonicnews.Fragments.HomeNewNewsFragment;
+import com.greenfam.sonicnews.Fragments.HomeTrendingNewsFragment;
 import com.greenfam.sonicnews.Fragments.LocalFragment;
 import com.greenfam.sonicnews.Fragments.MessageFragment;
 import com.greenfam.sonicnews.Fragments.MoreFragment;
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnTabSelectListener;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements HomeFragment.OnFragmentInteractionListener,
+        implements
+                HomeFragment.OnFragmentInteractionListener,
                 LocalFragment.OnFragmentInteractionListener,
                 MessageFragment.OnFragmentInteractionListener,
-                MoreFragment.OnFragmentInteractionListener
+                MoreFragment.OnFragmentInteractionListener,
+                HomeHotNewsFragment.OnFragmentInteractionListener,
+                HomeTrendingNewsFragment.OnFragmentInteractionListener,
+                HomeNewNewsFragment.OnFragmentInteractionListener
 {
     private ViewPager viewPager;
     private TabLayout mTabLayout;
     private ViewPagerAdapter adapter;
-
+    private TextView tittleTextView;
+    private ActionBar actionBar;
 
     private int[] mTabsIcons = {
             R.drawable.ic_favorite_white_24dp,
@@ -44,12 +56,17 @@ public class MainActivity extends AppCompatActivity
             R.drawable.ic_local_dining_white_24dp
     };
 
+    public MainActivity() {
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
+        tittleTextView = (TextView) findViewById(R.id.main_title);
+        actionBar = getSupportActionBar();
 
         if (viewPager != null)
             setupViewPager(viewPager);
@@ -66,6 +83,23 @@ public class MainActivity extends AppCompatActivity
 
             mTabLayout.getTabAt(0).getCustomView().setSelected(true);
         }
+
+        switch (viewPager.getCurrentItem()) {
+            case 0:
+                actionBar.setTitle("Home");
+                break;
+            case 1:
+                actionBar.setTitle("Local");
+                break;
+            case 2:
+                actionBar.setTitle("Message");
+                break;
+            case 3:
+                actionBar.setTitle("More");
+                break;
+            default:
+                break;
+        }
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -76,6 +110,29 @@ public class MainActivity extends AppCompatActivity
         adapter.addFragment(new MoreFragment(), "More");
 
         viewPager.setAdapter(adapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        if (id == R.id.action_search) {
+            return true;
+        } else if (id == R.id.change_location_action) {
+            Toast.makeText(getBaseContext(), "Change Location", Toast.LENGTH_LONG).show();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
