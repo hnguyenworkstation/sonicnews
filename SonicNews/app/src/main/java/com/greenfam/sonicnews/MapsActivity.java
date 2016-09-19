@@ -1,9 +1,18 @@
 package com.greenfam.sonicnews;
 
 import android.content.Intent;
-import android.nfc.Tag;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,11 +21,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
@@ -26,20 +38,28 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 public class MapsActivity extends AppCompatActivity
-        implements OnMapReadyCallback, PlaceSelectionListener {
+        implements OnMapReadyCallback, PlaceSelectionListener,
+        GoogleApiClient.OnConnectionFailedListener,
+        GoogleApiClient.ConnectionCallbacks {
 
     private static final String TAG = "Maps";
     private GoogleMap mMap;
     private Button dropOffButton;
-    private PlaceAutocompleteFragment autocompleteFragment;
-    private final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;/**
+    private final int REQUEST_CODE_AUTOCOMPLETE = 1;
+    private GoogleApiClient mGoogleClient;
+    private Location lastKnownLocation;
+    private CameraPosition lastKnownCameraPos;
+
+    /**
      * Request code passed to the PlacePicker intent to identify its result when it returns.
      */
     private static final int REQUEST_PLACE_PICKER = 1;
+
     /**
      * Request code for the autocomplete activity. This will be used to identify results from the
      * autocomplete activity in onActivityResult.
@@ -57,18 +77,19 @@ public class MapsActivity extends AppCompatActivity
         dropOffButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dropOff();
+                dropOff(mMap.getCameraPosition().target);
             }
         });
 
         mapFragment.getMapAsync(this);
 
-        // Getting place search box
-        // Retrieve the PlaceAutocompleteFragment.
-        autocompleteFragment = (PlaceAutocompleteFragment)
-                getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-
-        autocompleteFragment.setOnPlaceSelectedListener(this);
+        if (mGoogleClient == null) {
+            mGoogleClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
     }
 
     @Override
@@ -81,21 +102,26 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_search:
-                // User chose the "Settings" item, show the app settings UI...
+            case R.id.place_search:
                 try {
-                    PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
-                    Intent intent = intentBuilder.build(this);
-                    // Start the Intent by requesting a result, identified by a request code.
-                    startActivityForResult(intent, REQUEST_PLACE_PICKER);
-
+                    // The autocomplete activity requires Google Play Services to be available. The intent
+                    // builder checks this and throws an exception if it is not the case.
+                    Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                            .build(this);
+                    startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE);
                 } catch (GooglePlayServicesRepairableException e) {
-                    GooglePlayServicesUtil
-                            .getErrorDialog(e.getConnectionStatusCode(), this, 0);
+                    // Indicates that Google Play Services is either not installed or not up to date. Prompt
+                    // the user to correct the issue.
+                    GoogleApiAvailability.getInstance().getErrorDialog(this, e.getConnectionStatusCode(),
+                            0 /* requestCode */).show();
                 } catch (GooglePlayServicesNotAvailableException e) {
-                    Toast.makeText(this, "Google Play Services is not available.",
-                            Toast.LENGTH_LONG)
-                            .show();
+                    // Indicates that Google Play Services is not available and the problem is not easily
+                    // resolvable.
+                    String message = "Google Play Services is not available: " +
+                            GoogleApiAvailability.getInstance().getErrorString(e.errorCode);
+
+                    Log.e(TAG, message);
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
                 }
                 return true;
 
@@ -109,19 +135,74 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Check that the result was from the autocomplete widget.
+        if (requestCode == REQUEST_CODE_AUTOCOMPLETE) {
             if (resultCode == RESULT_OK) {
+                // Get the user's selected place from the Intent.
                 Place place = PlaceAutocomplete.getPlace(this, data);
-                Log.i(TAG, "Place: " + place.getName());
+                Log.i(TAG, "Place Selected: " + place.getName());
+
+                Toast.makeText(this, formatPlaceDetails(getResources(), place.getName(),
+                        place.getId(), place.getAddress(), place.getPhoneNumber(),
+                        place.getWebsiteUri()), Toast.LENGTH_LONG).show();
+
+                // Display attributions if required.
+                CharSequence attributions = place.getAttributions();
+                if (!TextUtils.isEmpty(attributions)) {
+                    Toast.makeText(this,Html.fromHtml(attributions.toString()) ,Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this,"",Toast.LENGTH_LONG).show();
+                }
+
+                // Then move to this new location
+                moveToNewPlace(place.getLatLng());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
-                // TODO: Handle the error.
-                Log.i(TAG, status.getStatusMessage());
-
+                Log.e(TAG, "Error: Status = " + status.toString());
             } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
+                // Indicates that the activity closed before a selection was made. For example if
+                // the user pressed the back button.
             }
         }
+    }
+
+    /**
+     * Helper method to format information about a place nicely.
+     */
+    private static Spanned formatPlaceDetails(Resources res, CharSequence name, String id,
+                                              CharSequence address, CharSequence phoneNumber, Uri websiteUri) {
+        Log.e(TAG, res.getString(R.string.place_details, name, id, address, phoneNumber,
+                websiteUri));
+        return Html.fromHtml(res.getString(R.string.place_details, name, id, address, phoneNumber,
+                websiteUri));
+
+    }
+
+    private void moveToNewPlace(LatLng newPlace) {
+        CameraPosition newPos = new CameraPosition.Builder()
+                                        .target(newPlace)
+                                        .zoom(12)
+                                        .bearing(300)
+                                        .build();
+
+        // Update last known Cameraposition
+        lastKnownCameraPos = newPos;
+
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(newPos), new GoogleMap.CancelableCallback(){
+
+            @Override
+            public void onFinish(){
+                mMap.getUiSettings().setScrollGesturesEnabled(true);
+            }
+
+            @Override
+            public void onCancel(){
+                mMap.getUiSettings().setAllGesturesEnabled(true);
+            }
+        });
+
     }
 
     /**
@@ -135,20 +216,97 @@ public class MapsActivity extends AppCompatActivity
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         mMap = googleMap;
+        // Todo fix the initial position when map start and resume
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        if (lastKnownCameraPos == null){
+
+            // Get last known location
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+
+            lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleClient);
+
+            lastKnownCameraPos = new CameraPosition.Builder()
+                    .target(new LatLng(lastKnownLocation.getLatitude(),
+                            lastKnownLocation.getLongitude()))
+                    .zoom(12)
+                    .bearing(300)
+                    .build();
+        }
+
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(lastKnownCameraPos),
+                new GoogleMap.CancelableCallback(){
+
+            @Override
+            public void onFinish(){
+                mMap.getUiSettings().setScrollGesturesEnabled(true);
+            }
+
+            @Override
+            public void onCancel(){
+                mMap.getUiSettings().setAllGesturesEnabled(true);
+            }
+        });
     }
 
-    private void dropOff() {
+    @Override
+    protected void onStart() {
+        mGoogleClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        mGoogleClient.disconnect();
+        super.onStop();
+    }
+
+
+    private void dropOff(LatLng here) {
         // Todo: Write function to drop prople to this location
         Toast.makeText(MapsActivity.this, "Dropped!", Toast.LENGTH_SHORT).show();
+
+        // BEGIN_INCLUDE(intent)
+            /* Use the PlacePicker Builder to construct an Intent.
+            Note: This sample demonstrates a basic use case.
+            The PlacePicker Builder supports additional properties such as search bounds.
+             */
+        try {
+            PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
+            Intent intent = intentBuilder.build(this);
+            // Start the Intent by requesting a result, identified by a request code.
+
+            intentBuilder.setLatLngBounds(getLatLngBounds(here));
+            startActivityForResult(intent, REQUEST_PLACE_PICKER);
+
+        } catch (GooglePlayServicesRepairableException e) {
+            GooglePlayServicesUtil
+                    .getErrorDialog(e.getConnectionStatusCode(), this, 0);
+        } catch (GooglePlayServicesNotAvailableException e) {
+            Toast.makeText(this, "Google Play Services is not available.",
+                    Toast.LENGTH_LONG)
+                    .show();
+        }
     }
 
+    private static LatLngBounds getLatLngBounds(LatLng pos) {
+        LatLngBounds.Builder builder = LatLngBounds.builder();
+        builder.include(pos);
+        return builder.build();
+    }
     @Override
     public void onPlaceSelected(Place place) {
     }
@@ -157,5 +315,20 @@ public class MapsActivity extends AppCompatActivity
     public void onError(Status status) {
         Toast.makeText(this, "Place selection failed: " + status.getStatusMessage(),
                 Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
     }
 }
