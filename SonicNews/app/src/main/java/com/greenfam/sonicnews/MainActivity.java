@@ -69,27 +69,6 @@ public class MainActivity extends AppCompatActivity
         if (viewPager != null)
             setupViewPager(viewPager);
 
-        // setup viewpager
-        viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener()
-        {
-            @Override
-            public void onPageSelected(int position)
-            {
-                //Clear action bar menu items.
-                //This prompts the onPrepareOptionsMenu which recreates the menu with
-                //with the appropriate options for a given fragment as defined by you
-                supportInvalidateOptionsMenu();
-            }
-
-            @Override
-            public void onPageScrollStateChanged (int arg0)
-            {
-                //Clear action bar menu items and display correct ones
-                //This invalidates the menu options as soon as the swiping of pages begins
-                supportInvalidateOptionsMenu();
-            }
-        });
-
         mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
         if (mTabLayout != null) {
             mTabLayout.setupWithViewPager(viewPager);

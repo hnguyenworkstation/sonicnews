@@ -1,0 +1,14 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.greenfam.sonicnews.Fragments.HomeFragment">
+
+    <item
+        android:id="@+id/place_search"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+        android:title="Search"
+        app:showAsAction="always"
+        android:orderInCategory="1"/>
+</menu>
