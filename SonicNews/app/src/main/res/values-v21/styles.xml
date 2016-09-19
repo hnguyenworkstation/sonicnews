@@ -5,4 +5,13 @@
             <item name="android:windowDrawsSystemBarBackgrounds">true</item>
             <item name="android:statusBarColor">@android:color/transparent</item>
         </style>
+
+    <style name="ActionBarThemeOverlay" parent="">
+        <item name="android:textColorPrimary">@color/white_54</item>
+        <item name="android:actionMenuTextColor">@color/white</item>
+        <item name="android:textColorSecondary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="theme">@style/ThemeOverlay.SonicNews.ActionBar</item>
+    </style>
 </resources>

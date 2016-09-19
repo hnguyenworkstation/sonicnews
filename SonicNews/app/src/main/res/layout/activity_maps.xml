@@ -15,6 +15,22 @@
         android:layout_height="match_parent"
         tools:context="com.greenfam.sonicnews.MapsActivity" />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:layout_gravity="center_vertical|center_horizontal">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_pin_drop_white_24dp"
+            android:paddingBottom="7dp"
+            />
+
+    </LinearLayout>
+
+
     <Button
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="match_parent"
@@ -22,9 +38,8 @@
         android:layout_gravity="center|bottom"
         android:text="@string/map_pickup_button"
         android:textAllCaps="true"
-        android:drawable="@android:drawable/ic_menu_add"
+        android:drawableLeft="@android:drawable/ic_menu_add"
         android:gravity="center"
-        android:drawablePadding="6dp"
         android:textSize="28dp"
         android:id="@+id/pick_location_button"
         android:layout_below="@+id/map"
