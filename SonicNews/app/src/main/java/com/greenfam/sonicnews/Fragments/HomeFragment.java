@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.greenfam.sonicnews.CustomViewPager;
 import com.greenfam.sonicnews.MapsActivity;
 import com.greenfam.sonicnews.R;
 
@@ -48,7 +49,7 @@ public class HomeFragment extends Fragment {
     private String mParam2;
     private TabLayout tabLayout;
     private FragmentViewPagerAdapter adapter;
-    private ViewPager homeViewPager;
+    private CustomViewPager homeViewPager;
     private Menu mMenu;
     private View rootView;
     private Intent map;
@@ -97,7 +98,7 @@ public class HomeFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
         // View Pager
-        homeViewPager = (ViewPager)rootView.findViewById(R.id.viewpager);
+        homeViewPager = (CustomViewPager)rootView.findViewById(R.id.viewpager);
         if (homeViewPager != null)
             setupFragmentViewPager(homeViewPager);
 
