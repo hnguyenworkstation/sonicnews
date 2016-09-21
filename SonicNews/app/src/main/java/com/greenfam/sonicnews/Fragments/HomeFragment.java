@@ -51,6 +51,7 @@ public class HomeFragment extends Fragment {
     private ViewPager homeViewPager;
     private Menu mMenu;
     private View rootView;
+    private Intent map;
 
     private OnFragmentInteractionListener mListener;
 
@@ -85,6 +86,8 @@ public class HomeFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         setHasOptionsMenu (true);
+
+        map = new Intent(this.getActivity(), MapsActivity.class);
     }
 
     @Override
@@ -136,8 +139,6 @@ public class HomeFragment extends Fragment {
         if (id == R.id.action_search) {
             return true;
         } else if (id == R.id.change_location_action) {
-            Toast.makeText(this.getContext(), "Change Location", Toast.LENGTH_LONG).show();
-            Intent map = new Intent(this.getActivity(), MapsActivity.class);
             getActivity().startActivity(map);
         }
 

@@ -24,7 +24,7 @@
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/ic_pin_drop_white_24dp"
+            android:src="@drawable/balloon"
             android:paddingBottom="7dp"
             />
 

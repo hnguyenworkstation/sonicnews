@@ -1,14 +1,23 @@
 package com.greenfam.sonicnews;
 
+import android.*;
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresPermission;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spanned;
@@ -30,6 +39,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlacePicker;
@@ -60,11 +70,15 @@ public class MapsActivity extends AppCompatActivity
      */
     private static final int REQUEST_PLACE_PICKER = 1;
 
+    private static final int REQUEST_LOCATION_ACCESS = 0;
+
     /**
      * Request code for the autocomplete activity. This will be used to identify results from the
      * autocomplete activity in onActivityResult.
      */
     @Override
+    @RequiresPermission(anyOf = {android.Manifest.permission.ACCESS_COARSE_LOCATION,
+            android.Manifest.permission.ACCESS_FINE_LOCATION})
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
@@ -88,8 +102,18 @@ public class MapsActivity extends AppCompatActivity
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
+                    .addApi(Places.GEO_DATA_API)
                     .build();
         }
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestLocationPermission();
+        }
+
+        getLocation();
     }
 
     @Override
@@ -133,6 +157,38 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
+    @Nullable
+    private Location getLocation() {
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return null;
+            }
+
+            Location lastKnownLocationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (lastKnownLocationGPS != null) {
+                return lastKnownLocationGPS;
+            } else {
+                Location loc =  locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+                System.out.println("1::" + loc);
+                System.out.println("2::" + loc.getLatitude());
+                return loc;
+            }
+        } else {
+            return null;
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -151,9 +207,9 @@ public class MapsActivity extends AppCompatActivity
                 // Display attributions if required.
                 CharSequence attributions = place.getAttributions();
                 if (!TextUtils.isEmpty(attributions)) {
-                    Toast.makeText(this,Html.fromHtml(attributions.toString()) ,Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, Html.fromHtml(attributions.toString()), Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(this,"",Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "", Toast.LENGTH_LONG).show();
                 }
 
                 // Then move to this new location
@@ -168,9 +224,6 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * Helper method to format information about a place nicely.
-     */
     private static Spanned formatPlaceDetails(Resources res, CharSequence name, String id,
                                               CharSequence address, CharSequence phoneNumber, Uri websiteUri) {
         Log.e(TAG, res.getString(R.string.place_details, name, id, address, phoneNumber,
@@ -182,23 +235,23 @@ public class MapsActivity extends AppCompatActivity
 
     private void moveToNewPlace(LatLng newPlace) {
         CameraPosition newPos = new CameraPosition.Builder()
-                                        .target(newPlace)
-                                        .zoom(12)
-                                        .bearing(300)
-                                        .build();
+                .target(newPlace)
+                .zoom(12)
+                .bearing(300)
+                .build();
 
         // Update last known Cameraposition
         lastKnownCameraPos = newPos;
 
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(newPos), new GoogleMap.CancelableCallback(){
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(newPos), new GoogleMap.CancelableCallback() {
 
             @Override
-            public void onFinish(){
+            public void onFinish() {
                 mMap.getUiSettings().setScrollGesturesEnabled(true);
             }
 
             @Override
-            public void onCancel(){
+            public void onCancel() {
                 mMap.getUiSettings().setAllGesturesEnabled(true);
             }
         });
@@ -217,49 +270,46 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        // Todo fix the initial position when map start and resume
+    }
 
-        if (lastKnownCameraPos == null){
+    private void requestLocationPermission() {
+        // Camera permission has not been granted yet. Request it directly.
+        ActivityCompat.requestPermissions(this,
+                new String[]{
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                },
+                REQUEST_LOCATION_ACCESS);
+    }
 
-            // Get last known location
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION_ACCESS:
+                // BEGIN_INCLUDE(permission_result)
+                // Received permission result for camera permission.
+                Log.i(TAG, "Received response for Camera permission request.");
+
+                // Check if the only required permission has been granted
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Camera permission has been granted, preview can be displayed
+                    Log.i(TAG, "LOCATION permission has now been granted. Showing preview.");
+                    lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(
+                            mGoogleClient);
+
+                    // then setup the map
+                    setUpInitialMap();
+                } else {
+                    Log.i(TAG, "CAMERA permission was NOT granted.");
+                }
+                // END_INCLUDE(permission_result)
                 return;
-            }
-
-            lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleClient);
-
-            lastKnownCameraPos = new CameraPosition.Builder()
-                    .target(new LatLng(lastKnownLocation.getLatitude(),
-                            lastKnownLocation.getLongitude()))
-                    .zoom(12)
-                    .bearing(300)
-                    .build();
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                return;
         }
-
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(lastKnownCameraPos),
-                new GoogleMap.CancelableCallback(){
-
-            @Override
-            public void onFinish(){
-                mMap.getUiSettings().setScrollGesturesEnabled(true);
-            }
-
-            @Override
-            public void onCancel(){
-                mMap.getUiSettings().setAllGesturesEnabled(true);
-            }
-        });
     }
 
     @Override
@@ -302,11 +352,26 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager manager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+
+        boolean isAvailable = false;
+
+        if (networkInfo != null && networkInfo.isConnected()) {
+            isAvailable = true;
+        }
+        return isAvailable;
+    }
+
+    @NonNull
     private static LatLngBounds getLatLngBounds(LatLng pos) {
         LatLngBounds.Builder builder = LatLngBounds.builder();
         builder.include(pos);
         return builder.build();
     }
+
     @Override
     public void onPlaceSelected(Place place) {
     }
@@ -322,9 +387,53 @@ public class MapsActivity extends AppCompatActivity
 
     }
 
+    private void setUpInitialMap() {
+        // Todo fix the initial position when map start and resume
+        if (lastKnownCameraPos == null) {
+            lastKnownCameraPos = new CameraPosition.Builder()
+                    .target(new LatLng(lastKnownLocation.getLatitude(),
+                            lastKnownLocation.getLongitude()))
+                    .zoom(12)
+                    .bearing(300)
+                    .build();
+        }
+
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(lastKnownCameraPos),
+            new GoogleMap.CancelableCallback() {
+                @Override
+                public void onFinish() {
+                    mMap.getUiSettings().setScrollGesturesEnabled(true);
+                }
+
+                @Override
+                public void onCancel() {
+                    mMap.getUiSettings().setAllGesturesEnabled(true);
+                }
+            });
+    }
+
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
 
+        if (lastKnownLocation == null)
+        lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleClient);
+
+        // then setup the map
+        setUpInitialMap();
     }
 
     @Override
