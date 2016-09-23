@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity
             // toolbar.setLogo(R.drawable.ic_favorite_white_24dp);
             getSupportActionBar().setTitle("Sonic News");
             getSupportActionBar().setDisplayShowTitleEnabled(true);
+            getSupportActionBar().setElevation(0);
         }
     }
 
