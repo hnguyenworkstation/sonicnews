@@ -29,5 +29,7 @@
 
 
     <!-- Chat Frame layout strings -->
+    <string name="send_message_button">Send</string>
+    <string name="chat_input_hint">Write a message...</string>
 
 </resources>

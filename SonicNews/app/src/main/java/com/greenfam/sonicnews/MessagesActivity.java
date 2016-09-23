@@ -61,12 +61,17 @@ public class MessagesActivity extends AppCompatActivity {
                 SingleMessage newMessage;
 
                 // Todo: fix this testing function
-                if (messContent.charAt(0) == '1') {
-                    newMessage = new SingleMessage("you",
-                            inputMsg.getText().toString(), false);
+                if (!messContent.isEmpty()) {
+                    if (messContent.charAt(0) == '1') {
+                        newMessage = new SingleMessage("Other",
+                                inputMsg.getText().toString(), false);
+                    } else {
+                        newMessage = new SingleMessage("You",
+                                inputMsg.getText().toString(), true);
+                    }
                 } else {
-                    newMessage = new SingleMessage("Other",
-                            inputMsg.getText().toString(), true);
+                    newMessage = new SingleMessage("You",
+                            "this is a very long test post to see if the layout is already scaled or not", true);
                 }
 
                 // Clearing the input filed once  message was sent

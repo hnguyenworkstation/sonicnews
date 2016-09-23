@@ -51,7 +51,7 @@
         <activity android:name=".MessagesActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.greenfam.sonicnews.MainActivity" />
+                android:value="com.greenfam.sonicnews.MessagesActivity" />
         </activity>
     </application>
 

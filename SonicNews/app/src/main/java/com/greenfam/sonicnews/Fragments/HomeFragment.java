@@ -28,8 +28,6 @@ import com.greenfam.sonicnews.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import info.hoang8f.android.segmented.SegmentedGroup;
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
