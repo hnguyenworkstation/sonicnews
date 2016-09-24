@@ -35,4 +35,7 @@ dependencies {
 
     // Circle Image for profile
     compile 'de.hdodenhof:circleimageview:2.1.0'
+
+    // Circle Image Button
+    compile 'com.github.markushi:circlebutton:1.1'
 }
