@@ -1,6 +1,7 @@
 package com.greenfam.sonicnews;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,6 +26,8 @@ public class WelcomeActivity extends AppCompatActivity
 
     private Button skipButton;
     private Button nextButton;
+    private Button mLoginBtn;
+    private Button mRegisterBtn;
     private ViewPager viewPager;
 
     private List<View> listView = new ArrayList<>();
@@ -107,7 +111,23 @@ public class WelcomeActivity extends AppCompatActivity
             case R.id.skipBtn:
                 viewPager.setCurrentItem(3);
                 break;
+            case R.id.welcome_register_btn:
+                startActivity(new Intent(WelcomeActivity.this, PhoneRegisterActivity.class));
+                finish();
+                break;
+            case R.id.welcome_login_btn:
+                startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
+                finish();
+                break;
+            default:
+                break;
         }
+    }
+
+    public void moveToLoginPage() {
+        // Todo: Adding functions for two button on Welcome Slides
+        startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
+        finish();
     }
 
     class ViewPagerAdapter extends PagerAdapter {

@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/tile_bg"
     android:orientation="vertical" >
 
     <ListView
@@ -13,8 +12,7 @@
         android:background="@null"
         android:divider="@null"
         android:transcriptMode="alwaysScroll"
-        android:stackFromBottom="true">
-    </ListView>
+        android:stackFromBottom="true" />
 
     <LinearLayout
         android:id="@+id/llMsgCompose"
@@ -24,26 +22,46 @@
         android:orientation="horizontal"
         android:weightSum="3" >
 
+        <CheckBox
+            android:id="@+id/add_media"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:background="@null"
+            android:padding="5dp"
+            android:layout_marginStart="10dp"
+            android:button="@drawable/add_media_button"
+            android:layout_gravity="center_vertical"/>
+
         <EditText
             android:id="@+id/inputMsg"
             android:layout_width="0dp"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_weight="3"
-            android:background="@color/bg_msg_input"
+            android:background="@color/white"
             android:textColor="@color/text_msg_input"
             android:hint="@string/chat_input_hint"
             android:paddingLeft="6dp"
             android:paddingRight="6dp"/>
 
-        <Button
-            android:id="@+id/btnSend"
+        <CheckBox
+            android:id="@+id/add_emoji"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/bg_btn_join"
-            android:layout_gravity="end"
-            android:textColor="@color/white"
-            android:text="@string/send_message_button"
-            android:layout_weight="0.30"/>
+            android:layout_height="32dp"
+            android:background="@null"
+            android:padding="5dp"
+            android:layout_marginEnd="10dp"
+            android:button="@drawable/add_emoji_button"
+            android:layout_gravity="center_vertical"/>
+
+        <ImageButton
+            android:id="@+id/btnSend"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:padding="5dp"
+            android:background="@drawable/send"
+            android:layout_marginEnd="10dp"
+            android:layout_gravity="center_vertical"/>
+
     </LinearLayout>
 
 </LinearLayout>

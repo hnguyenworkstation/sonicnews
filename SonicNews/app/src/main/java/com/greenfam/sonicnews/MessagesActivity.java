@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -20,7 +21,7 @@ public class MessagesActivity extends AppCompatActivity {
     // LogCat tag
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private Button btnSend;
+    private ImageView btnSend;
     private EditText inputMsg;
 
     // Chat messages list adapter
@@ -40,7 +41,7 @@ public class MessagesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.complete_chat);
 
-        btnSend = (Button) findViewById(R.id.btnSend);
+        btnSend = (ImageView) findViewById(R.id.btnSend);
         inputMsg = (EditText) findViewById(R.id.inputMsg);
         listViewMessages = (ListView) findViewById(R.id.list_view_messages);
 
