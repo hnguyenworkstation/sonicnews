@@ -46,5 +46,7 @@
         completions."
     </string>
     <string name="register_link">Register</string>
+    <string name="phone_input_hint">Phone Number</string>
+    <string name="phone_register_request">Verify</string>
 
 </resources>

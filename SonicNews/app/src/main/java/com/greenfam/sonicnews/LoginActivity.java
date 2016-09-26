@@ -67,6 +67,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private CircleButton mPhoneLogin;
     private CircleButton mGoogleLogin;
     private CircleButton mTwitterLogin;
+    private Button registerBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,12 +105,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mGoogleLogin = (CircleButton) findViewById(R.id.google_login);
         mTwitterLogin = (CircleButton) findViewById(R.id.twitter_login);
 
+        registerBtn = (Button) findViewById(R.id.register_btn);
+        registerBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, PhoneRegisterActivity.class));
+            }
+        });
+
         // setting up the social buttons
         initSocialButtons();
     }
 
     private void initSocialButtons() {
-
         mGoogleLogin.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
