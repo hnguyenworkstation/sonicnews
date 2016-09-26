@@ -95,6 +95,7 @@
             android:layout_marginTop="25dp"
             android:text="@string/phone_register_request"
             style="@style/Widget.AppCompat.Button.Colored"
+            android:background="@drawable/long_button_style"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textAllCaps="true"/>

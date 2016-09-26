@@ -39,3 +39,5 @@ dependencies {
     // Circle Image Button
     compile 'com.github.markushi:circlebutton:1.1'
 }
+
+apply plugin: 'com.google.gms.google-services'

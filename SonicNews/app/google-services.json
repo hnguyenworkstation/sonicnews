@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "216116436740",
+    "firebase_url": "https://sonic-news.firebaseio.com",
+    "project_id": "sonic-news",
+    "storage_bucket": "sonic-news.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:216116436740:android:e8742b5c84a4ca8c",
+        "android_client_info": {
+          "package_name": "com.greenfam.sonicnews"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "216116436740-kfadnc8e1uv6es7m6o4tn9fjtoclcrpk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.greenfam.sonicnews",
+            "certificate_hash": "1DF73C330BA80F72CC5FB22F1FE67328B6303277"
+          }
+        },
+        {
+          "client_id": "216116436740-05ku2m9d9v90c5ao2qj3jhc6emdi4vl0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5vExl83tnSkdgqYDJ0Nn4k7_XNozTZas"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "216116436740-05ku2m9d9v90c5ao2qj3jhc6emdi4vl0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
