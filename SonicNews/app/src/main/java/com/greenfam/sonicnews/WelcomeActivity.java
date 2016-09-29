@@ -24,10 +24,10 @@ import java.util.List;
 public class WelcomeActivity extends AppCompatActivity
     implements View.OnClickListener {
 
+    private final int LAST_PAGE = 3;
+
     private Button skipButton;
     private Button nextButton;
-    private Button mLoginBtn;
-    private Button mRegisterBtn;
     private ViewPager viewPager;
 
     private List<View> listView = new ArrayList<>();
@@ -47,6 +47,16 @@ public class WelcomeActivity extends AppCompatActivity
         viewPager = (ViewPager) findViewById(R.id.welcome_viewpager);
 
         initUI();
+    }
+
+    private void updateButtons() {
+        int current = viewPager.getCurrentItem();
+
+        if (current == LAST_PAGE) {
+            nextButton.setText("Login");
+        } else {
+            nextButton.setText("Next");
+        }
     }
 
     private void initUI() {
@@ -95,7 +105,8 @@ public class WelcomeActivity extends AppCompatActivity
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
+                // update buttons when stage changes
+                updateButtons();
             }
         });
     }
@@ -105,29 +116,20 @@ public class WelcomeActivity extends AppCompatActivity
         switch (v.getId()) {
             case R.id.nextBtn:
                 int next = viewPager.getCurrentItem() + 1;
-                if (next >= 4) break;
-                viewPager.setCurrentItem(next);
+                if (next >= 4) {
+                    nextButton.setText("Login");
+                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                    finish();
+                } else {
+                    viewPager.setCurrentItem(next);
+                }
                 break;
             case R.id.skipBtn:
                 viewPager.setCurrentItem(3);
                 break;
-            case R.id.welcome_register_btn:
-                startActivity(new Intent(WelcomeActivity.this, PhoneRegisterActivity.class));
-                finish();
-                break;
-            case R.id.welcome_login_btn:
-                startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
-                finish();
-                break;
             default:
                 break;
         }
-    }
-
-    public void moveToLoginPage() {
-        // Todo: Adding functions for two button on Welcome Slides
-        startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
-        finish();
     }
 
     class ViewPagerAdapter extends PagerAdapter {
@@ -147,7 +149,6 @@ public class WelcomeActivity extends AppCompatActivity
             container.addView(list.get(position));
             return list.get(position);
         }
-
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
