@@ -1,200 +1,326 @@
 package com.greenfam.sonicnews;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.greenfam.sonicnews.Adapters.MessageThreadAdapter;
+import com.greenfam.sonicnews.Content.AppConfig;
+import com.greenfam.sonicnews.Content.ServerEndpoint;
+import com.greenfam.sonicnews.Content.SingleConversation;
+import com.greenfam.sonicnews.Content.UserProfile;
+import com.greenfam.sonicnews.GCM.NotificationUtils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MessagesActivity extends BackgroundActivity {
 
-    // LogCat tag
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private String TAG = MessagesActivity.class.getSimpleName();
 
-    private ImageView btnSend;
-    private EditText inputMsg;
-
-    // Chat messages list adapter
-    private MessageListAdapter adapter;
-    private List<SingleMessage> listMessages;
-    private ListView listViewMessages;
-
-    // Client name
-    private String name = null;
-
-    // JSON flags to identify the kind of JSON response
-    private static final String TAG_SELF = "self", TAG_NEW = "new",
-            TAG_MESSAGE = "message", TAG_EXIT = "exit";
+    private String chatRoomId;
+    private RecyclerView recyclerView;
+    private MessageThreadAdapter mAdapter;
+    private ArrayList<SingleMessage> messageArrayList;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+    private EditText inputMessage;
+    private ImageButton btnSend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.complete_chat);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        btnSend = (ImageView) findViewById(R.id.btnSend);
-        inputMsg = (EditText) findViewById(R.id.inputMsg);
-        listViewMessages = (ListView) findViewById(R.id.list_view_messages);
+        inputMessage = (EditText) findViewById(R.id.inputMsg);
+        btnSend = (ImageButton) findViewById(R.id.btnSend);
 
-        // Getting the person name from previous screen
-        Intent i = getIntent();
-        name = i.getStringExtra("name");
+        Intent intent = getIntent();
+        chatRoomId = intent.getStringExtra("chat_room_id");
+        String title = intent.getStringExtra("name");
 
-        listMessages = new ArrayList<SingleMessage>();
+        getSupportActionBar().setTitle(title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        adapter = new MessageListAdapter(this, listMessages);
-        listViewMessages.setAdapter(adapter);
+        if (chatRoomId == null) {
+            Toast.makeText(getApplicationContext(), "Chat room not found!", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+
+        messageArrayList = new ArrayList<>();
+
+        // self user id is to identify the message owner
+        String selfUserId = BackgroundActivity.getInstance().getPrefManager().getUser().getId();
+
+        mAdapter = new MessageThreadAdapter(this, messageArrayList, selfUserId);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(mAdapter);
+
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(AppConfig.PUSH_NOTIFICATION)) {
+                    // new push message is received
+                    handlePushNotification(intent);
+                }
+            }
+        };
 
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Sending message to web socket server
+                sendMessage();
             }
         });
 
-        /**
-         * Creating web socket client. This will have callback methods
-         * */
+        fetchChatThread();
     }
-
-
-    /**
-     * Parsing the JSON message received from server The intent of message will
-     * be identified by JSON node 'flag'. flag = self, message belongs to the
-     * person. flag = new, a new person joined the conversation. flag = message,
-     * a new message received from server. flag = exit, somebody left the
-     * conversation.
-     * */
-//    private void parseMessage(final String msg) {
-//
-//        try {
-//            JSONObject jObj = new JSONObject(msg);
-//
-//            // JSON node 'flag'
-//            String flag = jObj.getString("flag");
-//
-//            // if flag is 'self', this JSON contains session id
-//            if (flag.equalsIgnoreCase(TAG_SELF)) {
-//
-//                String sessionId = jObj.getString("sessionId");
-//
-//                // Save the session id in shared preferences
-//                utils.storeSessionId(sessionId);
-//
-//                Log.e(TAG, "Your session id: " + utils.getSessionId());
-//
-//            } else if (flag.equalsIgnoreCase(TAG_NEW)) {
-//                // If the flag is 'new', new person joined the room
-//                String name = jObj.getString("name");
-//                String message = jObj.getString("message");
-//
-//                // number of people online
-//                String onlineCount = jObj.getString("onlineCount");
-//
-//                showToast(name + message + ". Currently " + onlineCount
-//                        + " people online!");
-//
-//            } else if (flag.equalsIgnoreCase(TAG_MESSAGE)) {
-//                // if the flag is 'message', new message received
-//                String fromName = name;
-//                String message = jObj.getString("message");
-//                String sessionId = jObj.getString("sessionId");
-//                boolean isSelf = true;
-//
-//                // Checking if the message was sent by you
-//                if (!sessionId.equals(utils.getSessionId())) {
-//                    fromName = jObj.getString("name");
-//                    isSelf = false;
-//                }
-//
-//                Message m = new Message(fromName, message, isSelf);
-//
-//                // Appending the message to chat list
-//                appendMessage(m);
-//
-//            } else if (flag.equalsIgnoreCase(TAG_EXIT)) {
-//                // If the flag is 'exit', somebody left the conversation
-//                String name = jObj.getString("name");
-//                String message = jObj.getString("message");
-//
-//                showToast(name + message);
-//            }
-//
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onResume() {
+        super.onResume();
+
+        // registering the receiver for new notification
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(AppConfig.PUSH_NOTIFICATION));
+
+        NotificationUtils.clearNotifications();
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onPause();
     }
 
     /**
-     * Appending message to list view
+     * Handling new push message, will add the message to
+     * recycler view and scroll it to bottom
      * */
-    private void appendMessage(final SingleMessage m) {
-        runOnUiThread(new Runnable() {
+    private void handlePushNotification(Intent intent) {
+        SingleMessage message = (SingleMessage) intent.getSerializableExtra("message");
+        String chatRoomId = intent.getStringExtra("chat_room_id");
 
-            @Override
-            public void run() {
-                listMessages.add(m);
-
-                adapter.notifyDataSetChanged();
-
-                // Playing device's notification
-                playBeep();
+        if (message != null && chatRoomId != null) {
+            messageArrayList.add(message);
+            mAdapter.notifyDataSetChanged();
+            if (mAdapter.getItemCount() > 1) {
+                recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView, null, mAdapter.getItemCount() - 1);
             }
-        });
-    }
-
-    private void showToast(final String message) {
-        runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), message,
-                        Toast.LENGTH_LONG).show();
-            }
-        });
-
+        }
     }
 
     /**
-     * Plays device's default notification sound
+     * Posting a new message in chat room
+     * will make an http call to our server. Our server again sends the message
+     * to all the devices as push notification
      * */
-    public void playBeep() {
+    private void sendMessage() {
+        final String message = this.inputMessage.getText().toString().trim();
 
-        try {
-            Uri notification = RingtoneManager
-                    .getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(),
-                    notification);
-            r.play();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (TextUtils.isEmpty(message)) {
+            Toast.makeText(getApplicationContext(), "Enter a message", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        String endPoint = ServerEndpoint.CHAT_ROOM_MESSAGE.replace("_ID_", chatRoomId);
+
+        Log.e(TAG, "endpoint: " + endPoint);
+
+        this.inputMessage.setText("");
+
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                endPoint, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.e(TAG, "response: " + response);
+
+                try {
+                    JSONObject obj = new JSONObject(response);
+
+                    // check for error
+                    if (obj.getBoolean("error") == false) {
+                        JSONObject commentObj = obj.getJSONObject("message");
+
+                        String commentId = commentObj.getString("message_id");
+                        String commentText = commentObj.getString("message");
+                        String createdAt = commentObj.getString("created_at");
+
+                        JSONObject userObj = obj.getJSONObject("user");
+                        String userId = userObj.getString("user_id");
+                        String userName = userObj.getString("name");
+                        UserProfile user = new UserProfile(userId, userName, null);
+
+                        SingleMessage message = new SingleMessage();
+                        message.setId(commentId);
+                        message.setMessage(commentText);
+                        message.setCreatedAt(createdAt);
+                        message.setUser(user);
+
+                        messageArrayList.add(message);
+
+                        mAdapter.notifyDataSetChanged();
+                        if (mAdapter.getItemCount() > 1) {
+                            // scrolling to bottom of the recycler view
+                            recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView, null, mAdapter.getItemCount() - 1);
+                        }
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), "" + obj.getString("message"), Toast.LENGTH_LONG).show();
+                    }
+
+                } catch (JSONException e) {
+                    Log.e(TAG, "json parsing error: " + e.getMessage());
+                    Toast.makeText(getApplicationContext(), "json parse error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                NetworkResponse networkResponse = error.networkResponse;
+                Log.e(TAG, "Volley error: " + error.getMessage() + ", code: " + networkResponse);
+                Toast.makeText(getApplicationContext(), "Volley error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                inputMessage.setText(message);
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("user_id", BackgroundActivity.getInstance().getPrefManager().getUser().getId());
+                params.put("message", message);
+
+                Log.e(TAG, "Params: " + params.toString());
+
+                return params;
+            };
+        };
+
+
+        // disabling retry policy so that it won't make
+        // multiple http calls
+        int socketTimeout = 0;
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        strReq.setRetryPolicy(policy);
+
+        //Adding request to request queue
+        BackgroundActivity.getInstance().addToRequestQueue(strReq);
     }
 
-    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
-    public static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
+    /**
+     * Fetching all the messages of a single chat room
+     * */
+    private void fetchChatThread() {
+
+        String endPoint = ServerEndpoint.CHAT_THREAD.replace("_ID_", chatRoomId);
+        Log.e(TAG, "endPoint: " + endPoint);
+
+        StringRequest strReq = new StringRequest(Request.Method.GET,
+                endPoint, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.e(TAG, "response: " + response);
+
+                try {
+                    JSONObject obj = new JSONObject(response);
+
+                    // check for error
+                    if (obj.getBoolean("error") == false) {
+                        JSONArray commentsObj = obj.getJSONArray("messages");
+
+                        for (int i = 0; i < commentsObj.length(); i++) {
+                            JSONObject commentObj = (JSONObject) commentsObj.get(i);
+
+                            String commentId = commentObj.getString("message_id");
+                            String commentText = commentObj.getString("message");
+                            String createdAt = commentObj.getString("created_at");
+
+                            JSONObject userObj = commentObj.getJSONObject("user");
+                            String userId = userObj.getString("user_id");
+                            String userName = userObj.getString("username");
+                            UserProfile user = new UserProfile(userId, userName, null);
+
+                            SingleMessage message = new SingleMessage();
+                            message.setId(commentId);
+                            message.setMessage(commentText);
+                            message.setCreatedAt(createdAt);
+                            message.setUser(user);
+
+                            messageArrayList.add(message);
+                        }
+
+                        mAdapter.notifyDataSetChanged();
+                        if (mAdapter.getItemCount() > 1) {
+                            recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView, null, mAdapter.getItemCount() - 1);
+                        }
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), "" + obj.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                    }
+
+                } catch (JSONException e) {
+                    Log.e(TAG, "json parsing error: " + e.getMessage());
+                    Toast.makeText(getApplicationContext(), "json parse error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                NetworkResponse networkResponse = error.networkResponse;
+                Log.e(TAG, "Volley error: " + error.getMessage() + ", code: " + networkResponse);
+                Toast.makeText(getApplicationContext(), "Volley error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        //Adding request to request queue
+        BackgroundActivity.getInstance().addToRequestQueue(strReq);
     }
+
 }

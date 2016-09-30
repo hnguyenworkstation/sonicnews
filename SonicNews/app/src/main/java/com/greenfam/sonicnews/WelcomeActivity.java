@@ -37,6 +37,10 @@ public class WelcomeActivity extends BackgroundActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (BackgroundActivity.getInstance().getPrefManager().getUser() != null) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
         setContentView(R.layout.activity_welcome);
 
         skipButton = (Button) findViewById(R.id.skipBtn);
