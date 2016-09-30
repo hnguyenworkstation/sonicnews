@@ -48,7 +48,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
-public class MapsActivity extends AppCompatActivity
+public class MapsActivity extends BackgroundActivity
         implements OnMapReadyCallback, PlaceSelectionListener,
         GoogleApiClient.OnConnectionFailedListener,
         GoogleApiClient.ConnectionCallbacks {

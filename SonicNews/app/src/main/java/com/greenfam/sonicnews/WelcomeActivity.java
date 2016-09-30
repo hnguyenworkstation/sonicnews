@@ -21,7 +21,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WelcomeActivity extends AppCompatActivity
+public class WelcomeActivity extends BackgroundActivity
     implements View.OnClickListener {
 
     private final int LAST_PAGE = 3;

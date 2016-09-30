@@ -1,29 +1,37 @@
 package com.greenfam.sonicnews;
 
+import com.greenfam.sonicnews.Content.UserProfile;
+
+import java.io.Serializable;
+
 /**
  * Created by jason on 9/22/16.
  */
 
-public class SingleMessage {
+public class SingleMessage implements Serializable {
 
     private String fromName, message;
+    private String mID;
+    private String mTimeStamp;
     private boolean isSelf;
+    private UserProfile user;
 
     public SingleMessage() {
     }
 
-    public SingleMessage(String fromName, String message, boolean isSelf) {
-        this.fromName = fromName;
+    public SingleMessage(String id, String message, String createdAt, UserProfile user) {
+        this.mID = id;
         this.message = message;
-        this.isSelf = isSelf;
+        this.mTimeStamp = createdAt;
+        this.user = user;
     }
 
-    public String getFromName() {
-        return fromName;
+    public String getId() {
+        return mID;
     }
 
-    public void setFromName(String fromName) {
-        this.fromName = fromName;
+    public void setId(String id) {
+        this.mID = id;
     }
 
     public String getMessage() {
@@ -34,11 +42,19 @@ public class SingleMessage {
         this.message = message;
     }
 
-    public boolean isSelf() {
-        return isSelf;
+    public String getCreatedAt() {
+        return mTimeStamp;
     }
 
-    public void setSelf(boolean isSelf) {
-        this.isSelf = isSelf;
+    public void setCreatedAt(String createdAt) {
+        this.mTimeStamp = createdAt;
+    }
+
+    public UserProfile getUser() {
+        return user;
+    }
+
+    public void setUser(UserProfile user) {
+        this.user = user;
     }
 }

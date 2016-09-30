@@ -28,7 +28,7 @@ import com.greenfam.sonicnews.Fragments.MoreFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BackgroundActivity
         implements
                 HomeFragment.OnFragmentInteractionListener,
                 LocalFragment.OnFragmentInteractionListener,

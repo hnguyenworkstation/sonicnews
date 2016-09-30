@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.android.volley.RequestQueue;
+import com.greenfam.sonicnews.Content.MyPreferenceManager;
 import com.greenfam.sonicnews.MessagesActivity;
 import com.greenfam.sonicnews.R;
 
@@ -33,6 +35,12 @@ public class MessageFragment extends Fragment {
     private Button chatButton;
 
     private OnFragmentInteractionListener mListener;
+
+    public static final String TAG = MessageFragment.class
+            .getSimpleName();
+    private RequestQueue mRequestQueue;
+    private static MessageFragment mInstance;
+    private MyPreferenceManager pref;
 
     public MessageFragment() {
         // Required empty public constructor

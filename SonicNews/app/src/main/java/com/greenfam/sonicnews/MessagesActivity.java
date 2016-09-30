@@ -16,7 +16,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessagesActivity extends AppCompatActivity {
+public class MessagesActivity extends BackgroundActivity {
 
     // LogCat tag
     private static final String TAG = MainActivity.class.getSimpleName();

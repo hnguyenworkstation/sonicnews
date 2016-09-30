@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class PhoneRegisterActivity extends AppCompatActivity {
+public class PhoneRegisterActivity extends BackgroundActivity {
 
     private Button phoneVerify;
 

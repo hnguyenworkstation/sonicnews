@@ -6,7 +6,13 @@
     android:backgroundTint="@color/title_gray">
 
     <!-- TODO: Adding more setting selectors -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <include layout="@layout/profile_card_style" />
+        <include
+            layout="@layout/profile_card_style" />
+
+    </LinearLayout>
 
 </FrameLayout>
