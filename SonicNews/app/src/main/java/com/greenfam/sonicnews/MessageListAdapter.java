@@ -54,23 +54,6 @@ public class MessageListAdapter extends BaseAdapter {
         LayoutInflater mInflater = (LayoutInflater) context
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
-        // Identifying the message owner
-        if (messagesItems.get(position).isSelf()) {
-            // message belongs to you, so load the right aligned layout
-            convertView = mInflater.inflate(R.layout.list_messages_right,
-                    null);
-        } else {
-            // message belongs to other person, load the left aligned layout
-            convertView = mInflater.inflate(R.layout.list_messages_left,
-                    null);
-        }
-
-        TextView lblFrom = (TextView) convertView.findViewById(R.id.lblMsgFrom);
-        TextView txtMsg = (TextView) convertView.findViewById(R.id.txtMsg);
-
-        txtMsg.setText(m.getMessage());
-        lblFrom.setText(m.getFromName());
-
         return convertView;
     }
 }

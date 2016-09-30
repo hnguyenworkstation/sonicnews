@@ -58,26 +58,6 @@ public class MessagesActivity extends BackgroundActivity {
             @Override
             public void onClick(View v) {
                 // Sending message to web socket server
-                String messContent = inputMsg.getText().toString();
-                SingleMessage newMessage;
-
-                // Todo: fix this testing function
-                if (!messContent.isEmpty()) {
-                    if (messContent.charAt(0) == '1') {
-                        newMessage = new SingleMessage("Other",
-                                inputMsg.getText().toString(), false);
-                    } else {
-                        newMessage = new SingleMessage("You",
-                                inputMsg.getText().toString(), true);
-                    }
-                } else {
-                    newMessage = new SingleMessage("You",
-                            "this is a very long test post to see if the layout is already scaled or not", true);
-                }
-
-                // Clearing the input filed once  message was sent
-                appendMessage(newMessage);
-                inputMsg.setText("");
             }
         });
 
