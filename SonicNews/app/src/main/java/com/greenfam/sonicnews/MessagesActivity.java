@@ -73,21 +73,16 @@ public class MessagesActivity extends BackgroundActivity {
         chatRoomId = intent.getStringExtra("chat_room_id");
         String title = intent.getStringExtra("name");
 
-        getSupportActionBar().setTitle(title);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         if (chatRoomId == null) {
             Toast.makeText(getApplicationContext(), "Chat room not found!", Toast.LENGTH_SHORT).show();
             finish();
         }
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-
+        recyclerView = (RecyclerView) findViewById(R.id.list_view_messages);
         messageArrayList = new ArrayList<>();
 
         // self user id is to identify the message owner
         String selfUserId = BackgroundActivity.getInstance().getPrefManager().getUser().getId();
-
         mAdapter = new MessageThreadAdapter(this, messageArrayList, selfUserId);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -98,10 +93,10 @@ public class MessagesActivity extends BackgroundActivity {
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(AppConfig.PUSH_NOTIFICATION)) {
-                    // new push message is received
-                    handlePushNotification(intent);
-                }
+            if (intent.getAction().equals(AppConfig.PUSH_NOTIFICATION)) {
+                // new push message is received
+                handlePushNotification(intent);
+            }
             }
         };
 
@@ -177,7 +172,6 @@ public class MessagesActivity extends BackgroundActivity {
 
                 try {
                     JSONObject obj = new JSONObject(response);
-
                     // check for error
                     if (obj.getBoolean("error") == false) {
                         JSONObject commentObj = obj.getJSONObject("message");
@@ -198,7 +192,6 @@ public class MessagesActivity extends BackgroundActivity {
                         message.setUser(user);
 
                         messageArrayList.add(message);
-
                         mAdapter.notifyDataSetChanged();
                         if (mAdapter.getItemCount() > 1) {
                             // scrolling to bottom of the recycler view
