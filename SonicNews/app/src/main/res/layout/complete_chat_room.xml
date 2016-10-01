@@ -1,23 +1,26 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".MessagesActivity"
+    tools:showIn="@layout/activity_chat_room">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/list_view_messages"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@null"
-        android:divider="@null"
-        android:transcriptMode="alwaysScroll"
-        android:stackFromBottom="true" />
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="20dp"
+        android:scrollbars="vertical" />
 
     <LinearLayout
         android:id="@+id/llMsgCompose"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
         android:background="@color/white"
         android:orientation="horizontal"
         android:weightSum="3" >
@@ -61,7 +64,5 @@
             android:background="@drawable/send"
             android:layout_marginEnd="10dp"
             android:layout_gravity="center_vertical"/>
-
     </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

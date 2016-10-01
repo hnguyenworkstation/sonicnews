@@ -14,16 +14,16 @@ public class SingleMessage implements Serializable {
     private String mID;
     private String mTimeStamp;
     private boolean isSelf;
-    private UserProfile user;
+    private String fromID;
 
     public SingleMessage() {
     }
 
-    public SingleMessage(String id, String message, String createdAt, UserProfile user) {
+    public SingleMessage(String id, String message, String createdAt, String userID) {
         this.mID = id;
         this.message = message;
         this.mTimeStamp = createdAt;
-        this.user = user;
+        this.fromID = userID;
     }
 
     public String getId() {
@@ -50,11 +50,11 @@ public class SingleMessage implements Serializable {
         this.mTimeStamp = createdAt;
     }
 
-    public UserProfile getUser() {
-        return user;
+    public String getFromID() {
+        return fromID;
     }
 
-    public void setUser(UserProfile user) {
-        this.user = user;
+    public void setFromID(String fromID) {
+        this.fromID = fromID;
     }
 }

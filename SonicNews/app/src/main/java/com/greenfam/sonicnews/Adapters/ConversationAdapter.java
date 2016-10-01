@@ -33,10 +33,10 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
         public ViewHolder(View view) {
             super(view);
-            name = (TextView) view.findViewById(R.id.name);
-            message = (TextView) view.findViewById(R.id.message);
-            timestamp = (TextView) view.findViewById(R.id.timestamp);
-            count = (TextView) view.findViewById(R.id.count);
+            name = (TextView) view.findViewById(R.id.chat_name);
+            message = (TextView) view.findViewById(R.id.chat_message);
+            timestamp = (TextView) view.findViewById(R.id.chat_timestamp);
+            count = (TextView) view.findViewById(R.id.chat_count);
         }
     }
 
@@ -52,7 +52,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.conversation_row, parent, false);
+                .inflate(R.layout.chat_room_row_layout, parent, false);
 
         return new ViewHolder(itemView);
     }

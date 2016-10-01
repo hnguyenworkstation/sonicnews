@@ -5,10 +5,8 @@
 
     <!-- view background color -->
     <solid
-        android:color="@color/title_gray" >
+        android:color="@color/self_chat_background" >
     </solid>
-
-
 
     <!-- If you want to add some padding -->
     <padding
@@ -20,7 +18,7 @@
 
     <!-- Here is the corner radius -->
     <corners
-        android:radius="5dp"   >
+        android:radius="10dp"   >
     </corners>
 
 </shape>

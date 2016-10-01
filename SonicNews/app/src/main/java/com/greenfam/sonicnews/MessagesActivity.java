@@ -62,8 +62,8 @@ public class MessagesActivity extends BackgroundActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.complete_chat);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setContentView(R.layout.activity_chat_room);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
         setSupportActionBar(toolbar);
 
         inputMessage = (EditText) findViewById(R.id.inputMsg);
@@ -78,7 +78,7 @@ public class MessagesActivity extends BackgroundActivity {
             finish();
         }
 
-        recyclerView = (RecyclerView) findViewById(R.id.list_view_messages);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         messageArrayList = new ArrayList<>();
 
         // self user id is to identify the message owner
@@ -93,10 +93,10 @@ public class MessagesActivity extends BackgroundActivity {
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(AppConfig.PUSH_NOTIFICATION)) {
-                // new push message is received
-                handlePushNotification(intent);
-            }
+                if (intent.getAction().equals(AppConfig.PUSH_NOTIFICATION)) {
+                    // new push message is received
+                    handlePushNotification(intent);
+                }
             }
         };
 
@@ -182,14 +182,12 @@ public class MessagesActivity extends BackgroundActivity {
 
                         JSONObject userObj = obj.getJSONObject("user");
                         String userId = userObj.getString("user_id");
-                        String userName = userObj.getString("name");
-                        UserProfile user = new UserProfile(userId, userName, null);
 
                         SingleMessage message = new SingleMessage();
                         message.setId(commentId);
                         message.setMessage(commentText);
                         message.setCreatedAt(createdAt);
-                        message.setUser(user);
+                        message.setFromID(userId);
 
                         messageArrayList.add(message);
                         mAdapter.notifyDataSetChanged();
@@ -208,7 +206,6 @@ public class MessagesActivity extends BackgroundActivity {
                 }
             }
         }, new Response.ErrorListener() {
-
             @Override
             public void onErrorResponse(VolleyError error) {
                 NetworkResponse networkResponse = error.networkResponse;
@@ -217,19 +214,15 @@ public class MessagesActivity extends BackgroundActivity {
                 inputMessage.setText(message);
             }
         }) {
-
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("user_id", BackgroundActivity.getInstance().getPrefManager().getUser().getId());
                 params.put("message", message);
-
                 Log.e(TAG, "Params: " + params.toString());
-
                 return params;
             };
         };
-
 
         // disabling retry policy so that it won't make
         // multiple http calls
@@ -254,53 +247,49 @@ public class MessagesActivity extends BackgroundActivity {
         Log.e(TAG, "endPoint: " + endPoint);
 
         StringRequest strReq = new StringRequest(Request.Method.GET,
-                endPoint, new Response.Listener<String>() {
+            endPoint, new Response.Listener<String>() {
 
-            @Override
-            public void onResponse(String response) {
-                Log.e(TAG, "response: " + response);
+        @Override
+        public void onResponse(String response) {
+            Log.e(TAG, "response: " + response);
 
-                try {
-                    JSONObject obj = new JSONObject(response);
+            try {
+                JSONObject obj = new JSONObject(response);
 
-                    // check for error
-                    if (obj.getBoolean("error") == false) {
-                        JSONArray commentsObj = obj.getJSONArray("messages");
+                // check for error
+                if (obj.getBoolean("error") == false) {
+                    JSONArray commentsObj = obj.getJSONArray("messages");
 
-                        for (int i = 0; i < commentsObj.length(); i++) {
-                            JSONObject commentObj = (JSONObject) commentsObj.get(i);
+                    for (int i = 0; i < commentsObj.length(); i++) {
+                        JSONObject commentObj = (JSONObject) commentsObj.get(i);
 
-                            String commentId = commentObj.getString("message_id");
-                            String commentText = commentObj.getString("message");
-                            String createdAt = commentObj.getString("created_at");
+                        String commentId = commentObj.getString("message_id");
+                        String commentText = commentObj.getString("message");
+                        String createdAt = commentObj.getString("created_at");
 
-                            JSONObject userObj = commentObj.getJSONObject("user");
-                            String userId = userObj.getString("user_id");
-                            String userName = userObj.getString("username");
-                            UserProfile user = new UserProfile(userId, userName, null);
+                        JSONObject userObj = commentObj.getJSONObject("user");
+                        String userId = userObj.getString("user_id");
 
-                            SingleMessage message = new SingleMessage();
-                            message.setId(commentId);
-                            message.setMessage(commentText);
-                            message.setCreatedAt(createdAt);
-                            message.setUser(user);
+                        SingleMessage message = new SingleMessage();
+                        message.setId(commentId);
+                        message.setMessage(commentText);
+                        message.setCreatedAt(createdAt);
+                        message.setFromID(userId);
 
-                            messageArrayList.add(message);
-                        }
-
-                        mAdapter.notifyDataSetChanged();
-                        if (mAdapter.getItemCount() > 1) {
-                            recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView, null, mAdapter.getItemCount() - 1);
-                        }
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "" + obj.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                        messageArrayList.add(message);
                     }
 
-                } catch (JSONException e) {
-                    Log.e(TAG, "json parsing error: " + e.getMessage());
-                    Toast.makeText(getApplicationContext(), "json parse error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    mAdapter.notifyDataSetChanged();
+                    if (mAdapter.getItemCount() > 1) {
+                        recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView, null, mAdapter.getItemCount() - 1);
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "" + obj.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
                 }
+            } catch (JSONException e) {
+                Log.e(TAG, "json parsing error: " + e.getMessage());
+                Toast.makeText(getApplicationContext(), "json parse error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
             }
         }, new Response.ErrorListener() {
 
@@ -311,9 +300,7 @@ public class MessagesActivity extends BackgroundActivity {
                 Toast.makeText(getApplicationContext(), "Volley error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
         //Adding request to request queue
         BackgroundActivity.getInstance().addToRequestQueue(strReq);
     }
-
 }

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.greenfam.sonicnews.Content.SingleConversation;
 import com.greenfam.sonicnews.R;
 import com.greenfam.sonicnews.SingleMessage;
 
@@ -41,7 +42,6 @@ public class MessageThreadAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
-
     public MessageThreadAdapter(Context mContext, ArrayList<SingleMessage> messageArrayList, String userId) {
         this.mContext = mContext;
         this.messageArrayList = messageArrayList;
@@ -67,15 +67,13 @@ public class MessageThreadAdapter extends RecyclerView.Adapter<RecyclerView.View
                     .inflate(R.layout.list_messages_left, parent, false);
         }
 
-
         return new ViewHolder(itemView);
     }
-
 
     @Override
     public int getItemViewType(int position) {
         SingleMessage message = messageArrayList.get(position);
-        if (message.getUser().getId().equals(userId)) {
+        if (message.getFromID().equals(userId)) {
             return SELF;
         }
 
@@ -89,8 +87,8 @@ public class MessageThreadAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         String timestamp = getTimeStamp(message.getCreatedAt());
 
-        if (message.getUser().getName() != null)
-            timestamp = message.getUser().getName() + ", " + timestamp;
+        if ( message.getFromID() != null)
+            timestamp = message.getFromID() + ", " + timestamp;
 
         ((ViewHolder) holder).timestamp.setText(timestamp);
     }

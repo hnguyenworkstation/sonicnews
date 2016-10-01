@@ -117,11 +117,7 @@ public class MyGcmPushReceiver extends GcmListenerService {
                     return;
                 }
 
-                UserProfile user = new UserProfile();
-                user.setId(uObj.getString("user_id"));
-                user.setEmail(uObj.getString("email"));
-                user.setName(uObj.getString("name"));
-                message.setUser(user);
+                message.setFromID(uObj.getString("user_id"));
 
                 // verifying whether the app is in background or foreground
                 if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {
@@ -140,7 +136,7 @@ public class MyGcmPushReceiver extends GcmListenerService {
                     // app is in background. show the message in notification try
                     Intent resultIntent = new Intent(getApplicationContext(), MessagesActivity.class);
                     resultIntent.putExtra("chat_room_id", chatRoomId);
-                    showNotificationMessage(getApplicationContext(), title, user.getName() + " : " + message.getMessage(), message.getCreatedAt(), resultIntent);
+                    showNotificationMessage(getApplicationContext(), title, message.getFromID() + " : " + message.getMessage(), message.getCreatedAt(), resultIntent);
                 }
 
             } catch (JSONException e) {
@@ -173,11 +169,7 @@ public class MyGcmPushReceiver extends GcmListenerService {
                 message.setCreatedAt(mObj.getString("created_at"));
 
                 JSONObject uObj = datObj.getJSONObject("user");
-                UserProfile user = new UserProfile();
-                user.setId(uObj.getString("user_id"));
-                user.setEmail(uObj.getString("email"));
-                user.setName(uObj.getString("name"));
-                message.setUser(user);
+                message.setFromID(uObj.getString("user_id"));
 
                 // verifying whether the app is in background or foreground
                 if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {
@@ -197,7 +189,7 @@ public class MyGcmPushReceiver extends GcmListenerService {
 
                     // check for push notification image attachment
                     if (TextUtils.isEmpty(imageUrl)) {
-                        showNotificationMessage(getApplicationContext(), title, user.getName() + " : " + message.getMessage(), message.getCreatedAt(), resultIntent);
+                        showNotificationMessage(getApplicationContext(), title, message.getFromID() + " : " + message.getMessage(), message.getCreatedAt(), resultIntent);
                     } else {
                         // push notification contains image
                         // show it with the image

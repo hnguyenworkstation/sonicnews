@@ -86,15 +86,6 @@ public class MessageFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MessageFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static MessageFragment newInstance(String param1, String param2) {
         MessageFragment fragment = new MessageFragment();
         Bundle args = new Bundle();
@@ -118,7 +109,7 @@ public class MessageFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_message, container, false);
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.available_chat_list);
 
         /**
          * Broadcast receiver calls in two scenarios
@@ -128,7 +119,6 @@ public class MessageFragment extends Fragment {
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-
                 // checking for type intent filter
                 if (intent.getAction().equals(AppConfig.REGISTRATION_COMPLETE)) {
                     // gcm successfully registered
@@ -206,8 +196,6 @@ public class MessageFragment extends Fragment {
             SingleMessage message = (SingleMessage) intent.getSerializableExtra("message");
             Toast.makeText(this.getContext(), "New push: " + message.getMessage(), Toast.LENGTH_LONG).show();
         }
-
-
     }
 
     /**
@@ -233,44 +221,42 @@ public class MessageFragment extends Fragment {
      */
     private void fetchChatRooms() {
         StringRequest strReq = new StringRequest(Request.Method.GET,
-                ServerEndpoint.CHAT_ROOMS, new Response.Listener<String>() {
+            ServerEndpoint.CHAT_ROOMS, new Response.Listener<String>() {
 
-            @Override
-            public void onResponse(String response) {
-                Log.e(TAG, "response: " + response);
+        @Override
+        public void onResponse(String response) {
+            Log.e(TAG, "response: " + response);
 
-                try {
-                    JSONObject obj = new JSONObject(response);
+            try {
+                JSONObject obj = new JSONObject(response);
 
-                    // check for error flag
-                    if (obj.getBoolean("error") == false) {
-                        JSONArray chatRoomsArray = obj.getJSONArray("chat_rooms");
-                        for (int i = 0; i < chatRoomsArray.length(); i++) {
-                            JSONObject chatRoomsObj = (JSONObject) chatRoomsArray.get(i);
-                            SingleConversation cr = new SingleConversation();
-                            cr.setId(chatRoomsObj.getString("chat_room_id"));
-                            cr.setName(chatRoomsObj.getString("name"));
-                            cr.setLastMessage("");
-                            cr.setUnreadCount(0);
-                            cr.setTimestamp(chatRoomsObj.getString("created_at"));
-
-                            chatRoomArrayList.add(cr);
-                        }
-
-                    } else {
-                        // error in fetching chat rooms
-                        Toast.makeText(getContext(), "" + obj.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                // check for error flag
+                if (obj.getBoolean("error") == false) {
+                    JSONArray chatRoomsArray = obj.getJSONArray("chat_rooms");
+                    for (int i = 0; i < chatRoomsArray.length(); i++) {
+                        JSONObject chatRoomsObj = (JSONObject) chatRoomsArray.get(i);
+                        SingleConversation cr = new SingleConversation();
+                        cr.setId(chatRoomsObj.getString("chat_room_id"));
+                        cr.setName(chatRoomsObj.getString("name"));
+                        cr.setLastMessage("");
+                        cr.setUnreadCount(0);
+                        cr.setTimestamp(chatRoomsObj.getString("created_at"));
+                        chatRoomArrayList.add(cr);
                     }
-
-                } catch (JSONException e) {
-                    Log.e(TAG, "json parsing error: " + e.getMessage());
-                    Toast.makeText(getContext(), "Json parse error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                } else {
+                    // error in fetching chat rooms
+                    Toast.makeText(getContext(), "" + obj.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
                 }
 
-                mAdapter.notifyDataSetChanged();
+            } catch (JSONException e) {
+                Log.e(TAG, "json parsing error: " + e.getMessage());
+                Toast.makeText(getContext(), "Json parse error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
 
-                // subscribing to all chat room topics
-                subscribeToAllTopics();
+            mAdapter.notifyDataSetChanged();
+
+            // subscribing to all chat room topics
+            subscribeToAllTopics();
             }
         }, new Response.ErrorListener() {
 

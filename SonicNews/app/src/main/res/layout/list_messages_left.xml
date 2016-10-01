@@ -1,48 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="5dp"
+    android:orientation="horizontal"
     android:paddingTop="5dp"
-    android:paddingLeft="10dp">
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
 
     <TextView
-        android:id="@+id/lblMsgFrom"
+        android:id="@+id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:textColor="@color/lblFromName"
-        android:textSize="12dp"
-        android:textStyle="italic" />
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:textIsSelectable="true"
+        android:background="@drawable/bg_bubble_white"
+        android:textSize="14dp" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/chat_profile"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:src="@drawable/ic_account_circle_black_24dp"
-            app:civ_border_width="1dp"
-            app:civ_border_color="#FF000000"/>
-
-        <TextView
-            android:id="@+id/txtMsg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:layout_marginRight="80dp"
-            android:layout_marginLeft="15dp"
-            android:textColor="@color/title_gray"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingTop="5dp"
-            android:background="@drawable/message_from_bg"/>
-
-    </LinearLayout>
-
-</LinearLayout>
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/message"
+        android:layout_marginBottom="25dp"
+        android:layout_marginLeft="10dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="6dp"
+        android:textSize="10dp" />
+</RelativeLayout>
