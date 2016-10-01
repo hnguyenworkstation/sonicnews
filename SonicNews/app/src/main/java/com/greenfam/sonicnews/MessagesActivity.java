@@ -4,11 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,11 +13,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -33,10 +26,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.greenfam.sonicnews.Adapters.MessageThreadAdapter;
 import com.greenfam.sonicnews.Content.AppConfig;
+import com.greenfam.sonicnews.FCM.NotificationUtils;
 import com.greenfam.sonicnews.Content.ServerEndpoint;
-import com.greenfam.sonicnews.Content.SingleConversation;
-import com.greenfam.sonicnews.Content.UserProfile;
-import com.greenfam.sonicnews.GCM.NotificationUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,15 +35,14 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class MessagesActivity extends BackgroundActivity {
+public class MessagesActivity extends SonicNewsActivity {
 
     private String TAG = MessagesActivity.class.getSimpleName();
 
     private String chatRoomId;
-    private RecyclerView recyclerView;
+    private RecyclerView listMessages;
     private MessageThreadAdapter mAdapter;
     private ArrayList<SingleMessage> messageArrayList;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
@@ -78,17 +68,17 @@ public class MessagesActivity extends BackgroundActivity {
             finish();
         }
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        listMessages = (RecyclerView) findViewById(R.id.listMessages);
         messageArrayList = new ArrayList<>();
 
         // self user id is to identify the message owner
-        String selfUserId = BackgroundActivity.getInstance().getPrefManager().getUser().getId();
+        String selfUserId = SonicNewsActivity.getInstance().getPrefManager().getUser().getId();
         mAdapter = new MessageThreadAdapter(this, messageArrayList, selfUserId);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(mAdapter);
+        listMessages.setLayoutManager(layoutManager);
+        listMessages.setItemAnimator(new DefaultItemAnimator());
+        listMessages.setAdapter(mAdapter);
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -118,7 +108,7 @@ public class MessagesActivity extends BackgroundActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(AppConfig.PUSH_NOTIFICATION));
 
-        NotificationUtils.clearNotifications();
+        NotificationUtils.clearNotifications(getBaseContext());
     }
 
     @Override
@@ -139,7 +129,7 @@ public class MessagesActivity extends BackgroundActivity {
             messageArrayList.add(message);
             mAdapter.notifyDataSetChanged();
             if (mAdapter.getItemCount() > 1) {
-                recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView, null, mAdapter.getItemCount() - 1);
+                listMessages.getLayoutManager().smoothScrollToPosition(listMessages, null, mAdapter.getItemCount() - 1);
             }
         }
     }
@@ -165,11 +155,9 @@ public class MessagesActivity extends BackgroundActivity {
 
         StringRequest strReq = new StringRequest(Request.Method.POST,
                 endPoint, new Response.Listener<String>() {
-
             @Override
             public void onResponse(String response) {
                 Log.e(TAG, "response: " + response);
-
                 try {
                     JSONObject obj = new JSONObject(response);
                     // check for error
@@ -193,13 +181,11 @@ public class MessagesActivity extends BackgroundActivity {
                         mAdapter.notifyDataSetChanged();
                         if (mAdapter.getItemCount() > 1) {
                             // scrolling to bottom of the recycler view
-                            recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView, null, mAdapter.getItemCount() - 1);
+                            listMessages.getLayoutManager().smoothScrollToPosition(listMessages, null, mAdapter.getItemCount() - 1);
                         }
-
                     } else {
                         Toast.makeText(getApplicationContext(), "" + obj.getString("message"), Toast.LENGTH_LONG).show();
                     }
-
                 } catch (JSONException e) {
                     Log.e(TAG, "json parsing error: " + e.getMessage());
                     Toast.makeText(getApplicationContext(), "json parse error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -217,7 +203,7 @@ public class MessagesActivity extends BackgroundActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("user_id", BackgroundActivity.getInstance().getPrefManager().getUser().getId());
+                params.put("user_id", SonicNewsActivity.getInstance().getPrefManager().getUser().getId());
                 params.put("message", message);
                 Log.e(TAG, "Params: " + params.toString());
                 return params;
@@ -234,7 +220,7 @@ public class MessagesActivity extends BackgroundActivity {
         strReq.setRetryPolicy(policy);
 
         //Adding request to request queue
-        BackgroundActivity.getInstance().addToRequestQueue(strReq);
+        SonicNewsActivity.getInstance().addToRequestQueue(strReq);
     }
 
 
@@ -255,7 +241,6 @@ public class MessagesActivity extends BackgroundActivity {
 
             try {
                 JSONObject obj = new JSONObject(response);
-
                 // check for error
                 if (obj.getBoolean("error") == false) {
                     JSONArray commentsObj = obj.getJSONArray("messages");
@@ -281,7 +266,7 @@ public class MessagesActivity extends BackgroundActivity {
 
                     mAdapter.notifyDataSetChanged();
                     if (mAdapter.getItemCount() > 1) {
-                        recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView, null, mAdapter.getItemCount() - 1);
+                        listMessages.getLayoutManager().smoothScrollToPosition(listMessages, null, mAdapter.getItemCount() - 1);
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "" + obj.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
@@ -301,6 +286,6 @@ public class MessagesActivity extends BackgroundActivity {
             }
         });
         //Adding request to request queue
-        BackgroundActivity.getInstance().addToRequestQueue(strReq);
+        SonicNewsActivity.getInstance().addToRequestQueue(strReq);
     }
 }

@@ -95,7 +95,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (BackgroundActivity.getInstance().getPrefManager().getUser() != null) {
+        if (SonicNewsActivity.getInstance().getPrefManager().getUser() != null) {
             startActivity(new Intent(this, MainActivity.class));
             finish();
         }
@@ -237,7 +237,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 userObj.getString("email"));
 
                         // storing user in shared preferences
-                        BackgroundActivity.getInstance().getPrefManager().storeUser(user);
+                        SonicNewsActivity.getInstance().getPrefManager().storeUser(user);
 
                         // start main activity
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
@@ -272,7 +272,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         };
 
         //Adding request to request queue
-        BackgroundActivity.getInstance().addToRequestQueue(strReq);
+        SonicNewsActivity.getInstance().addToRequestQueue(strReq);
     }
     private void showDialog() {
         if (!mDialog.isShowing())

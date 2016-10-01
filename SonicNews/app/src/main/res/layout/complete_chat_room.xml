@@ -9,11 +9,16 @@
     tools:showIn="@layout/activity_chat_room">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
+        android:id="@+id/listMessages"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="20dp"
-        android:scrollbars="vertical" />
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:paddingBottom="30dp"
+        android:scrollbars="vertical"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"/>
 
     <LinearLayout
         android:id="@+id/llMsgCompose"

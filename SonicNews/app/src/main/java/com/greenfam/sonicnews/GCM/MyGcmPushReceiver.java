@@ -9,9 +9,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.gcm.GcmListenerService;
-import com.greenfam.sonicnews.BackgroundActivity;
+import com.greenfam.sonicnews.FCM.NotificationUtils;
+import com.greenfam.sonicnews.SonicNewsActivity;
 import com.greenfam.sonicnews.Content.AppConfig;
-import com.greenfam.sonicnews.Content.UserProfile;
 import com.greenfam.sonicnews.MessagesActivity;
 import com.greenfam.sonicnews.SingleMessage;
 
@@ -49,18 +49,16 @@ public class MyGcmPushReceiver extends GcmListenerService {
         Log.e(TAG, "timestamp: " + timestamp);
 
         if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {
-
             // app is in foreground, broadcast the push message
             Intent pushNotification = new Intent(AppConfig.PUSH_NOTIFICATION);
             pushNotification.putExtra("message", message);
             LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
 
             // play notification sound
-            NotificationUtils notificationUtils = new NotificationUtils();
+            NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
             notificationUtils.playNotificationSound();
         } else {
-
-            Intent resultIntent = new Intent(getApplicationContext(), BackgroundActivity.class);
+            Intent resultIntent = new Intent(getApplicationContext(), SonicNewsActivity.class);
             resultIntent.putExtra("message", message);
 
             if (TextUtils.isEmpty(image)) {
@@ -95,7 +93,6 @@ public class MyGcmPushReceiver extends GcmListenerService {
      * */
     private void processChatRoomPush(String title, boolean isBackground, String data) {
         if (!isBackground) {
-
             try {
                 JSONObject datObj = new JSONObject(data);
 
@@ -109,10 +106,7 @@ public class MyGcmPushReceiver extends GcmListenerService {
 
                 JSONObject uObj = datObj.getJSONObject("user");
 
-                // skip the message if the message belongs to same user as
-                // the user would be having the same message when he was sending
-                // but it might differs in your scenario
-                if (uObj.getString("user_id").equals(BackgroundActivity.getInstance().getPrefManager().getUser().getId())) {
+                if (uObj.getString("user_id").equals(SonicNewsActivity.getInstance().getPrefManager().getUser().getId())) {
                     Log.e(TAG, "Skipping the push message as it belongs to same user");
                     return;
                 }
@@ -130,7 +124,7 @@ public class MyGcmPushReceiver extends GcmListenerService {
                     LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
 
                     // play notification sound
-                    NotificationUtils notificationUtils = new NotificationUtils();
+                    NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
                     notificationUtils.playNotificationSound();
                 } else {
                     // app is in background. show the message in notification try
@@ -181,11 +175,11 @@ public class MyGcmPushReceiver extends GcmListenerService {
                     LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
 
                     // play notification sound
-                    NotificationUtils notificationUtils = new NotificationUtils();
+                    NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
                     notificationUtils.playNotificationSound();
                 } else {
                     // app is in background. show the message in notification try
-                    Intent resultIntent = new Intent(getApplicationContext(), BackgroundActivity.class);
+                    Intent resultIntent = new Intent(getApplicationContext(), SonicNewsActivity.class);
 
                     // check for push notification image attachment
                     if (TextUtils.isEmpty(imageUrl)) {

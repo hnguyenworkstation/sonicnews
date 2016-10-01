@@ -16,7 +16,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
-import com.greenfam.sonicnews.BackgroundActivity;
+import com.greenfam.sonicnews.SonicNewsActivity;
 import com.greenfam.sonicnews.Content.AppConfig;
 import com.greenfam.sonicnews.Content.ServerEndpoint;
 import com.greenfam.sonicnews.Content.UserProfile;
@@ -143,7 +143,7 @@ public class GcmIntentService extends IntentService {
     private void sendRegistrationToServer(final String token) {
 
         // checking for valid login session
-        UserProfile user = BackgroundActivity.getInstance().getPrefManager().getUser();
+        UserProfile user = SonicNewsActivity.getInstance().getPrefManager().getUser();
         if (user == null) {
             // TODO
             // user not found, redirecting him to login screen
@@ -199,6 +199,6 @@ public class GcmIntentService extends IntentService {
         };
 
         //Adding request to request queue
-        BackgroundActivity.getInstance().addToRequestQueue(strReq);
+        SonicNewsActivity.getInstance().addToRequestQueue(strReq);
     }
 }

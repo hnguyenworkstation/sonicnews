@@ -1,4 +1,4 @@
-package com.greenfam.sonicnews.GCM;
+package com.greenfam.sonicnews.FCM;
 
 import android.app.ActivityManager;
 import android.app.Notification;
@@ -19,7 +19,6 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.util.Patterns;
 
-import com.greenfam.sonicnews.BackgroundActivity;
 import com.greenfam.sonicnews.Content.AppConfig;
 import com.greenfam.sonicnews.R;
 
@@ -29,24 +28,18 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 /**
- * Created by quang on 9/30/2016.
+ * Created by quang on 10/1/2016.
  */
-
-// All credits of this class goes to AndroidHive.Info
 
 public class NotificationUtils {
 
     private static String TAG = NotificationUtils.class.getSimpleName();
 
     private Context mContext;
-
-    public NotificationUtils() {
-    }
 
     public NotificationUtils(Context mContext) {
         this.mContext = mContext;
@@ -102,22 +95,7 @@ public class NotificationUtils {
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
-        if (AppConfig.appendNotificationMessages) {
-            // store the notification in shared pref first
-            BackgroundActivity.getInstance().getPrefManager().addNotification(message);
-
-            // get the notifications from shared preferences
-            String oldNotification = BackgroundActivity.getInstance().getPrefManager().getNotifications();
-
-            List<String> messages = Arrays.asList(oldNotification.split("\\|"));
-
-            for (int i = messages.size() - 1; i >= 0; i--) {
-                inboxStyle.addLine(messages.get(i));
-            }
-        } else {
-            inboxStyle.addLine(message);
-        }
-
+        inboxStyle.addLine(message);
 
         Notification notification;
         notification = mBuilder.setSmallIcon(icon).setTicker(title).setWhen(0)
@@ -181,8 +159,8 @@ public class NotificationUtils {
     public void playNotificationSound() {
         try {
             Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
-                    + "://" + BackgroundActivity.getInstance().getApplicationContext().getPackageName() + "/raw/notification");
-            Ringtone r = RingtoneManager.getRingtone(BackgroundActivity.getInstance().getApplicationContext(), alarmSound);
+                    + "://" + mContext.getPackageName() + "/raw/notification");
+            Ringtone r = RingtoneManager.getRingtone(mContext, alarmSound);
             r.play();
         } catch (Exception e) {
             e.printStackTrace();
@@ -218,8 +196,8 @@ public class NotificationUtils {
     }
 
     // Clears notification tray messages
-    public static void clearNotifications() {
-        NotificationManager notificationManager = (NotificationManager) BackgroundActivity.getInstance().getSystemService(Context.NOTIFICATION_SERVICE);
+    public static void clearNotifications(Context context) {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
     }
 

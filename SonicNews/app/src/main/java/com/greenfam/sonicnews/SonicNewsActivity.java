@@ -1,10 +1,12 @@
 package com.greenfam.sonicnews;
 
-import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,20 +17,22 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.greenfam.sonicnews.Content.AppConfig;
 import com.greenfam.sonicnews.Content.MyPreferenceManager;
+import com.greenfam.sonicnews.FCM.NotificationUtils;
 import com.greenfam.sonicnews.GCM.GcmIntentService;
 
 /**
  * Created by jason on 9/29/16.
  */
 
-public class BackgroundActivity extends AppCompatActivity {
+public class SonicNewsActivity extends AppCompatActivity {
 
     public static final String TAG = "SONIC NEWS";
 
     private RequestQueue mRequestQueue;
-    private static BackgroundActivity mInstance;
+    private static SonicNewsActivity mInstance;
     private MyPreferenceManager pref;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -48,26 +52,31 @@ public class BackgroundActivity extends AppCompatActivity {
                 if (intent.getAction().equals(AppConfig.REGISTRATION_COMPLETE)) {
                     // gcm successfully registered
                     // now subscribe to `global` topic to receive app wide notifications
-                    String token = intent.getStringExtra("token");
-
-                    Toast.makeText(getApplicationContext(), "GCM registration token: " + token, Toast.LENGTH_LONG).show();
-
-                } else if (intent.getAction().equals(AppConfig.SENT_TOKEN_TO_SERVER)) {
-                    // gcm registration id is stored in our server's MySQL
-
-                    Toast.makeText(getApplicationContext(), "GCM registration token is stored in server!", Toast.LENGTH_LONG).show();
+                    FirebaseMessaging.getInstance().subscribeToTopic(AppConfig.TOPIC_GLOBAL);
+                    displayFirebaseRegId();
 
                 } else if (intent.getAction().equals(AppConfig.PUSH_NOTIFICATION)) {
                     // new push notification is received
-
-                    Toast.makeText(getApplicationContext(), "Push notification is received!", Toast.LENGTH_LONG).show();
+                    String message = intent.getStringExtra("message");
+                    Toast.makeText(getApplicationContext(), "Push notification: " + message, Toast.LENGTH_LONG).show();
                 }
             }
         };
 
+        displayFirebaseRegId();
+
         if (checkPlayServices()) {
             registerGCM();
         }
+    }
+
+    // Fetches reg id from shared preferences
+    // and displays on the screen
+    private void displayFirebaseRegId() {
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(AppConfig.SHARED_PREF, 0);
+        String regId = pref.getString("regId", null);
+
+        Log.e(TAG, "Firebase reg id: " + regId);
     }
 
     // starting the service to register with GCM
@@ -75,6 +84,29 @@ public class BackgroundActivity extends AppCompatActivity {
         Intent intent = new Intent(this, GcmIntentService.class);
         intent.putExtra("key", "register");
         startService(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // register GCM registration complete receiver
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(AppConfig.REGISTRATION_COMPLETE));
+
+        // register new push message receiver
+        // by doing this, the activity will be notified each time a new message arrives
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(AppConfig.PUSH_NOTIFICATION));
+
+        // clear the notification area when the app is opened
+        NotificationUtils.clearNotifications(getBaseContext());
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onPause();
     }
 
     private boolean checkPlayServices() {
@@ -100,7 +132,7 @@ public class BackgroundActivity extends AppCompatActivity {
         ListActivities.removeActivity(this);
     }
 
-    public static synchronized BackgroundActivity getInstance() {
+    public static synchronized SonicNewsActivity getInstance() {
         return mInstance;
     }
 

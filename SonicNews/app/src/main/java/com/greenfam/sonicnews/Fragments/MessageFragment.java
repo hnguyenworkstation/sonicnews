@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
@@ -28,16 +27,15 @@ import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.greenfam.sonicnews.Adapters.ConversationAdapter;
-import com.greenfam.sonicnews.BackgroundActivity;
+import com.greenfam.sonicnews.FCM.NotificationUtils;
+import com.greenfam.sonicnews.SonicNewsActivity;
 import com.greenfam.sonicnews.Content.AppConfig;
 import com.greenfam.sonicnews.Content.MyPreferenceManager;
 import com.greenfam.sonicnews.Content.ServerEndpoint;
 import com.greenfam.sonicnews.Content.SingleConversation;
 import com.greenfam.sonicnews.Content.SingleMessageDivider;
 import com.greenfam.sonicnews.GCM.GcmIntentService;
-import com.greenfam.sonicnews.GCM.NotificationUtils;
 import com.greenfam.sonicnews.LoginActivity;
-import com.greenfam.sonicnews.MainActivity;
 import com.greenfam.sonicnews.MessagesActivity;
 import com.greenfam.sonicnews.R;
 import com.greenfam.sonicnews.SingleMessage;
@@ -269,7 +267,7 @@ public class MessageFragment extends Fragment {
         });
 
         //Adding request to request queue
-        BackgroundActivity.getInstance().addToRequestQueue(strReq);
+        SonicNewsActivity.getInstance().addToRequestQueue(strReq);
     }
 
     // subscribing to global topic
@@ -314,7 +312,7 @@ public class MessageFragment extends Fragment {
                 new IntentFilter(AppConfig.PUSH_NOTIFICATION));
 
         // clearing the notification tray
-        NotificationUtils.clearNotifications();
+        NotificationUtils.clearNotifications(getContext());
     }
 
     @Override
