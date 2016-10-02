@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class PhoneRegisterActivity extends SonicNewsActivity {
+public class PhoneRegisterActivity extends SonicNewsActivity implements View.OnClickListener {
 
     private Button phoneVerify;
 
@@ -22,5 +22,10 @@ public class PhoneRegisterActivity extends SonicNewsActivity {
                 startActivity(new Intent(PhoneRegisterActivity.this, MainActivity.class));
             }
         });
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }

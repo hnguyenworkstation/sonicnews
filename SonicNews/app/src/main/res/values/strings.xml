@@ -27,6 +27,9 @@
     ]]>
     </string>
 
+    <!-- Add Post -->
+    <string name="add_post_hint">What are you thinking? ...</string>
+
 
     <!-- Chat Frame layout strings -->
     <string name="send_message_button">Send</string>

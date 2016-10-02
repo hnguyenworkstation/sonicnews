@@ -10,11 +10,20 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.digits.sdk.android.Digits;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterCore;
+import io.fabric.sdk.android.Fabric;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WelcomeActivity extends SonicNewsActivity
     implements View.OnClickListener {
+
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = "fWuQOw31TpfxDm2Rm1AJeSiVp";
+    private static final String TWITTER_SECRET = "LMZtqmu77wd4kCzwBXPlHc4zld3QWRHfbEiJVYQa17biMz3bee";
+
 
     private final int LAST_PAGE = 3;
 
@@ -29,6 +38,8 @@ public class WelcomeActivity extends SonicNewsActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new TwitterCore(authConfig), new Digits.Builder().build());
         if (SonicNewsActivity.getInstance().getPrefManager().getUser() != null) {
             startActivity(new Intent(this, MainActivity.class));
             finish();

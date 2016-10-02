@@ -41,8 +41,15 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.digits.sdk.android.AuthCallback;
+import com.digits.sdk.android.Digits;
+import com.digits.sdk.android.DigitsAuthButton;
+import com.digits.sdk.android.DigitsException;
+import com.digits.sdk.android.DigitsSession;
 import com.greenfam.sonicnews.Content.ServerEndpoint;
 import com.greenfam.sonicnews.Content.UserProfile;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterCore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 
 import at.markushi.ui.CircleButton;
+import io.fabric.sdk.android.Fabric;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -132,11 +140,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
-        // getting social elements
-        mPhoneLogin = (CircleButton) findViewById(R.id.phone_login);
-        mGoogleLogin = (CircleButton) findViewById(R.id.google_login);
-        mTwitterLogin = (CircleButton) findViewById(R.id.twitter_login);
-
         registerBtn = (Button) findViewById(R.id.register_btn);
         registerBtn.setOnClickListener(new OnClickListener() {
             @Override
@@ -145,15 +148,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        // setting up the social buttons
-        initSocialButtons();
-    }
-
-    private void initSocialButtons() {
-        mGoogleLogin.setOnClickListener(new OnClickListener() {
+        DigitsAuthButton digitsButton = (DigitsAuthButton) findViewById(R.id.auth_button);
+        digitsButton.setCallback(new AuthCallback() {
             @Override
-            public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            public void success(DigitsSession session, String phoneNumber) {
+                // TODO: associate the session userID with your user model
+                Toast.makeText(getApplicationContext(), "Authentication successful for "
+                        + phoneNumber, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void failure(DigitsException exception) {
+                Log.d("Digits", "Sign in with Digits failure", exception);
             }
         });
     }
@@ -162,7 +168,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (!mayRequestContacts()) {
             return;
         }
-
         getLoaderManager().initLoader(0, null, this);
     }
 

@@ -142,7 +142,13 @@
                 android:gravity="center"
                 android:weightSum="1">
 
-                <at.markushi.ui.CircleButton
+                <com.digits.sdk.android.DigitsAuthButton
+                    android:id="@+id/auth_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+
+                <!-- <at.markushi.ui.CircleButton
                     android:id="@+id/phone_login"
                     android:layout_width="64dip"
                     android:layout_height="64dip"
@@ -167,14 +173,9 @@
                     android:src="@drawable/twitter"
                     app:cb_color="@color/circle_button_lightblue"
                     app:cb_pressedRingWidth="35dip"
-                    android:layout_gravity="center_horizontal"/>
+                    android:layout_gravity="center_horizontal"/> -->
 
             </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1.5dp"
-                android:background="?android:attr/listDivider"/>
 
         </LinearLayout>
     </ScrollView>
