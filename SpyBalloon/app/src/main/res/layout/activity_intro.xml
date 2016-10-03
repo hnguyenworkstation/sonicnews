@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_intro"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/intro_backgroud"
+    tools:context="me.hnguyenuml.spyballoon.IntroActivity">
+
+    <ImageView
+        android:id="@+id/intro_banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
+        android:src="@drawable/intro_banner"
+        android:layout_marginBottom="@dimen/intro_banner_padding"
+        android:layout_alignParentTop="true" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/intro_backgroud"
+        android:layout_below="@+id/intro_banner"
+        android:layout_above="@+id/welcome_bottom_group"
+        android:gravity="center">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/intro_viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:overScrollMode="never">
+        </android.support.v4.view.ViewPager>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/welcome_bottom_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:background="@color/intro_backgroud"
+        android:layout_marginBottom="5dp"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/intro_login_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/active_solid_button_style"
+            android:text = "Login"
+            android:layout_marginLeft="5dp"/>
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/welcome_viewgroup"
+            android:layout_gravity="center"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:orientation="horizontal" >
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/intro_register_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="5dp"
+            android:gravity="center"
+            android:text="Register"
+            android:background="@drawable/inactive_solid_button_style"/>
+    </LinearLayout>
+
+</RelativeLayout>

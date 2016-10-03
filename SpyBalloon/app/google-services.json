@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "848231099217",
+    "firebase_url": "https://spy-balloon-46173.firebaseio.com",
+    "project_id": "spy-balloon-46173",
+    "storage_bucket": "spy-balloon-46173.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848231099217:android:2990de6363a7e951",
+        "android_client_info": {
+          "package_name": "me.hnguyenuml.spyballoon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "848231099217-jc4f8263il1dki7bdhdu2t6f5lusc019.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3iib63-loWmEiGiEORN89iAFKtikthqM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

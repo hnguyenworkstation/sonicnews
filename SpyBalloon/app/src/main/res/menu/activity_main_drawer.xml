@@ -3,24 +3,25 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_tab"
+            android:title="Home" />
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Gallery" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:id="@+id/nav_message"
+            android:icon="@drawable/ic_message_tab"
+            android:title="Messages" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
             android:title="Tools" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Communicate"
+        android:checkableBehavior="single">
         <menu>
             <item
                 android:id="@+id/nav_share"
