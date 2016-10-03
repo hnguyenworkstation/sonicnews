@@ -3,7 +3,7 @@ package me.hnguyenuml.spyballoon;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class ListMessageActivity extends AppCompatActivity {
+public class MessageActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

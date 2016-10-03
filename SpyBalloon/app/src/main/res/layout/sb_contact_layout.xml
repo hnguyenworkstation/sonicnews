@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="20dp"
+        android:background="@color/white">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/profile_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/main_image"
+            app:civ_border_width="2dp"
+            app:civ_border_color="@color/active_button"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/sb_contact_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/contact_text_size"
+            android:layout_marginLeft="@dimen/contact_name_marginLeft"
+            android:layout_marginTop="@dimen/contact_name_marginTop"
+            android:textAllCaps="false"
+            android:text="Spy Admin"/>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/contact_number_size"
+            android:layout_marginLeft="@dimen/contact_name_marginLeft"
+            android:textAllCaps="false"
+            android:text="+19786315334"/>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

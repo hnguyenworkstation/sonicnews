@@ -10,6 +10,8 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
 
     <application
         android:allowBackup="true"
@@ -30,6 +32,7 @@
         <activity android:name=".IntroActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -53,11 +56,12 @@
                 android:value="me.hnguyenuml.spyballoon.MainActivity" />
         </activity>
         <activity android:name=".PhoneRegisterActivity" />
-        <activity android:name=".ListMessageActivity">
+        <activity android:name=".MessageActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="me.hnguyenuml.spyballoon.MainActivity" />
         </activity>
+        <activity android:name=".DisplayContactsActivity"></activity>
     </application>
 
 </manifest>

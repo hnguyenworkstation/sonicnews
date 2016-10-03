@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 /**
  * Created by quang on 10/1/2016.
  */
@@ -22,6 +24,8 @@ public class SBPreferenceManager {
     private static final String SB_KEY_USER_EMAIL = "user_email";
     private static final String SB_KEY_USER_ID = "user_id";
     private static final String SB_KEY_NOTIFICATIONS = "notifications";
+
+    private ArrayList<SBFriend> contactList;
 
     public SBPreferenceManager(Context context) {
         this.mContext = context;
@@ -69,5 +73,13 @@ public class SBPreferenceManager {
     public void clear() {
         editor.clear();
         editor.commit();
+    }
+
+    public ArrayList<SBFriend> getContactList() {
+        return contactList;
+    }
+
+    public void setContactList(ArrayList<SBFriend> list) {
+        this.contactList = list;
     }
 }

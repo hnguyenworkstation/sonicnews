@@ -7,7 +7,19 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_maps">Map</string>
 
+    <!-- State Titles -->
+    <string name="home_title">Spy Balloon</string>
+    <string name="around_title">Spy Around</string>
+    <string name="chat_title">Messages</string>
+    <string name="more_title">Spy More</string>
+
     <!-- Register -->
     <string name="phone_register_request">Verify</string>
     <string name="phone_input_hint">Enter phone number</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Main Activity -->
+    <string name="request_contact_permission">Contact Permission is needed</string>
 </resources>
