@@ -4,20 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -25,20 +22,20 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import android.support.design.widget.FloatingActionButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -49,22 +46,24 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends AppCompatActivity
+public class MapsActivity extends BaseActivity
         implements OnMapReadyCallback, PlaceSelectionListener,
         GoogleApiClient.OnConnectionFailedListener,
-        GoogleApiClient.ConnectionCallbacks {
+        GoogleApiClient.ConnectionCallbacks{
 
     private static final String TAG = "SpyMap";
     private final int REQUEST_CODE_AUTOCOMPLETE = 1;
     private GoogleApiClient mGoogleClient;
-    private Location lastKnownLocation;
-    private CameraPosition lastKnownCameraPos;
 
+    private static final int REQUEST_CODE = 1;
     private static final int REQUEST_PLACE_PICKER = 1;
     private static final int REQUEST_LOCATION_ACCESS = 0;
 
     private GoogleMap mMap;
     private ActionBar toolbar;
+    private FloatingActionButton mFab;
+    private View rootLayout;
+    private Intent mainIntent;
 
     @Override
     @RequiresPermission(anyOf = {android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -72,21 +71,68 @@ public class MapsActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        mayRequestPermissions();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        rootLayout = getWindow().getDecorView().getRootView();
 
         toolbar = getSupportActionBar();
 
+        mainIntent = new Intent(MapsActivity.this, SpyDayActivity.class);
+
         if (mGoogleClient == null) {
             mGoogleClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .addApi(Places.GEO_DATA_API)
-                .build();
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .addApi(Places.GEO_DATA_API)
+                    .build();
         }
+
+        mFab = (FloatingActionButton) findViewById(R.id.map_fab);
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Drawing the image around
+                startActivity(mainIntent);
+            }
+        });
+    }
+
+    private boolean mayRequestPermissions() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
+        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+        if (checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+        if (shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                || shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                            android.Manifest.permission.ACCESS_FINE_LOCATION
+                    },
+                    REQUEST_LOCATION_ACCESS);
+        }
+        return false;
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION
+                },
+                REQUEST_LOCATION_ACCESS);
     }
 
     @Override
@@ -144,7 +190,6 @@ public class MapsActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Check that the result was from the autocomplete widget.
         if (requestCode == REQUEST_CODE_AUTOCOMPLETE) {
             if (resultCode == RESULT_OK) {
                 // Get the user's selected place from the Intent.
@@ -182,8 +227,6 @@ public class MapsActivity extends AppCompatActivity
                 .bearing(300)
                 .build();
 
-        lastKnownCameraPos = newPos;
-
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(newPos), new GoogleMap.CancelableCallback() {
 
             @Override
@@ -210,26 +253,6 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-
-        if (lastKnownLocation == null)
-            lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleClient);
-
-        // then setup the map
-        setUpInitialMap();
     }
 
     @Override
@@ -260,18 +283,15 @@ public class MapsActivity extends AppCompatActivity
             case REQUEST_LOCATION_ACCESS:
                 // BEGIN_INCLUDE(permission_result)
                 // Received permission result for camera permission.
-                Log.i(TAG, "Received response for Camera permission request.");
+                Log.i(TAG, "Received response for Location permission request.");
 
                 // Check if the only required permission has been granted
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Camera permission has been granted, preview can be displayed
                     Log.i(TAG, "LOCATION permission has now been granted. Showing preview.");
-
-                    // then setup the map
-                    setUpInitialMap();
                 } else {
-                    Log.i(TAG, "CAMERA permission was NOT granted.");
+                    Log.i(TAG, "LOCATION permission was NOT granted.");
                 }
                 // END_INCLUDE(permission_result)
                 return;
@@ -299,30 +319,5 @@ public class MapsActivity extends AppCompatActivity
         LatLngBounds.Builder builder = LatLngBounds.builder();
         builder.include(pos);
         return builder.build();
-    }
-
-    private void setUpInitialMap() {
-        // Todo fix the initial position when map start and resume
-        if (lastKnownCameraPos == null) {
-            lastKnownCameraPos = new CameraPosition.Builder()
-                    .target(new LatLng(lastKnownLocation.getLatitude(),
-                            lastKnownLocation.getLongitude()))
-                    .zoom(12)
-                    .bearing(300)
-                    .build();
-        }
-
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(lastKnownCameraPos),
-            new GoogleMap.CancelableCallback() {
-                @Override
-                public void onFinish() {
-                    mMap.getUiSettings().setScrollGesturesEnabled(true);
-                }
-
-                @Override
-                public void onCancel() {
-                    mMap.getUiSettings().setAllGesturesEnabled(true);
-                }
-            });
     }
 }
