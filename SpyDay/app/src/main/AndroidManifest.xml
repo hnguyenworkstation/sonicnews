@@ -25,11 +25,15 @@
         <activity android:name=".MapsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SpyDayActivity" />
-        <activity android:name=".BaseActivity"></activity>
+        <activity
+            android:name=".SpyDayActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Transparent" />
+        <activity android:name=".BaseActivity" />
     </application>
 
 </manifest>

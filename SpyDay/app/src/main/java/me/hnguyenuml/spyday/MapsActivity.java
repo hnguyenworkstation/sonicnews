@@ -1,5 +1,6 @@
 package me.hnguyenuml.spyday;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.annotation.RequiresPermission;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -49,7 +52,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapsActivity extends BaseActivity
         implements OnMapReadyCallback, PlaceSelectionListener,
         GoogleApiClient.OnConnectionFailedListener,
-        GoogleApiClient.ConnectionCallbacks{
+        GoogleApiClient.ConnectionCallbacks {
 
     private static final String TAG = "SpyMap";
     private final int REQUEST_CODE_AUTOCOMPLETE = 1;
@@ -62,8 +65,8 @@ public class MapsActivity extends BaseActivity
     private GoogleMap mMap;
     private ActionBar toolbar;
     private FloatingActionButton mFab;
-    private View rootLayout;
     private Intent mainIntent;
+    private View rootView;
 
     @Override
     @RequiresPermission(anyOf = {android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -76,10 +79,8 @@ public class MapsActivity extends BaseActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        rootLayout = getWindow().getDecorView().getRootView();
 
         toolbar = getSupportActionBar();
-
         mainIntent = new Intent(MapsActivity.this, SpyDayActivity.class);
 
         if (mGoogleClient == null) {
@@ -94,6 +95,7 @@ public class MapsActivity extends BaseActivity
         mFab = (FloatingActionButton) findViewById(R.id.map_fab);
 
         mFab.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
                 // Drawing the image around
@@ -117,11 +119,11 @@ public class MapsActivity extends BaseActivity
 
         } else {
             ActivityCompat.requestPermissions(this,
-                    new String[]{
-                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                            android.Manifest.permission.ACCESS_FINE_LOCATION
-                    },
-                    REQUEST_LOCATION_ACCESS);
+                new String[]{
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION
+                },
+                REQUEST_LOCATION_ACCESS);
         }
         return false;
     }
@@ -133,13 +135,6 @@ public class MapsActivity extends BaseActivity
                         android.Manifest.permission.ACCESS_FINE_LOCATION
                 },
                 REQUEST_LOCATION_ACCESS);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.map_menu, menu);
-        return true;
     }
 
     @Override
