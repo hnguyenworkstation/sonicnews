@@ -6,11 +6,13 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -36,8 +38,11 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +63,9 @@ public class LoginActivity extends BaseActivity
     private ViewPager viewPager;
     private ViewPagerAdapter adapter;
     private Button registerBtn;
+    private Fragment loginFragment;
+    private FragmentManager mFragManager;
+    private FragmentTransaction mFragTransition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +73,12 @@ public class LoginActivity extends BaseActivity
         overridePendingTransition(R.anim.fix_anim, R.anim.fix_anim);
         setContentView(R.layout.activity_login);
 
-        viewPager = (ViewPager) findViewById(R.id.login_viewpager);
-        if (viewPager != null)
-            setupViewPager(viewPager);
+        loginFragment = new LoginFragment();
+        mFragManager = getSupportFragmentManager();
+        mFragTransition = mFragManager.beginTransaction();
+
+        mFragTransition.replace(R.id.contentFragment, loginFragment);
+        mFragTransition.commit();
     }
 
     private void setupViewPager(ViewPager viewPager) {

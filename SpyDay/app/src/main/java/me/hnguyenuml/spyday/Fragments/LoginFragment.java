@@ -15,7 +15,9 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.CursorLoader;
+import android.text.Layout;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -66,7 +68,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
     private View mLoginFormView;
     private Button mRegister;
     private Button mForgetPassword;
-
     private View mRootView;
 
     private OnFragmentInteractionListener mListener;
@@ -188,6 +189,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
                 attemptLogin();
                 return;
             case R.id.register_btn:
+                final FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.replace(R.id.contentFragment, new RegisterFragment(), "RegisterFragment");
+                ft.commit();
                 return;
             case R.id.forget_password_link:
                 return;

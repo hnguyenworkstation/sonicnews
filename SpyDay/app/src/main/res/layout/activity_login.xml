@@ -16,12 +16,11 @@
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         >
 
-        <me.hnguyenuml.spyday.UI.CustomViewPager
-            android:id="@+id/login_viewpager"
-            android:theme="@style/Theme.Transparent"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <FrameLayout
+            android:id="@+id/contentFragment"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" />
 
-        </me.hnguyenuml.spyday.UI.CustomViewPager>
     </FrameLayout>
 </RelativeLayout>
