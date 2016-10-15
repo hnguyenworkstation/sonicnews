@@ -3,8 +3,8 @@ package me.hnguyenuml.spyday.Fragments;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.LoaderManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -29,11 +29,19 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
 import me.hnguyenuml.spyday.R;
+import me.hnguyenuml.spyday.SpyDayActivity;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -69,6 +77,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
     private Button mRegister;
     private Button mForgetPassword;
     private View mRootView;
+    private FirebaseAuth mFirebaseAuth;
+    private SpyDayPreferenceManager mPref;
 
     private OnFragmentInteractionListener mListener;
 
@@ -90,7 +100,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.fragment_login, container, false);
+        mFirebaseAuth = FirebaseAuth.getInstance();
 
+        mPref = new SpyDayPreferenceManager(getContext());
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) mRootView.findViewById(R.id.email);
@@ -262,8 +274,25 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            //authenticate user
+            mFirebaseAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            // If sign in fails, display a message to the user. If sign in succeeds
+                            // the auth state listener will be notified and logic to handle the
+                            // signed in user can be handled in the listener.
+                            showProgress(false);
+                            if (!task.isSuccessful()) {
+                                Toast.makeText(getActivity(), "Authentication failed.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Intent intent = new Intent(getActivity(), SpyDayActivity.class);
+                                mPref.setFirebaseUser(mFirebaseAuth.getCurrentUser());
+                                startActivity(intent);
+                                getActivity().finish();
+                            }
+                        }
+                    });
         }
     }
 

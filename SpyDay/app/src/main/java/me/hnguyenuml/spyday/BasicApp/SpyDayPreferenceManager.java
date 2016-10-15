@@ -3,6 +3,8 @@ package me.hnguyenuml.spyday.BasicApp;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.google.firebase.auth.FirebaseUser;
+
 /**
  * Created by Hung Nguyen on 10/14/2016.
  */
@@ -21,6 +23,7 @@ public class SpyDayPreferenceManager {
     // Shared pref mode
     int PRIVATE_MODE = 0;
     private boolean isLogged;
+    private FirebaseUser mFirebaseUser;
 
     // Sharedpref file name
     private static final String PREF_NAME = "5p46h@7";
@@ -40,6 +43,14 @@ public class SpyDayPreferenceManager {
 
     public boolean isLogged() {
         return false;
+    }
+
+    public FirebaseUser getFireBaseUser() {
+        return mFirebaseUser;
+    }
+
+    public void setFirebaseUser(FirebaseUser user) {
+        this.mFirebaseUser = user;
     }
 
     public void clear() {

@@ -1,14 +1,32 @@
 package me.hnguyenuml.spyday.Fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 import me.hnguyenuml.spyday.R;
+import me.hnguyenuml.spyday.SpyDayActivity;
 
 public class RegisterFragment extends Fragment {
 
@@ -18,6 +36,15 @@ public class RegisterFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private EditText mEmailField;
+    private EditText mPassword;
+    private EditText mConfirmPassword;
+    private View rootView;
+    private Button mRegButton;
+    private View mRegisterView;
+    private View mProgressView;
+    private FirebaseAuth mFirebaseAuth;
 
     private OnFragmentInteractionListener mListener;
 
@@ -47,10 +74,141 @@ public class RegisterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_register, container, false);
+        rootView = inflater.inflate(R.layout.fragment_register, container, false);
+
+        mFirebaseAuth = FirebaseAuth.getInstance();
+
+        mRegisterView = rootView.findViewById(R.id.email_register_form);
+        mProgressView = rootView.findViewById(R.id.register_progress);
+
+        mEmailField = (EditText) rootView.findViewById(R.id.reg_email);
+        mPassword = (EditText) rootView.findViewById(R.id.reg_password);
+        mConfirmPassword = (EditText) rootView.findViewById(R.id.reg_repassword);
+        mRegButton = (Button) rootView.findViewById(R.id.email_reg_button);
+        mRegButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attempRegister();
+            }
+        });
+
+        return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    private void attempRegister() {
+        // Reset errors.
+        mEmailField.setError(null);
+        mPassword.setError(null);
+        mConfirmPassword.setError(null);
+
+        // Store values at the time of the login attempt.
+        String email = mEmailField.getText().toString();
+        String password = mPassword.getText().toString();
+        String confirmPass = mConfirmPassword.getText().toString();
+
+        boolean isSatisfying = true;
+        View focusView = null;
+
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(email)) {
+            mEmailField.setError(getString(R.string.error_field_required));
+            focusView = mEmailField;
+            isSatisfying = false;
+        } else if (TextUtils.isEmpty(password)) {
+            mPassword.setError(getString(R.string.error_field_required));
+            focusView = mPassword;
+            isSatisfying = false;
+        } else if (TextUtils.isEmpty(confirmPass)) {
+            mConfirmPassword.setError(getString(R.string.error_field_required));
+            focusView = mConfirmPassword;
+            isSatisfying = false;
+        } else if (!isEmailValid(email)) {
+            mEmailField.setError(getString(R.string.error_invalid_email));
+            focusView = mEmailField;
+            isSatisfying = false;
+        } else if (!(password.equals(confirmPass))) {
+            mEmailField.setError(getString(R.string.password_not_match));
+            mConfirmPassword.setError(getString(R.string.password_not_match));
+            focusView = mEmailField;
+            isSatisfying = false;
+        }
+
+        if (!isSatisfying) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+        } else {
+            showProgress(true);
+            mFirebaseAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            Toast.makeText(getContext(), "createUserWithEmail:onComplete:"
+                                    + task.isSuccessful(), Toast.LENGTH_SHORT).show();
+                            showProgress(false);
+                            // If sign in fails, display a message to the user. If sign in succeeds
+                            // the auth state listener will be notified and logic to handle the
+                            // signed in user can be handled in the listener.
+                            if (!task.isSuccessful()) {
+                                Toast.makeText(getContext(), "Authentication failed." + task.getException(),
+                                        Toast.LENGTH_SHORT).show();
+                                if (task.getException()
+                                        .getMessage()
+                                        .contains(getString(R.string.error_duplicate_email))){
+                                    // Todo: show a dialog asking for reset password
+                                }
+                            } else {
+                                startActivity(new Intent(getActivity(), SpyDayActivity.class));
+                                getActivity().finish();
+                            }
+                        }
+                    });
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mRegisterView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mRegisterView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mRegisterView.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mRegisterView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    private boolean isEmailValid(String email) {
+        //TODO: Replace this with your own logic
+        return email.contains("@");
+    }
+
+    private boolean isPasswordValid(String password) {
+        //TODO: Replace this with your own logic
+        return password.length() > 8;
+    }
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -74,16 +232,6 @@ public class RegisterFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
