@@ -54,7 +54,7 @@ import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
 public class MapsActivity extends BaseActivity
         implements OnMapReadyCallback, PlaceSelectionListener,
         GoogleApiClient.OnConnectionFailedListener,
-        GoogleApiClient.ConnectionCallbacks {
+        GoogleApiClient.ConnectionCallbacks, GoogleMap.OnMapClickListener {
 
     private static final String TAG = "SpyMap";
     private final int REQUEST_CODE_AUTOCOMPLETE = 1;
@@ -144,15 +144,6 @@ public class MapsActivity extends BaseActivity
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                if (!mPreMan.isLogged()) {
-                    startActivity(new Intent(MapsActivity.this, LoginActivity.class));
-                }
-            }
-        });
     }
 
     @Override
@@ -323,5 +314,13 @@ public class MapsActivity extends BaseActivity
         LatLngBounds.Builder builder = LatLngBounds.builder();
         builder.include(pos);
         return builder.build();
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+
+        if (mPreMan.getFireBaseUser() == null) {
+            startActivity(new Intent(MapsActivity.this, LoginActivity.class));
+        }
     }
 }

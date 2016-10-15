@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
+import me.hnguyenuml.spyday.MapsActivity;
 import me.hnguyenuml.spyday.R;
 import me.hnguyenuml.spyday.SpyDayActivity;
 
@@ -197,7 +198,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.login:
+            case R.id.email_sign_in_button:
                 attemptLogin();
                 return;
             case R.id.register_btn:
@@ -267,26 +268,19 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
             showProgress(true);
             //authenticate user
             mFirebaseAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            // If sign in fails, display a message to the user. If sign in succeeds
-                            // the auth state listener will be notified and logic to handle the
-                            // signed in user can be handled in the listener.
                             showProgress(false);
                             if (!task.isSuccessful()) {
                                 Toast.makeText(getActivity(), "Authentication failed.", Toast.LENGTH_LONG).show();
                             } else {
-                                Intent intent = new Intent(getActivity(), SpyDayActivity.class);
+                                Intent intent = new Intent(getActivity(), MapsActivity.class);
                                 mPref.setFirebaseUser(mFirebaseAuth.getCurrentUser());
                                 startActivity(intent);
                                 getActivity().finish();

@@ -25,6 +25,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
+import me.hnguyenuml.spyday.MapsActivity;
 import me.hnguyenuml.spyday.R;
 import me.hnguyenuml.spyday.SpyDayActivity;
 
@@ -45,6 +47,7 @@ public class RegisterFragment extends Fragment {
     private View mRegisterView;
     private View mProgressView;
     private FirebaseAuth mFirebaseAuth;
+    private SpyDayPreferenceManager mPref;
 
     private OnFragmentInteractionListener mListener;
 
@@ -77,6 +80,7 @@ public class RegisterFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_register, container, false);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
+        mPref = new SpyDayPreferenceManager(getContext());
 
         mRegisterView = rootView.findViewById(R.id.email_register_form);
         mProgressView = rootView.findViewById(R.id.register_progress);
@@ -127,9 +131,9 @@ public class RegisterFragment extends Fragment {
             focusView = mEmailField;
             isSatisfying = false;
         } else if (!(password.equals(confirmPass))) {
-            mEmailField.setError(getString(R.string.password_not_match));
+            mPassword.setError(getString(R.string.password_not_match));
             mConfirmPassword.setError(getString(R.string.password_not_match));
-            focusView = mEmailField;
+            focusView = mPassword;
             isSatisfying = false;
         }
 
@@ -146,9 +150,6 @@ public class RegisterFragment extends Fragment {
                             Toast.makeText(getContext(), "createUserWithEmail:onComplete:"
                                     + task.isSuccessful(), Toast.LENGTH_SHORT).show();
                             showProgress(false);
-                            // If sign in fails, display a message to the user. If sign in succeeds
-                            // the auth state listener will be notified and logic to handle the
-                            // signed in user can be handled in the listener.
                             if (!task.isSuccessful()) {
                                 Toast.makeText(getContext(), "Authentication failed." + task.getException(),
                                         Toast.LENGTH_SHORT).show();
@@ -158,7 +159,8 @@ public class RegisterFragment extends Fragment {
                                     // Todo: show a dialog asking for reset password
                                 }
                             } else {
-                                startActivity(new Intent(getActivity(), SpyDayActivity.class));
+                                mPref.setFirebaseUser(mFirebaseAuth.getCurrentUser());
+                                startActivity(new Intent(getActivity(), MapsActivity.class));
                                 getActivity().finish();
                             }
                         }

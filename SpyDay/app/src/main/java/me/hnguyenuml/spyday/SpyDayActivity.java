@@ -58,10 +58,11 @@ public class SpyDayActivity extends BaseActivity implements
     }
 
     private void circularRevealActivity() {
+        // make the radius longer to cover the inches
         int cx = rootLayout.getWidth();
         int cy = rootLayout.getHeight();
 
-        float finalRadius = Math.max(rootLayout.getWidth(), rootLayout.getHeight());
+        float finalRadius = Math.max(rootLayout.getWidth() + 20, rootLayout.getHeight() + 20);
 
         // create the animator for this view (the start radius is zero)
         Animator circularReveal = null;
