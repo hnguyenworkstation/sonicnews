@@ -6,6 +6,14 @@
     android:theme="@style/Theme.Transparent"
     tools:context="me.hnguyenuml.spyday.Fragments.RegisterFragment">
 
+    <ImageButton
+        android:id="@+id/reg_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_back"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"/>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -95,17 +103,19 @@
                 </android.support.design.widget.TextInputLayout>
 
                 <Button
+                    android:layout_gravity="center"
+                    android:textColor="@color/white"
                     android:id="@+id/email_reg_button"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_marginTop="25dp"
                     android:text="@string/register_link"
-                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:textAllCaps="false"
+                    android:background="@drawable/active_button"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textAllCaps="true"/>
+                    android:textStyle="bold"/>
             </LinearLayout>
         </ScrollView>
     </FrameLayout>

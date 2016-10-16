@@ -1,12 +1,22 @@
 package me.hnguyenuml.spyday.Fragments;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import com.tangxiaolv.telegramgallery.GalleryActivity;
+
+import java.util.List;
 
 import me.hnguyenuml.spyday.R;
 
@@ -30,11 +40,13 @@ public class GetProfilePictureFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    private ImageView profile;
+    private View rootView;
+
     public GetProfilePictureFragment() {
         // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
     public static GetProfilePictureFragment newInstance(String param1, String param2) {
         GetProfilePictureFragment fragment = new GetProfilePictureFragment();
         Bundle args = new Bundle();
@@ -57,7 +69,32 @@ public class GetProfilePictureFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_get_profile_picture, container, false);
+        rootView = inflater.inflate(R.layout.fragment_get_profile_picture, container, false);
+
+        profile = (ImageView) rootView.findViewById(R.id.profile_image);
+
+        profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= 23 && getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    // request permission until user accept it
+                    getActivity().requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 4);
+                    return;
+                }
+                GalleryActivity.openActivity(getActivity(), new String[]{"image/gif","image/png"}, true, 1, 1);
+            }
+        });
+
+        return rootView;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //list of photos of seleced
+        List<String> photos = (List<String>) data.getSerializableExtra(GalleryActivity.PHOTOS);
+
+        //list of videos of seleced
+        List<String> vides = (List<String>) data.getSerializableExtra(GalleryActivity.VIDEO);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

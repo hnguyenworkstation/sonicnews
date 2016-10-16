@@ -27,6 +27,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="What should we call you?"
+                android:textColor="@color/white"
+                android:layout_marginBottom="10dp"
                 android:textSize="20sp"/>
 
             <android.support.design.widget.TextInputLayout
@@ -49,6 +51,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/gn_next"
+                android:background="@drawable/inactive_button"
+                android:textAllCaps="false"
                 android:text="Next"
                 android:layout_gravity="end"/>
 

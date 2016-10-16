@@ -1,64 +1,35 @@
 package me.hnguyenuml.spyday;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
 
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.text.TextUtils;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewAnimationUtils;
-import android.view.ViewTreeObserver;
-import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
+import android.view.Window;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.hnguyenuml.spyday.Fragments.GetNameFragment;
+import me.hnguyenuml.spyday.Fragments.GetProfilePictureFragment;
 import me.hnguyenuml.spyday.Fragments.LoginFragment;
 import me.hnguyenuml.spyday.Fragments.RegisterFragment;
 
-import static android.Manifest.permission.READ_CONTACTS;
-
-/**
- * A login screen that offers login via email/password.
- */
 public class LoginActivity extends BaseActivity
         implements
             OnClickListener,
             RegisterFragment.OnFragmentInteractionListener,
-            LoginFragment.OnFragmentInteractionListener {
+            LoginFragment.OnFragmentInteractionListener,
+            GetNameFragment.OnFragmentInteractionListener,
+            GetProfilePictureFragment.OnFragmentInteractionListener {
 
     private ViewPager viewPager;
     private ViewPagerAdapter adapter;
@@ -66,10 +37,13 @@ public class LoginActivity extends BaseActivity
     private Fragment loginFragment;
     private FragmentManager mFragManager;
     private FragmentTransaction mFragTransition;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);;
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+
         overridePendingTransition(R.anim.fix_anim, R.anim.fix_anim);
         setContentView(R.layout.activity_login);
 

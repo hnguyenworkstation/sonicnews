@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,16 +14,15 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 
 import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
 import me.hnguyenuml.spyday.MapsActivity;
@@ -47,6 +45,8 @@ public class RegisterFragment extends Fragment {
     private View mRegisterView;
     private View mProgressView;
     private SpyDayPreferenceManager mPref;
+    private ImageButton mBack;
+    private FragmentTransaction ft;
 
     private OnFragmentInteractionListener mListener;
 
@@ -91,6 +91,17 @@ public class RegisterFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 attempRegister();
+            }
+        });
+
+        mBack = (ImageButton)  rootView.findViewById(R.id.reg_back);
+        mBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ft = getFragmentManager().beginTransaction();
+                ft.setCustomAnimations(R.anim.fade_out_to_right, R.anim.fade_in_from_left);
+                ft.replace(R.id.contentFragment, new LoginFragment(), "LoginFragment");
+                ft.commit();
             }
         });
 
@@ -158,10 +169,9 @@ public class RegisterFragment extends Fragment {
                                 }
                             } else {
                                 mPref.updateFirebaseUser();
-                                final FragmentTransaction ft = getFragmentManager().beginTransaction();
+                                ft = getFragmentManager().beginTransaction();
                                 ft.replace(R.id.contentFragment, new GetNameFragment(), "GetNameFragment");
                                 ft.commit();
-                                getActivity().finish();
                             }
                         }
                     });

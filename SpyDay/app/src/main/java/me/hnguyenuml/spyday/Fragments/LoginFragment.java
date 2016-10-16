@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -17,12 +19,16 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.CursorLoader;
-import android.text.Layout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -79,11 +85,17 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
     private Button mForgetPassword;
     private View mRootView;
     private SpyDayPreferenceManager mPref;
+    private ActionBar mActionBar;
 
     private OnFragmentInteractionListener mListener;
 
     public LoginFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     public static LoginFragment newInstance(String param1, String param2) {
@@ -100,7 +112,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.fragment_login, container, false);
-
         mPref = new SpyDayPreferenceManager(getContext());
 
         // Set up the login form.
@@ -201,6 +212,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
                 return;
             case R.id.register_btn:
                 final FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.setCustomAnimations(R.anim.fade_in_from_right, R.anim.fade_out_to_left);
                 ft.replace(R.id.contentFragment, new RegisterFragment(), "RegisterFragment");
                 ft.commit();
                 return;

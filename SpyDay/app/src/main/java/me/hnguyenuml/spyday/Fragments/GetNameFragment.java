@@ -46,13 +46,25 @@ public class GetNameFragment extends Fragment {
         mNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.contentFragment, new GetProfilePictureFragment(), "GetProfile");
-                ft.commit();
+                String name = mNameField.getText().toString();
+                if (isValidName(name)) {
+                    final FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.contentFragment, new GetProfilePictureFragment(), "GetProfile");
+                    ft.commit();
+                } else {
+                    mNameField.setError(getString(R.string.error_field_required));
+                }
             }
         });
 
         return rootView;
+    }
+
+    private boolean isValidName(String name) {
+        if (name == null) {
+            return false;
+        }
+        return true;
     }
 
     public void onButtonPressed(Uri uri) {
