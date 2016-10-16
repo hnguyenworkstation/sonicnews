@@ -78,7 +78,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
     private Button mRegister;
     private Button mForgetPassword;
     private View mRootView;
-    private FirebaseAuth mFirebaseAuth;
     private SpyDayPreferenceManager mPref;
 
     private OnFragmentInteractionListener mListener;
@@ -101,7 +100,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.fragment_login, container, false);
-        mFirebaseAuth = FirebaseAuth.getInstance();
 
         mPref = new SpyDayPreferenceManager(getContext());
 
@@ -272,7 +270,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
         } else {
             showProgress(true);
             //authenticate user
-            mFirebaseAuth.signInWithEmailAndPassword(email, password)
+            mPref.getmFirebaseAuth().signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -281,7 +279,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
                                 Toast.makeText(getActivity(), "Authentication failed.", Toast.LENGTH_LONG).show();
                             } else {
                                 Intent intent = new Intent(getActivity(), MapsActivity.class);
-                                mPref.setFirebaseUser(mFirebaseAuth.getCurrentUser());
+                                mPref.updateFirebaseUser();
                                 startActivity(intent);
                                 getActivity().finish();
                             }

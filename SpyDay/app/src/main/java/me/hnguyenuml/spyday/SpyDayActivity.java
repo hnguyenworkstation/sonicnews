@@ -54,7 +54,6 @@ public class SpyDayActivity extends BaseActivity implements
         mViewPager = (ViewPager) findViewById(R.id.spyViewPager);
         mFloatBtn = (FloatingActionButton) findViewById(R.id.spyFloatBtn);
         mFloatBtn.setOnClickListener(this);
-
     }
 
     private void circularRevealActivity() {

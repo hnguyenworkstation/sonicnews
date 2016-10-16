@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
 import me.hnguyenuml.spyday.MapsActivity;
 import me.hnguyenuml.spyday.R;
-import me.hnguyenuml.spyday.SpyDayActivity;
 
 public class RegisterFragment extends Fragment {
 
@@ -46,7 +46,6 @@ public class RegisterFragment extends Fragment {
     private Button mRegButton;
     private View mRegisterView;
     private View mProgressView;
-    private FirebaseAuth mFirebaseAuth;
     private SpyDayPreferenceManager mPref;
 
     private OnFragmentInteractionListener mListener;
@@ -79,7 +78,6 @@ public class RegisterFragment extends Fragment {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_register, container, false);
 
-        mFirebaseAuth = FirebaseAuth.getInstance();
         mPref = new SpyDayPreferenceManager(getContext());
 
         mRegisterView = rootView.findViewById(R.id.email_register_form);
@@ -143,7 +141,7 @@ public class RegisterFragment extends Fragment {
             focusView.requestFocus();
         } else {
             showProgress(true);
-            mFirebaseAuth.createUserWithEmailAndPassword(email, password)
+            mPref.getmFirebaseAuth().createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -159,8 +157,10 @@ public class RegisterFragment extends Fragment {
                                     // Todo: show a dialog asking for reset password
                                 }
                             } else {
-                                mPref.setFirebaseUser(mFirebaseAuth.getCurrentUser());
-                                startActivity(new Intent(getActivity(), MapsActivity.class));
+                                mPref.updateFirebaseUser();
+                                final FragmentTransaction ft = getFragmentManager().beginTransaction();
+                                ft.replace(R.id.contentFragment, new GetNameFragment(), "GetNameFragment");
+                                ft.commit();
                                 getActivity().finish();
                             }
                         }
@@ -170,9 +170,6 @@ public class RegisterFragment extends Fragment {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
