@@ -68,11 +68,6 @@ public class ListMessageFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.map_menu, menu);  // Use filter.xml from step 1
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -81,10 +76,16 @@ public class ListMessageFragment extends Fragment {
         Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
 
         //for crate home button
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.setSupportActionBar(toolbar);
+        AppCompatActivity tempActivity = (AppCompatActivity) getActivity();
+        tempActivity.setSupportActionBar(toolbar);
+        tempActivity.setTitle("Messages");
 
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.list_message_menu, menu);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

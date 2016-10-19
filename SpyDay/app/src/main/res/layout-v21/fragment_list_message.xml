@@ -15,11 +15,7 @@
             android:layout_width="match_parent"
             android:background="?attr/colorPrimary"
             android:layout_height="wrap_content"
-            android:theme="?attr/toolbarStyle"
-            android:gravity="center">
-
-        </android.support.v7.widget.Toolbar>
-
+            android:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
         <!-- TODO: Update blank fragment layout -->
         <TextView
