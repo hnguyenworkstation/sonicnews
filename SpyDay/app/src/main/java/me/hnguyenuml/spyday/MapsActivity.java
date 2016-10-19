@@ -1,6 +1,5 @@
 package me.hnguyenuml.spyday;
 
-import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,17 +14,12 @@ import android.support.annotation.RequiresApi;
 import android.support.annotation.RequiresPermission;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -63,10 +57,8 @@ public class MapsActivity extends BaseActivity
     private static final int REQUEST_LOCATION_ACCESS = 0;
 
     private GoogleMap mMap;
-    private ActionBar toolbar;
     private FloatingActionButton mFab;
     private Intent mainIntent;
-    private View rootView;
 
     @Override
     @RequiresPermission(anyOf = {android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -80,7 +72,6 @@ public class MapsActivity extends BaseActivity
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        toolbar = getSupportActionBar();
         mainIntent = new Intent(MapsActivity.this, SpyDayActivity.class);
 
         if (mGoogleClient == null) {
