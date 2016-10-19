@@ -14,6 +14,8 @@ import java.lang.reflect.Field;
  */
 
 public class CustomViewPager extends ViewPager {
+    private boolean isVertialViewpagerIndex;
+
     public CustomViewPager(Context context) {
         super(context);
         setCustomScroller();
@@ -27,13 +29,15 @@ public class CustomViewPager extends ViewPager {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         // Never allow swiping to switch between pages
+        if (isVertialViewpagerIndex == true) {
+            return super.onInterceptTouchEvent(event);
+        }
+
         return false;
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        // Never allow swiping to switch between pages
-        return false;
+    private void setIsVertialViewPager(boolean isVertialViewPager) {
+        this.isVertialViewpagerIndex = isVertialViewPager;
     }
 
     private void setCustomScroller() {
