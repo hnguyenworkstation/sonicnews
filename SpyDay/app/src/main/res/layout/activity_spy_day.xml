@@ -9,8 +9,8 @@
 
     <FrameLayout
         android:id="@+id/root_layout"
-        android:background="#000000"
-        android:backgroundTint="#af000000"
+        android:background="@color/white"
+        android:backgroundTint="#afFFFFFF"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
