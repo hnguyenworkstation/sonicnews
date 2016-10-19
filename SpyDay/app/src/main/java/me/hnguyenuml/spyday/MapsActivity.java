@@ -1,5 +1,7 @@
 package me.hnguyenuml.spyday;
 
+import android.animation.Animator;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -43,6 +45,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
+
 public class MapsActivity extends BaseActivity
         implements OnMapReadyCallback, PlaceSelectionListener,
         GoogleApiClient.OnConnectionFailedListener,
@@ -57,8 +61,11 @@ public class MapsActivity extends BaseActivity
     private static final int REQUEST_LOCATION_ACCESS = 0;
 
     private GoogleMap mMap;
+    private SpyDayPreferenceManager mPreMan;
     private FloatingActionButton mFab;
     private Intent mainIntent;
+    private Bundle mBundleAnimation;
+    private View rootView;
 
     @Override
     @RequiresPermission(anyOf = {android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -67,12 +74,14 @@ public class MapsActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         mayRequestPermissions();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         mainIntent = new Intent(MapsActivity.this, SpyDayActivity.class);
+        mPreMan = new SpyDayPreferenceManager(getBaseContext());
 
         if (mGoogleClient == null) {
             mGoogleClient = new GoogleApiClient.Builder(this)
@@ -109,12 +118,7 @@ public class MapsActivity extends BaseActivity
                 || shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
 
         } else {
-            ActivityCompat.requestPermissions(this,
-                new String[]{
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION
-                },
-                REQUEST_LOCATION_ACCESS);
+            requestPermission();
         }
         return false;
     }
@@ -131,11 +135,22 @@ public class MapsActivity extends BaseActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if (true) {
+                    Intent temp = new Intent(MapsActivity.this, LoginActivity.class);
+                    mBundleAnimation =
+                            ActivityOptions.makeCustomAnimation(getApplicationContext(),
+                                    R.anim.fade_in_from_left, R.anim.fade_out_to_right).toBundle();
+                    startActivity(temp, mBundleAnimation);
+                }
+            }
+        });
     }
 
     @Override
@@ -279,6 +294,7 @@ public class MapsActivity extends BaseActivity
                 } else {
                     Log.i(TAG, "LOCATION permission was NOT granted.");
                 }
+
                 // END_INCLUDE(permission_result)
                 return;
             default:

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "708320421838",
+    "firebase_url": "https://spyday-fc1dc.firebaseio.com",
+    "project_id": "spyday-fc1dc",
+    "storage_bucket": "spyday-fc1dc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708320421838:android:106207c9a26ae455",
+        "android_client_info": {
+          "package_name": "me.hnguyenuml.spyday"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "708320421838-4cjigtijipg83cq6odsnh4pm4ptigida.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "me.hnguyenuml.spyday",
+            "certificate_hash": "B161CD611BDE2DCCCB9A4884C2746412E64046A5"
+          }
+        },
+        {
+          "client_id": "708320421838-pqv45ulg33riof335ur6oiu7gd2pqhfq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvYLufS4W34jPbt9G2JufFvuSY3R0TrNg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "708320421838-pqv45ulg33riof335ur6oiu7gd2pqhfq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

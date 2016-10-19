@@ -15,11 +15,11 @@
         android:layout_height="match_parent"
         >
 
-        <android.support.v4.view.ViewPager
+        <me.hnguyenuml.spyday.UI.CustomViewPager
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/spyViewPager">
-        </android.support.v4.view.ViewPager>
+        </me.hnguyenuml.spyday.UI.CustomViewPager>
 
         <android.support.design.widget.FloatingActionButton
             android:layout_width="wrap_content"
