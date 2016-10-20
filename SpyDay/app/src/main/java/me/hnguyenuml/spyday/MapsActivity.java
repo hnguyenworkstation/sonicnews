@@ -45,6 +45,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
 
 public class MapsActivity extends BaseActivity
@@ -98,8 +99,16 @@ public class MapsActivity extends BaseActivity
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                // Drawing the image around
-                startActivity(mainIntent);
+                // asking user to login
+                if (SpyDayApplication.getInstance().getPrefManager().getUser() == null) {
+                    Intent temp = new Intent(MapsActivity.this, LoginActivity.class);
+                    mBundleAnimation =
+                            ActivityOptions.makeCustomAnimation(getApplicationContext(),
+                                    R.anim.fade_in_from_left, R.anim.fade_out_to_right).toBundle();
+                    startActivity(temp, mBundleAnimation);
+                } else {
+                    startActivity(mainIntent);
+                }
             }
         });
     }
@@ -142,7 +151,7 @@ public class MapsActivity extends BaseActivity
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                if (true) {
+                if (SpyDayApplication.getInstance().getPrefManager().getUser() == null) {
                     Intent temp = new Intent(MapsActivity.this, LoginActivity.class);
                     mBundleAnimation =
                             ActivityOptions.makeCustomAnimation(getApplicationContext(),

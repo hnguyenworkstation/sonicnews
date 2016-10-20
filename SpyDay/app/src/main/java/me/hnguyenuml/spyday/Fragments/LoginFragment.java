@@ -291,7 +291,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
                                 Toast.makeText(getActivity(), "Authentication failed.", Toast.LENGTH_LONG).show();
                             } else {
                                 Intent intent = new Intent(getActivity(), MapsActivity.class);
-                                mPref.updateFirebaseUser();
+                                mPref.updateUserByFirebaseUID(mPref.getmFirebaseAuth().getCurrentUser().getUid());
                                 startActivity(intent);
                                 getActivity().finish();
                             }

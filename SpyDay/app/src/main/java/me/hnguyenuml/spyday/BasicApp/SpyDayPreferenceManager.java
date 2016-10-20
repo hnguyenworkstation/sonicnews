@@ -70,15 +70,15 @@ public class SpyDayPreferenceManager {
         return mFirebaseAuth;
     }
 
-    public void updateFirebaseUser() {
-        this.mFirebaseUser = mFirebaseAuth.getCurrentUser();
+    public void updateUserByFirebaseUID(String UID) {
+        this.mUser = new User();
     }
 
     public void setmFirebaseAuth(FirebaseAuth mFirebaseAuth) {
         this.mFirebaseAuth = mFirebaseAuth;
     }
 
-    public User getmUser() {
+    public User getUser() {
         return mUser;
     }
 

@@ -17,10 +17,6 @@ import java.util.Date;
 
 import me.hnguyenuml.spyday.R;
 
-/**
- * Created by Hung Nguyen on 10/20/2016.
- */
-
 public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.ViewHolder> {
 
     private Context mContext;

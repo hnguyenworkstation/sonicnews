@@ -25,8 +25,7 @@ import me.hnguyenuml.spyday.UI.ChatRoomsAdapter;
 import me.hnguyenuml.spyday.UI.RecycleViewItemDecoration;
 
 public class ListMessageFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private String TAG = ListMessageFragment.class.getSimpleName();
@@ -110,9 +109,6 @@ public class ListMessageFragment extends Fragment {
         }));
 
         return rootView;
-    }
-
-    private void initRecycleView() {
     }
 
     @Override

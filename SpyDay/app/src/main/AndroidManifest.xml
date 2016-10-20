@@ -16,10 +16,8 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -43,14 +41,20 @@
             android:launchMode="singleTask"
             android:theme="@style/Theme.Transparent" />
         <activity android:name=".BaseActivity" />
+
         <activity
             android:name=".LoginActivity"
+            android:label="@string/title_activity_login"
             android:launchMode="singleTask"
-            android:theme="@style/Theme.Transparent"
-            android:label="@string/title_activity_login">
-
-        </activity>
+            android:theme="@style/Theme.Transparent" />
+        
         <activity android:name="com.tangxiaolv.telegramgallery.GalleryActivity" />
+        <activity android:name=".SplashScreenActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
