@@ -1,10 +1,14 @@
 package me.hnguyenuml.spyday.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,42 +16,34 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import me.hnguyenuml.spyday.R;
+import java.util.ArrayList;
+import java.util.Calendar;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ListMessageFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ListMessageFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import me.hnguyenuml.spyday.R;
+import me.hnguyenuml.spyday.UI.ChatRoom;
+import me.hnguyenuml.spyday.UI.ChatRoomsAdapter;
+import me.hnguyenuml.spyday.UI.RecycleViewItemDecoration;
+
 public class ListMessageFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private String TAG = ListMessageFragment.class.getSimpleName();
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private ArrayList<ChatRoom> listChatRoom;
+    private ChatRoomsAdapter mAdapter;
+    private RecyclerView listRecycleView;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private View rootView;
 
     private OnFragmentInteractionListener mListener;
 
     public ListMessageFragment() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ListMessageFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static ListMessageFragment newInstance(String param1, String param2) {
         ListMessageFragment fragment = new ListMessageFragment();
         Bundle args = new Bundle();
@@ -70,17 +66,53 @@ public class ListMessageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_list_message, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_list_message, container, false);
+        listRecycleView = (RecyclerView) rootView.findViewById(R.id.chatroom_recycleview);
 
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-
-        //for crate home button
-        AppCompatActivity tempActivity = (AppCompatActivity) getActivity();
+        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.chatroom_toolbar);
+        AppCompatActivity tempActivity = (AppCompatActivity) this.getActivity();
         tempActivity.setSupportActionBar(toolbar);
         tempActivity.setTitle("Messages");
 
+        listChatRoom = new ArrayList<>();
+        listChatRoom.add(new ChatRoom("1", "Hung Nguyen", "hello adasdasd",
+                Calendar.getInstance().getTime().toString(), 2));
+        listChatRoom.add(new ChatRoom("2", "Hung Nguyen", "helloasdasd ",
+                Calendar.getInstance().getTime().toString(), 2));
+        listChatRoom.add(new ChatRoom("3", "Hung Nguyen", "helloasdafasf",
+                Calendar.getInstance().getTime().toString(), 2));
+        listChatRoom.add(new ChatRoom("4", "Hung Nguyen", "hello asf afs",
+                Calendar.getInstance().getTime().toString(), 2));
+        listChatRoom.add(new ChatRoom("5", "Hung Nguyen", "helloa asfasf",
+                Calendar.getInstance().getTime().toString(), 2));
+
+        mAdapter = new ChatRoomsAdapter(this.getContext(), listChatRoom);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        listRecycleView.setLayoutManager(layoutManager);
+        listRecycleView.addItemDecoration(new RecycleViewItemDecoration(
+                this.getContext()
+        ));
+        listRecycleView.setItemAnimator(new DefaultItemAnimator());
+        listRecycleView.setAdapter(mAdapter);
+
+        listRecycleView.addOnItemTouchListener(new ChatRoomsAdapter.
+                RecyclerTouchListener(this.getContext(),
+                listRecycleView, new ChatRoomsAdapter.ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
+
         return rootView;
+    }
+
+    private void initRecycleView() {
     }
 
     @Override

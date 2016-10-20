@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.daimajia.swipe.SwipeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp">
+
+    <!-- Bottom View Start-->
+    <LinearLayout
+        android:background="#66ddff00"
+        android:id="@+id/bottom_wrapper"
+        android:layout_width="160dp"
+        android:weightSum="1"
+        android:orientation="horizontal"
+        android:layout_height="match_parent">
+    </LinearLayout>
+    <!-- Bottom View End-->
+
+    <!-- Surface View Start -->
+    <RelativeLayout
+        android:padding="10dp"
+        android:background="#ffffff"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/chatroom_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:textColor="#444444"
+            android:textStyle="bold"
+            android:textSize="16dp" />
+
+        <TextView android:id="@+id/chatroom_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/chatroom_name"
+            android:textColor="#888888"
+            android:layout_marginTop="5dp"
+            android:text="Seems gcm will take some time"/>
+
+        <TextView android:id="@+id/chatroom_timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#888888"
+            android:text="12:00 AM"
+            android:textSize="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"/>
+
+        <TextView android:id="@+id/chatroom_count"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:gravity="center"
+            android:textSize="10dp"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="5dp"
+            android:layout_below="@id/chatroom_timestamp"
+            android:layout_alignParentRight="true"
+            android:text="5"
+            android:background="@drawable/circle_notification"/>
+    </RelativeLayout>
+    <!-- Surface View End -->
+</com.daimajia.swipe.SwipeLayout>
