@@ -2,7 +2,9 @@ package me.hnguyenuml.spyday.BasicApp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -34,6 +36,8 @@ public class SpyDayPreferenceManager {
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_USER_EMAIL = "user_email";
     private static final String KEY_NOTIFICATIONS = "notifications";
+
+    private Location initLocation;
 
     // Constructor
     public SpyDayPreferenceManager(Context context) {
@@ -74,5 +78,13 @@ public class SpyDayPreferenceManager {
 
     public void setUser(User mUser) {
         this.mUser = mUser;
+    }
+
+    public void setInitLocation(Location initLocation) {
+        this.initLocation = initLocation;
+    }
+
+    public Location getInitLocation(){
+        return this.initLocation;
     }
 }

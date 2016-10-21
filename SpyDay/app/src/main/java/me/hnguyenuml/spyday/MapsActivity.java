@@ -117,11 +117,17 @@ public class MapsActivity extends BaseActivity
             }
         });
 
-        fetchLocation();
+        if (fetchLocation()) {
+            updateCurrenInfo();
+        }
+    }
+
+    private void updateCurrenInfo() {
+        mPreMan.setInitLocation(lastKnownLocation);
     }
 
     @Nullable
-    private void fetchLocation() {
+    private boolean fetchLocation() {
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         if (locationManager != null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -135,12 +141,16 @@ public class MapsActivity extends BaseActivity
 
             if (lastKnownLocationGPS != null) {
                 lastKnownLocation = lastKnownLocationGPS;
+                return true;
             } else {
                 lastKnownLocation =  locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
                 System.out.println("1::" + lastKnownLocation);
                 System.out.println("2::" + lastKnownLocation.getLatitude());
+                return true;
             }
         }
+
+        return false;
     }
 
     private boolean mayRequestPermissions() {
