@@ -224,6 +224,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
             case R.id.forget_password_link:
                 return;
             case R.id.login_close:
+                Intent intent = new Intent(getActivity(), MapsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.slide_down_out, R.anim.slide_down_out);
                 return;
             default:
                 return;

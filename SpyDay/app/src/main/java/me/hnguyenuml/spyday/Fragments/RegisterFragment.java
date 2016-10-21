@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -46,6 +47,7 @@ public class RegisterFragment extends Fragment {
     private View mRegisterView;
     private View mProgressView;
     private ImageButton mBack;
+    private ImageButton mClose;
     private FragmentTransaction ft;
 
     private OnFragmentInteractionListener mListener;
@@ -100,6 +102,18 @@ public class RegisterFragment extends Fragment {
                 ft.setCustomAnimations(R.anim.fade_out_to_right, R.anim.fade_in_from_left);
                 ft.replace(R.id.contentFragment, new LoginFragment(), "LoginFragment");
                 ft.commit();
+            }
+        });
+
+        mClose = (ImageButton) rootView.findViewById(R.id.reg_close);
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), MapsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.slide_down_out, R.anim.slide_down_out);
+                return;
             }
         });
 
