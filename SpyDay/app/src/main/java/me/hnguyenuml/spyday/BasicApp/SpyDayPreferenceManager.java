@@ -15,16 +15,11 @@ import me.hnguyenuml.spyday.UserContent.User;
 public class SpyDayPreferenceManager {
     private String TAG = SpyDayPreferenceManager.class.getSimpleName();
 
-    // Shared Preferences
-    SharedPreferences mPref;
-    // Editor for Shared preferences
-    SharedPreferences.Editor mPrefEditor;
+    private SharedPreferences mPref;
+    private SharedPreferences.Editor mPrefEditor;
+    private Context mContext;
 
-    // Context
-    Context mContext;
-
-    // Shared pref mode
-    int PRIVATE_MODE = 0;
+    private int PRIVATE_MODE = 0;
     private boolean isLogged;
     private FirebaseUser mFirebaseUser;
     private FirebaseAuth mFirebaseAuth;
@@ -45,7 +40,6 @@ public class SpyDayPreferenceManager {
         this.mContext = context;
         mPref = mContext.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         mPrefEditor = mPref.edit();
-
         mFirebaseAuth = FirebaseAuth.getInstance();
     }
 
@@ -66,7 +60,7 @@ public class SpyDayPreferenceManager {
         mPrefEditor.commit();
     }
 
-    public FirebaseAuth getmFirebaseAuth() {
+    public FirebaseAuth getFirebaseAuth() {
         return mFirebaseAuth;
     }
 
@@ -74,7 +68,7 @@ public class SpyDayPreferenceManager {
         this.mUser = new User();
     }
 
-    public void setmFirebaseAuth(FirebaseAuth mFirebaseAuth) {
+    public void setFirebaseAuth(FirebaseAuth mFirebaseAuth) {
         this.mFirebaseAuth = mFirebaseAuth;
     }
 
@@ -82,7 +76,7 @@ public class SpyDayPreferenceManager {
         return mUser;
     }
 
-    public void setmUser(User mUser) {
+    public void setUser(User mUser) {
         this.mUser = mUser;
     }
 }

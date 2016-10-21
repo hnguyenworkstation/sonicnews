@@ -1,5 +1,7 @@
 package me.hnguyenuml.spyday;
 
+import android.*;
+import android.Manifest;
 import android.animation.Animator;
 import android.app.ActivityOptions;
 import android.content.Context;
@@ -24,6 +26,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -69,8 +74,8 @@ public class MapsActivity extends BaseActivity
     private View rootView;
 
     @Override
-    @RequiresPermission(anyOf = {android.Manifest.permission.ACCESS_COARSE_LOCATION,
-            android.Manifest.permission.ACCESS_FINE_LOCATION})
+    @RequiresPermission(anyOf = {Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION})
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
@@ -85,22 +90,22 @@ public class MapsActivity extends BaseActivity
         mPreMan = new SpyDayPreferenceManager(getBaseContext());
 
         if (mGoogleClient == null) {
+            // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
+            // See https://g.co/AppIndexing/AndroidStudio for more information.
             mGoogleClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
                     .addApi(Places.GEO_DATA_API)
-                    .build();
+                    .addApi(AppIndex.API).build();
         }
 
         mFab = (FloatingActionButton) findViewById(R.id.map_fab);
-
         mFab.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
                 // asking user to login
-                if (SpyDayApplication.getInstance().getPrefManager().getUser() == null) {
+                if (null == SpyDayApplication.getInstance().getPrefManager().getUser()) {
                     Intent temp = new Intent(MapsActivity.this, LoginActivity.class);
                     mBundleAnimation =
                             ActivityOptions.makeCustomAnimation(getApplicationContext(),
@@ -109,6 +114,7 @@ public class MapsActivity extends BaseActivity
                 } else {
                     startActivity(mainIntent);
                 }
+
             }
         });
     }
@@ -117,14 +123,14 @@ public class MapsActivity extends BaseActivity
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
         }
-        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             return true;
         }
-        if (checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             return true;
         }
-        if (shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_FINE_LOCATION)
-                || shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+        if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)
+                || shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
 
         } else {
             requestPermission();
@@ -135,8 +141,8 @@ public class MapsActivity extends BaseActivity
     private void requestPermission() {
         ActivityCompat.requestPermissions(this,
                 new String[]{
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION
                 },
                 REQUEST_LOCATION_ACCESS);
     }
@@ -330,5 +336,41 @@ public class MapsActivity extends BaseActivity
         LatLngBounds.Builder builder = LatLngBounds.builder();
         builder.include(pos);
         return builder.build();
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Maps Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        mGoogleClient.connect();
+        AppIndex.AppIndexApi.start(mGoogleClient, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(mGoogleClient, getIndexApiAction());
+        mGoogleClient.disconnect();
     }
 }

@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -34,6 +35,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +47,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
 import me.hnguyenuml.spyday.MapsActivity;
 import me.hnguyenuml.spyday.R;
@@ -84,8 +87,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
     private Button mRegister;
     private Button mForgetPassword;
     private View mRootView;
-    private SpyDayPreferenceManager mPref;
     private ActionBar mActionBar;
+    private ImageView mCloseBtn;
 
     private OnFragmentInteractionListener mListener;
 
@@ -112,7 +115,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.fragment_login, container, false);
-        mPref = new SpyDayPreferenceManager(getContext());
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) mRootView.findViewById(R.id.email);
@@ -140,6 +142,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
         mRegister.setOnClickListener(this);
         mForgetPassword = (Button) mRootView.findViewById(R.id.forget_password_link);
         mForgetPassword.setOnClickListener(this);
+
+        mCloseBtn = (ImageView) mRootView.findViewById(R.id.login_close);
+        mCloseBtn.setOnClickListener(this);
 
         return mRootView;
     }
@@ -218,31 +223,18 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
                 return;
             case R.id.forget_password_link:
                 return;
+            case R.id.login_close:
+                return;
             default:
                 return;
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
     private void attemptLogin() {
         if (mAuthTask != null) {
             return;
@@ -282,7 +274,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
         } else {
             showProgress(true);
             //authenticate user
-            mPref.getmFirebaseAuth().signInWithEmailAndPassword(email, password)
+            SpyDayApplication.getInstance().getPrefManager().getFirebaseAuth()
+                    .signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -291,7 +284,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
                                 Toast.makeText(getActivity(), "Authentication failed.", Toast.LENGTH_LONG).show();
                             } else {
                                 Intent intent = new Intent(getActivity(), MapsActivity.class);
-                                mPref.updateUserByFirebaseUID(mPref.getmFirebaseAuth().getCurrentUser().getUid());
+                                SpyDayApplication.getInstance().getPrefManager()
+                                        .updateUserByFirebaseUID(SpyDayApplication.getInstance().getPrefManager()
+                                                .getFirebaseAuth().getCurrentUser().getUid());
                                 startActivity(intent);
                                 getActivity().finish();
                             }

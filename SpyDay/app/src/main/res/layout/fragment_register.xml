@@ -6,13 +6,27 @@
     android:theme="@style/Theme.Transparent"
     tools:context="me.hnguyenuml.spyday.Fragments.RegisterFragment">
 
-    <ImageButton
-        android:id="@+id/reg_back"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/ic_back"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"/>
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/reg_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_back"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"/>
+
+        <ImageButton
+            android:id="@+id/reg_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_close"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -42,6 +56,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/white"
+                    android:text="REGISTER"
+                    android:textAllCaps="true"
+                    android:textSize="30sp"
+                    android:textStyle="bold"/>
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"

@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 
+import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
 import me.hnguyenuml.spyday.MapsActivity;
 import me.hnguyenuml.spyday.R;
@@ -44,7 +45,6 @@ public class RegisterFragment extends Fragment {
     private Button mRegButton;
     private View mRegisterView;
     private View mProgressView;
-    private SpyDayPreferenceManager mPref;
     private ImageButton mBack;
     private FragmentTransaction ft;
 
@@ -77,8 +77,6 @@ public class RegisterFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_register, container, false);
-
-        mPref = new SpyDayPreferenceManager(getContext());
 
         mRegisterView = rootView.findViewById(R.id.email_register_form);
         mProgressView = rootView.findViewById(R.id.register_progress);
@@ -152,7 +150,8 @@ public class RegisterFragment extends Fragment {
             focusView.requestFocus();
         } else {
             showProgress(true);
-            mPref.getmFirebaseAuth().createUserWithEmailAndPassword(email, password)
+            SpyDayApplication.getInstance().getPrefManager()
+                    .getFirebaseAuth().createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -168,7 +167,9 @@ public class RegisterFragment extends Fragment {
                                     // Todo: show a dialog asking for reset password
                                 }
                             } else {
-                                mPref.updateFirebaseUser();
+                                SpyDayApplication.getInstance().getPrefManager()
+                                        .updateUserByFirebaseUID(SpyDayApplication.getInstance().getPrefManager()
+                                                .getFirebaseAuth().getCurrentUser().getUid());
                                 ft = getFragmentManager().beginTransaction();
                                 ft.replace(R.id.contentFragment, new GetNameFragment(), "GetNameFragment");
                                 ft.commit();
