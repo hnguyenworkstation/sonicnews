@@ -9,6 +9,8 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
+import android.location.LocationManager;
 import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -39,6 +41,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -91,6 +95,15 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
     private ImageView mCloseBtn;
 
     private OnFragmentInteractionListener mListener;
+
+    private LocationManager mLocationManager;
+
+    private final LocationListener mLocationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(final Location location) {
+            //your code here
+        }
+    };
 
     public LoginFragment() {
         // Required empty public constructor
@@ -291,12 +304,16 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
                                 SpyDayApplication.getInstance().getPrefManager()
                                         .updateUserByFirebaseUID(SpyDayApplication.getInstance().getPrefManager()
                                                 .getFirebaseAuth().getCurrentUser().getUid());
+                                startUpdateUserInfo();
                                 startActivity(intent);
                                 getActivity().finish();
                             }
                         }
                     });
         }
+    }
+
+    private void startUpdateUserInfo() {
     }
 
     private boolean isEmailValid(String email) {

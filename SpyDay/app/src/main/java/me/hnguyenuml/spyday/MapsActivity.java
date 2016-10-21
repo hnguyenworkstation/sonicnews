@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -72,6 +74,7 @@ public class MapsActivity extends BaseActivity
     private Intent mainIntent;
     private Bundle mBundleAnimation;
     private View rootView;
+    private Location lastKnownLocation;
 
     @Override
     @RequiresPermission(anyOf = {Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -81,7 +84,6 @@ public class MapsActivity extends BaseActivity
         setContentView(R.layout.activity_maps);
         mayRequestPermissions();
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -90,8 +92,6 @@ public class MapsActivity extends BaseActivity
         mPreMan = new SpyDayPreferenceManager(getBaseContext());
 
         if (mGoogleClient == null) {
-            // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
-            // See https://g.co/AppIndexing/AndroidStudio for more information.
             mGoogleClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
@@ -114,9 +114,33 @@ public class MapsActivity extends BaseActivity
                 } else {
                     startActivity(mainIntent);
                 }
-
             }
         });
+
+        fetchLocation();
+    }
+
+    @Nullable
+    private void fetchLocation() {
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
+                requestPermission();
+            }
+
+            Location lastKnownLocationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            if (lastKnownLocationGPS != null) {
+                lastKnownLocation = lastKnownLocationGPS;
+            } else {
+                lastKnownLocation =  locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+                System.out.println("1::" + lastKnownLocation);
+                System.out.println("2::" + lastKnownLocation.getLatitude());
+            }
+        }
     }
 
     private boolean mayRequestPermissions() {
@@ -151,9 +175,31 @@ public class MapsActivity extends BaseActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(lastKnownLocation.getLatitude(),
+                                    lastKnownLocation.getLongitude()))
+                .title("Marker in Sydney"));
+
+        CameraPosition newPos = new CameraPosition.Builder()
+                .target(new LatLng(lastKnownLocation.getLatitude(),
+                        lastKnownLocation.getLongitude()))
+                .zoom(12)
+                .bearing(300)
+                .build();
+
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(newPos), new GoogleMap.CancelableCallback() {
+
+            @Override
+            public void onFinish() {
+                mMap.getUiSettings().setScrollGesturesEnabled(true);
+            }
+
+            @Override
+            public void onCancel() {
+                mMap.getUiSettings().setAllGesturesEnabled(true);
+            }
+        });
+        
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -173,19 +219,13 @@ public class MapsActivity extends BaseActivity
         switch (item.getItemId()) {
             case R.id.place_search:
                 try {
-                    // The autocomplete activity requires Google Play Services to be available. The intent
-                    // builder checks this and throws an exception if it is not the case.
                     Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
                             .build(this);
                     startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE);
                 } catch (GooglePlayServicesRepairableException e) {
-                    // Indicates that Google Play Services is either not installed or not up to date. Prompt
-                    // the user to correct the issue.
                     GoogleApiAvailability.getInstance().getErrorDialog(this, e.getConnectionStatusCode(),
-                            0 /* requestCode */).show();
+                            0).show();
                 } catch (GooglePlayServicesNotAvailableException e) {
-                    // Indicates that Google Play Services is not available and the problem is not easily
-                    // resolvable.
                     String message = "Google Play Services is not available: " +
                             GoogleApiAvailability.getInstance().getErrorString(e.errorCode);
 
@@ -195,8 +235,6 @@ public class MapsActivity extends BaseActivity
                 return true;
 
             default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
 
         }
@@ -208,7 +246,6 @@ public class MapsActivity extends BaseActivity
 
         if (requestCode == REQUEST_CODE_AUTOCOMPLETE) {
             if (resultCode == RESULT_OK) {
-                // Get the user's selected place from the Intent.
                 Place place = PlaceAutocomplete.getPlace(this, data);
                 Log.i(TAG, "Place Selected: " + place.getName());
 
@@ -216,7 +253,6 @@ public class MapsActivity extends BaseActivity
                         place.getId(), place.getAddress(), place.getPhoneNumber(),
                         place.getWebsiteUri()), Toast.LENGTH_LONG).show();
 
-                // Display attributions if required.
                 CharSequence attributions = place.getAttributions();
                 if (!TextUtils.isEmpty(attributions)) {
                     Toast.makeText(this, Html.fromHtml(attributions.toString()), Toast.LENGTH_LONG).show();
@@ -224,14 +260,11 @@ public class MapsActivity extends BaseActivity
                     Toast.makeText(this, "", Toast.LENGTH_LONG).show();
                 }
 
-                // Then move to this new location
                 moveToNewPlace(place.getLatLng());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
                 Log.e(TAG, "Error: Status = " + status.toString());
             } else if (resultCode == RESULT_CANCELED) {
-                // Indicates that the activity closed before a selection was made. For example if
-                // the user pressed the back button.
             }
         }
     }
@@ -297,20 +330,15 @@ public class MapsActivity extends BaseActivity
                                            @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_LOCATION_ACCESS:
-                // BEGIN_INCLUDE(permission_result)
-                // Received permission result for camera permission.
                 Log.i(TAG, "Received response for Location permission request.");
 
-                // Check if the only required permission has been granted
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Camera permission has been granted, preview can be displayed
                     Log.i(TAG, "LOCATION permission has now been granted. Showing preview.");
+                    fetchLocation();
                 } else {
                     Log.i(TAG, "LOCATION permission was NOT granted.");
                 }
-
-                // END_INCLUDE(permission_result)
                 return;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -338,10 +366,6 @@ public class MapsActivity extends BaseActivity
         return builder.build();
     }
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
     public Action getIndexApiAction() {
         Thing object = new Thing.Builder()
                 .setName("Maps Page") // TODO: Define a title for the content shown.
@@ -357,9 +381,6 @@ public class MapsActivity extends BaseActivity
     @Override
     public void onStart() {
         super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
         mGoogleClient.connect();
         AppIndex.AppIndexApi.start(mGoogleClient, getIndexApiAction());
     }
@@ -367,9 +388,6 @@ public class MapsActivity extends BaseActivity
     @Override
     public void onStop() {
         super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
         AppIndex.AppIndexApi.end(mGoogleClient, getIndexApiAction());
         mGoogleClient.disconnect();
     }

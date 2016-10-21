@@ -68,10 +68,6 @@ public class SpyDayPreferenceManager {
         this.mUser = new User();
     }
 
-    public void setFirebaseAuth(FirebaseAuth mFirebaseAuth) {
-        this.mFirebaseAuth = mFirebaseAuth;
-    }
-
     public User getUser() {
         return mUser;
     }

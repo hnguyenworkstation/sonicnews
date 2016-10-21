@@ -8,6 +8,9 @@ import android.widget.TextView;
 import org.w3c.dom.Text;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
+import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
+import me.hnguyenuml.spyday.UserContent.User;
 
 public class MyProfileActivity extends BaseActivity {
 
@@ -31,5 +34,12 @@ public class MyProfileActivity extends BaseActivity {
         profileJoinDate = (TextView) findViewById(R.id.myprofile_joindate);
         profileCurrentLoc = (TextView) findViewById(R.id.myprofile_currentLoc);
         profileCurrentVisitLoc = (TextView) findViewById(R.id.myprofile_currentVisitLoc);
+    }
+
+    private void initProfile() {
+        User user = SpyDayApplication.getInstance().getPrefManager().getUser();
+
+
+
     }
 }
