@@ -27,6 +27,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,6 +61,7 @@ import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
 import me.hnguyenuml.spyday.MapsActivity;
 import me.hnguyenuml.spyday.R;
 import me.hnguyenuml.spyday.SpyDayActivity;
+import me.hnguyenuml.spyday.UserContent.User;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -68,19 +70,13 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
     private static final int REQUEST_READ_CONTACTS = 0;
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
             "foo@example.com:hello", "bar@example.com:world"
     };
+
+    private static final String TAG = LoginFragment.class.getSimpleName();
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -304,19 +300,32 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
                             if (!task.isSuccessful()) {
                                 Toast.makeText(getActivity(), "Authentication failed.", Toast.LENGTH_LONG).show();
                             } else {
-                                startUpdateUserInfo();
+                                DatabaseReference mDatabase = SpyDayApplication.getInstance()
+                                        .getPrefManager().getUserDatabase();
+                                mDatabase.child(SpyDayApplication.getInstance()
+                                        .getPrefManager().getFirebaseAuth().getCurrentUser().getUid())
+                                        .addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                User newUser = dataSnapshot.getValue(User.class);
+                                                Log.d(TAG, "User name: " + newUser.getUserName()
+                                                        + ", email " + newUser.getUserNickName());
+                                                SpyDayApplication.getInstance()
+                                                        .getPrefManager().storeUser(newUser);
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
                                 Intent intent = new Intent(getActivity(), MapsActivity.class);
-                                SpyDayApplication.getInstance().getPrefManager()
-                                        .updateUserByFirebaseUID();
                                 startActivity(intent);
                                 getActivity().finish();
                             }
                         }
                     });
         }
-    }
-
-    private void startUpdateUserInfo() {
     }
 
     private boolean isEmailValid(String email) {
