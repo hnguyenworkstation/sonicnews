@@ -47,6 +47,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -300,11 +304,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
                             if (!task.isSuccessful()) {
                                 Toast.makeText(getActivity(), "Authentication failed.", Toast.LENGTH_LONG).show();
                             } else {
+                                startUpdateUserInfo();
                                 Intent intent = new Intent(getActivity(), MapsActivity.class);
                                 SpyDayApplication.getInstance().getPrefManager()
-                                        .updateUserByFirebaseUID(SpyDayApplication.getInstance().getPrefManager()
-                                                .getFirebaseAuth().getCurrentUser().getUid());
-                                startUpdateUserInfo();
+                                        .updateUserByFirebaseUID();
                                 startActivity(intent);
                                 getActivity().finish();
                             }

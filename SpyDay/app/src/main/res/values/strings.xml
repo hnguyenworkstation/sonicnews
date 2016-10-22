@@ -39,5 +39,6 @@
 
 
     <!-- Endpoint String-->
-    <string name="child_profile">Profile Content</string>
+    <string name="DB_users">Users</string>
+    <string name="SR_profileImage">ProfileImages</string>
 </resources>

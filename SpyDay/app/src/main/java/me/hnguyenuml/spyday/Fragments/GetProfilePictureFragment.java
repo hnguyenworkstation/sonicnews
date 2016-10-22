@@ -5,40 +5,43 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.tangxiaolv.telegramgallery.GalleryActivity;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.MapsActivity;
 import me.hnguyenuml.spyday.R;
+import me.hnguyenuml.spyday.UserContent.User;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link GetProfilePictureFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link GetProfilePictureFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class GetProfilePictureFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -105,32 +108,70 @@ public class GetProfilePictureFragment extends Fragment {
         mFinishBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pushProfileImage();
+                if (mImageURI != null) {
+                    pushFullProfile();
+                } else {
+                    pushProfile();
+                }
+                getActivity().finish();
                 Intent intent = new Intent(getActivity(), MapsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.slide_down_out, R.anim.slide_down_out);
-                getActivity().finish();
             }
         });
 
         return rootView;
     }
 
-    private void pushProfileImage() {
-        StorageReference newPath = SpyDayApplication.getInstance().getPrefManager()
-                .getmProfileStorage();
-        newPath = newPath.child(mImageURI.getLastPathSegment());
-        newPath.putFile(mImageURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Uri dbURI = taskSnapshot.getDownloadUrl();
-                SpyDayApplication.getInstance()
-                        .getPrefManager()
-                        .getProfileDatabase()
-                        .child("profile_image").setValue(dbURI);
-            }
-        });
+    private void pushProfile() {
+        User temp = SpyDayApplication.getInstance().getPrefManager().getUser();
+        User user = new User(temp.getUserUID(), temp.getUserName(),
+                temp.getUserNickName(), null);
+        SpyDayApplication.getInstance()
+                .getPrefManager()
+                .getUserDatabase()
+                .child(user.getUserUID()).setValue(user);
+    }
+
+    private void pushFullProfile() {
+        final User temp = SpyDayApplication.getInstance().getPrefManager().getUser();
+        StorageReference newPath = SpyDayApplication.getInstance()
+                .getPrefManager()
+                .getFirebaseStorage().child(getString(R.string.SR_profileImage))
+                .child(temp.getUserUID());
+
+        Bitmap bitmap = null;
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), mImageURI);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
+
+            UploadTask uploadTask = newPath.putBytes(data);
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Uri dbURI = taskSnapshot.getDownloadUrl();
+
+                    assert dbURI != null;
+                    User user = new User(temp.getUserUID(), temp.getUserName(),
+                            temp.getUserNickName(), dbURI.toString());
+                    SpyDayApplication.getInstance()
+                            .getPrefManager()
+                            .getUserDatabase()
+                            .child(user.getUserUID()).setValue(user);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getContext(),e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

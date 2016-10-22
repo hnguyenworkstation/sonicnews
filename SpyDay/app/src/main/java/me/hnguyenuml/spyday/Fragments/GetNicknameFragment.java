@@ -63,7 +63,7 @@ public class GetNicknameFragment extends Fragment {
             public void onClick(View v) {
                 String name = mNicknameField.getText().toString();
                 if (isValidNickName(name)) {
-                    pushName(name);
+                    pushNickname(name);
                     final FragmentTransaction ft = getFragmentManager().beginTransaction();
                     ft.replace(R.id.contentFragment, new GetProfilePictureFragment(), "GetProfile");
                     ft.commit();
@@ -76,11 +76,9 @@ public class GetNicknameFragment extends Fragment {
         return rootView;
     }
 
-    private void pushName(String name) {
+    private void pushNickname(String name) {
         SpyDayApplication.getInstance()
-                .getPrefManager()
-                .getProfileDatabase()
-                .child("nickname").setValue(name);
+                .getPrefManager().getUser().setUserNickName(name);
     }
 
     private boolean isValidNickName(String name) {

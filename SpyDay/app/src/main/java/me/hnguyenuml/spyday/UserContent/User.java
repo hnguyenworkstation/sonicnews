@@ -7,53 +7,56 @@ import com.google.android.gms.maps.model.LatLng;
  */
 
 public class User {
-    private String UserUID;
-    private String UserName;
-    private String UserNickName;
-    private String UserProfileURL;
+    private String user_uid;
+    private String user_name;
+    private String user_nickname;
+    private String user_profileurl;
     private LatLng UserCurrentLocation;
     private LatLng UserVisitingLocation;
 
     public User() {}
 
     public User(String UID) {
-        this.UserUID = UID;
+        this.user_uid = UID;
     }
 
     public User(String UID, String name, String nickname, String ProfileURL) {
-
+        this.user_uid = UID;
+        this.user_name = name;
+        this.user_nickname = nickname;
+        this.user_profileurl = ProfileURL;
     }
 
     public String getUserNickName() {
-        return UserNickName;
+        return user_nickname;
     }
 
     public void setUserNickName(String userNickName) {
-        UserNickName = userNickName;
+        user_nickname = userNickName;
     }
 
     public String getUserUID() {
-        return UserUID;
+        return user_uid;
     }
 
     public void setUserUID(String userUID) {
-        UserUID = userUID;
+        user_uid = userUID;
     }
 
     public String getUserName() {
-        return UserName;
+        return user_name;
     }
 
     public void setUserName(String userName) {
-        UserName = userName;
+        user_name = userName;
     }
 
     public String getUserProfileURL() {
-        return UserProfileURL;
+        return user_profileurl;
     }
 
     public void setUserProfileURL(String userProfileURL) {
-        UserProfileURL = userProfileURL;
+        user_profileurl = userProfileURL;
     }
 
     public LatLng getUserCurrentLocation() {

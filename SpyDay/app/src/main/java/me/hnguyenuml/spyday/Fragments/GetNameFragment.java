@@ -64,9 +64,7 @@ public class GetNameFragment extends Fragment {
 
     private void pushName(String name) {
         SpyDayApplication.getInstance()
-                .getPrefManager()
-                .getProfileDatabase()
-                .child("name").setValue(name);
+                .getPrefManager().getUser().setUserName(name);
     }
 
     private boolean isValidName(String name) {

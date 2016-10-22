@@ -188,15 +188,33 @@ public class MapsActivity extends BaseActivity
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
         if (!mayRequestPermissions()){
             requestPermission();
+        } else {
+            initMap();
         }
 
-        mMap = googleMap;
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if (SpyDayApplication.getInstance().getPrefManager().getUser() == null) {
+                    Intent temp = new Intent(MapsActivity.this, LoginActivity.class);
+                    mBundleAnimation =
+                            ActivityOptions.makeCustomAnimation(getApplicationContext(),
+                                    R.anim.fade_in_from_left, R.anim.fade_out_to_right).toBundle();
+                    startActivity(temp, mBundleAnimation);
+                }
+            }
+        });
+    }
+
+    private void initMap() {
         // Add a marker in Sydney and move the camera
         mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(lastKnownLocation.getLatitude(),
-                                    lastKnownLocation.getLongitude()))
+                        lastKnownLocation.getLongitude()))
                 .title("Marker in Sydney"));
 
         CameraPosition newPos = new CameraPosition.Builder()
@@ -216,19 +234,6 @@ public class MapsActivity extends BaseActivity
             @Override
             public void onCancel() {
                 mMap.getUiSettings().setAllGesturesEnabled(true);
-            }
-        });
-        
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                if (SpyDayApplication.getInstance().getPrefManager().getUser() == null) {
-                    Intent temp = new Intent(MapsActivity.this, LoginActivity.class);
-                    mBundleAnimation =
-                            ActivityOptions.makeCustomAnimation(getApplicationContext(),
-                                    R.anim.fade_in_from_left, R.anim.fade_out_to_right).toBundle();
-                    startActivity(temp, mBundleAnimation);
-                }
             }
         });
     }
@@ -355,6 +360,7 @@ public class MapsActivity extends BaseActivity
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.i(TAG, "LOCATION permission has now been granted. Showing preview.");
                     fetchLocation();
+                    initMap();
                 } else {
                     Log.i(TAG, "LOCATION permission was NOT granted.");
                 }

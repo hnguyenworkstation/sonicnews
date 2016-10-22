@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
 
+import com.google.android.gms.fitness.data.Application;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,14 +40,11 @@ public class SpyDayPreferenceManager {
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_USER_EMAIL = "user_email";
     private static final String KEY_NOTIFICATIONS = "notifications";
-
-    // Database Variables
-    private FirebaseUser mFirebaseUser;
+    private final String DB_USER = "Users";
     private FirebaseAuth mFirebaseAuth;
     private StorageReference mFirebaseStorage;
-    private StorageReference mProfileStorage;
     private DatabaseReference mFirebaseDatabase;
-    private DatabaseReference mProfileDatabase;
+    private DatabaseReference mUserDatabase;
     private Location initLocation;
 
     public SpyDayPreferenceManager(Context context) {
@@ -57,29 +55,12 @@ public class SpyDayPreferenceManager {
 
         mFirebaseStorage = FirebaseStorage.getInstance().getReference();
         mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        mUserDatabase = FirebaseDatabase.getInstance().getReference(DB_USER);
+        mUser = new User();
     }
 
-    public void updateDatabasePref() {
-        mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        mProfileDatabase = mFirebaseDatabase
-                .child("Profile Content")
-                .child(mFirebaseUser.getUid())
-                .push();
-
-        mProfileStorage = mFirebaseStorage.child("Profile Images");
-    }
-
-    public StorageReference getmProfileStorage() {
-        return mProfileStorage;
-    }
-
-    public void fetchUserData() {
-        mUser = new User(mFirebaseUser.getUid());
-
-    }
-
-    public DatabaseReference getProfileDatabase() {
-        return mProfileDatabase;
+    public DatabaseReference getUserDatabase() {
+        return mUserDatabase;
     }
 
     public DatabaseReference getFirebaseDatabase() {
@@ -94,14 +75,6 @@ public class SpyDayPreferenceManager {
         return false;
     }
 
-    public FirebaseUser getFireBaseUser() {
-        return mFirebaseUser;
-    }
-
-    public void setFirebaseUser(FirebaseUser user) {
-        this.mFirebaseUser = user;
-    }
-
     public void clear() {
         mPrefEditor.clear();
         mPrefEditor.commit();
@@ -111,8 +84,8 @@ public class SpyDayPreferenceManager {
         return mFirebaseAuth;
     }
 
-    public void updateUserByFirebaseUID(String UID) {
-        this.mUser = new User();
+    public void updateUserByFirebaseUID() {
+        this.mUser = new User(mFirebaseAuth.getCurrentUser().getUid());
     }
 
     public User getUser() {
