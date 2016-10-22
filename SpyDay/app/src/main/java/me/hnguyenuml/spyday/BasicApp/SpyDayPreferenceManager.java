@@ -44,11 +44,11 @@ public class SpyDayPreferenceManager {
     private FirebaseUser mFirebaseUser;
     private FirebaseAuth mFirebaseAuth;
     private StorageReference mFirebaseStorage;
+    private StorageReference mProfileStorage;
     private DatabaseReference mFirebaseDatabase;
     private DatabaseReference mProfileDatabase;
     private Location initLocation;
 
-    // Constructor
     public SpyDayPreferenceManager(Context context) {
         this.mContext = context;
         mPref = mContext.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
@@ -65,6 +65,12 @@ public class SpyDayPreferenceManager {
                 .child("Profile Content")
                 .child(mFirebaseUser.getUid())
                 .push();
+
+        mProfileStorage = mFirebaseStorage.child("Profile Images");
+    }
+
+    public StorageReference getmProfileStorage() {
+        return mProfileStorage;
     }
 
     public void fetchUserData() {
@@ -113,7 +119,7 @@ public class SpyDayPreferenceManager {
         return mUser;
     }
 
-    public void setUser(User mUser) {
+    public void storeUser(User mUser) {
         this.mUser = mUser;
     }
 

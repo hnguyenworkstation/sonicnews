@@ -104,8 +104,9 @@ public class MapsActivity extends BaseActivity
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // asking user to login
-                if (null == SpyDayApplication.getInstance().getPrefManager().getUser()) {
+                if (null == SpyDayApplication.getInstance()
+                        .getPrefManager()
+                        .getFirebaseAuth().getCurrentUser()) {
                     Intent temp = new Intent(MapsActivity.this, LoginActivity.class);
                     mBundleAnimation =
                             ActivityOptions.makeCustomAnimation(getApplicationContext(),
@@ -128,26 +129,30 @@ public class MapsActivity extends BaseActivity
 
     @Nullable
     private boolean fetchLocation() {
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager != null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED) {
-                requestPermission();
-            }
+        if (mayRequestPermissions()) {
+            LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            if (locationManager != null) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                                != PackageManager.PERMISSION_GRANTED) {
+                    requestPermission();
+                }
 
-            Location lastKnownLocationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                Location lastKnownLocationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-            if (lastKnownLocationGPS != null) {
-                lastKnownLocation = lastKnownLocationGPS;
-                return true;
-            } else {
-                lastKnownLocation =  locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-                System.out.println("1::" + lastKnownLocation);
-                System.out.println("2::" + lastKnownLocation.getLatitude());
-                return true;
+                if (lastKnownLocationGPS != null) {
+                    lastKnownLocation = lastKnownLocationGPS;
+                    return true;
+                } else {
+                    lastKnownLocation =  locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+                    System.out.println("1::" + lastKnownLocation);
+                    System.out.println("2::" + lastKnownLocation.getLatitude());
+                    return true;
+                }
             }
+        } else {
+            requestPermission();
         }
 
         return false;
@@ -183,6 +188,10 @@ public class MapsActivity extends BaseActivity
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        if (!mayRequestPermissions()){
+            requestPermission();
+        }
+
         mMap = googleMap;
         // Add a marker in Sydney and move the camera
         mMap.addMarker(new MarkerOptions()

@@ -1,6 +1,7 @@
 package me.hnguyenuml.spyday.Fragments;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,16 +9,26 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.tangxiaolv.telegramgallery.GalleryActivity;
 
 import java.util.List;
 
+import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
+import me.hnguyenuml.spyday.MapsActivity;
 import me.hnguyenuml.spyday.R;
 
 /**
@@ -42,6 +53,9 @@ public class GetProfilePictureFragment extends Fragment {
 
     private ImageView profile;
     private View rootView;
+    private static final int GALLERY_REQUEST = 1;
+    private Button mFinishBtn;
+    private Uri mImageURI = null;
 
     public GetProfilePictureFragment() {
         // Required empty public constructor
@@ -81,20 +95,50 @@ public class GetProfilePictureFragment extends Fragment {
                     getActivity().requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 4);
                     return;
                 }
-                GalleryActivity.openActivity(getActivity(), new String[]{"image/gif","image/png"}, true, 1, 1);
+                Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                galleryIntent.setType("image/*");
+                startActivityForResult(galleryIntent, GALLERY_REQUEST);
+            }
+        });
+
+        mFinishBtn = (Button) rootView.findViewById(R.id.getprofile_finish);
+        mFinishBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pushProfileImage();
+                Intent intent = new Intent(getActivity(), MapsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.slide_down_out, R.anim.slide_down_out);
+                getActivity().finish();
             }
         });
 
         return rootView;
     }
 
+    private void pushProfileImage() {
+        StorageReference newPath = SpyDayApplication.getInstance().getPrefManager()
+                .getmProfileStorage();
+        newPath = newPath.child(mImageURI.getLastPathSegment());
+        newPath.putFile(mImageURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Uri dbURI = taskSnapshot.getDownloadUrl();
+                SpyDayApplication.getInstance()
+                        .getPrefManager()
+                        .getProfileDatabase()
+                        .child("profile_image").setValue(dbURI);
+            }
+        });
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //list of photos of seleced
-        List<String> photos = (List<String>) data.getSerializableExtra(GalleryActivity.PHOTOS);
-
-        //list of videos of seleced
-        List<String> vides = (List<String>) data.getSerializableExtra(GalleryActivity.VIDEO);
+        if(requestCode == GALLERY_REQUEST && resultCode == Activity.RESULT_OK) {
+            mImageURI = data.getData();
+            profile.setImageURI(mImageURI);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
