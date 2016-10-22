@@ -7,7 +7,12 @@ import android.location.Location;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import me.hnguyenuml.spyday.R;
 import me.hnguyenuml.spyday.UserContent.User;
 
 /**
@@ -23,8 +28,6 @@ public class SpyDayPreferenceManager {
 
     private int PRIVATE_MODE = 0;
     private boolean isLogged;
-    private FirebaseUser mFirebaseUser;
-    private FirebaseAuth mFirebaseAuth;
 
     private User mUser;
 
@@ -37,6 +40,12 @@ public class SpyDayPreferenceManager {
     private static final String KEY_USER_EMAIL = "user_email";
     private static final String KEY_NOTIFICATIONS = "notifications";
 
+    // Database Variables
+    private FirebaseUser mFirebaseUser;
+    private FirebaseAuth mFirebaseAuth;
+    private StorageReference mFirebaseStorage;
+    private DatabaseReference mFirebaseDatabase;
+    private DatabaseReference mProfileDatabase;
     private Location initLocation;
 
     // Constructor
@@ -45,6 +54,34 @@ public class SpyDayPreferenceManager {
         mPref = mContext.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         mPrefEditor = mPref.edit();
         mFirebaseAuth = FirebaseAuth.getInstance();
+
+        mFirebaseStorage = FirebaseStorage.getInstance().getReference();
+        mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+    }
+
+    public void updateDatabasePref() {
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        mProfileDatabase = mFirebaseDatabase
+                .child("Profile Content")
+                .child(mFirebaseUser.getUid())
+                .push();
+    }
+
+    public void fetchUserData() {
+        mUser = new User(mFirebaseUser.getUid());
+
+    }
+
+    public DatabaseReference getProfileDatabase() {
+        return mProfileDatabase;
+    }
+
+    public DatabaseReference getFirebaseDatabase() {
+        return mFirebaseDatabase;
+    }
+
+    public StorageReference getFirebaseStorage() {
+        return mFirebaseStorage;
     }
 
     public boolean isLogged() {

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.hnguyenuml.spyday.Fragments.GetNameFragment;
+import me.hnguyenuml.spyday.Fragments.GetNicknameFragment;
 import me.hnguyenuml.spyday.Fragments.GetProfilePictureFragment;
 import me.hnguyenuml.spyday.Fragments.LoginFragment;
 import me.hnguyenuml.spyday.Fragments.RegisterFragment;
@@ -29,7 +30,8 @@ public class LoginActivity extends BaseActivity
             RegisterFragment.OnFragmentInteractionListener,
             LoginFragment.OnFragmentInteractionListener,
             GetNameFragment.OnFragmentInteractionListener,
-            GetProfilePictureFragment.OnFragmentInteractionListener {
+            GetProfilePictureFragment.OnFragmentInteractionListener,
+            GetNicknameFragment.OnFragmentInteractionListener {
 
     private ViewPager viewPager;
     private ViewPagerAdapter adapter;
@@ -61,11 +63,6 @@ public class LoginActivity extends BaseActivity
         adapter.addFragment(new RegisterFragment(), "Register");
 
         viewPager.setAdapter(adapter);
-    }
-
-    @Override
-    public void onBackPressed() {
-        return;
     }
 
     @Override

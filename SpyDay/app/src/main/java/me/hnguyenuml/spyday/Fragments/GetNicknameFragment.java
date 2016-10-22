@@ -14,19 +14,29 @@ import android.widget.EditText;
 import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.R;
 
-public class GetNameFragment extends Fragment {
+public class GetNicknameFragment extends Fragment {
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+
     private OnFragmentInteractionListener mListener;
     private Button mNext;
-    private EditText mNameField;
+    private EditText mNicknameField;
     private View rootView;
 
-    public GetNameFragment() {
-        // Required empty public constructor
+    public GetNicknameFragment() {
     }
 
-    public static GetNameFragment newInstance(String param1, String param2) {
-        GetNameFragment fragment = new GetNameFragment();
+    public static GetNicknameFragment newInstance(String param1, String param2) {
+        GetNicknameFragment fragment = new GetNicknameFragment();
         Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -34,27 +44,31 @@ public class GetNameFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_get_name, container, false);
-        mNameField = (EditText) rootView.findViewById(R.id.gn_put_name);
+        rootView = inflater.inflate(R.layout.fragment_get_nickname, container, false);
+        mNicknameField = (EditText) rootView.findViewById(R.id.getnickname_name);
 
-        mNext = (Button) rootView.findViewById(R.id.gn_next);
+        mNext = (Button) rootView.findViewById(R.id.getnickname_next);
         mNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name = mNameField.getText().toString();
-                if (isValidName(name)) {
+                String name = mNicknameField.getText().toString();
+                if (isValidNickName(name)) {
                     pushName(name);
                     final FragmentTransaction ft = getFragmentManager().beginTransaction();
-                    ft.replace(R.id.contentFragment, new GetNicknameFragment(), "GetNickname");
+                    ft.replace(R.id.contentFragment, new GetProfilePictureFragment(), "GetProfile");
                     ft.commit();
                 } else {
-                    mNameField.setError(getString(R.string.error_field_required));
+                    mNicknameField.setError(getString(R.string.error_field_required));
                 }
             }
         });
@@ -66,16 +80,17 @@ public class GetNameFragment extends Fragment {
         SpyDayApplication.getInstance()
                 .getPrefManager()
                 .getProfileDatabase()
-                .child("name").setValue(name);
+                .child("nickname").setValue(name);
     }
 
-    private boolean isValidName(String name) {
+    private boolean isValidNickName(String name) {
         if (name == null) {
             return false;
         }
         return true;
     }
 
+    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);

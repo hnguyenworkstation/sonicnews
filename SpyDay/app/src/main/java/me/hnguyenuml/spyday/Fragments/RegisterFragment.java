@@ -181,9 +181,7 @@ public class RegisterFragment extends Fragment {
                                     // Todo: show a dialog asking for reset password
                                 }
                             } else {
-                                SpyDayApplication.getInstance().getPrefManager()
-                                        .updateUserByFirebaseUID(SpyDayApplication.getInstance().getPrefManager()
-                                                .getFirebaseAuth().getCurrentUser().getUid());
+                                updatePrefManager();
                                 ft = getFragmentManager().beginTransaction();
                                 ft.replace(R.id.contentFragment, new GetNameFragment(), "GetNameFragment");
                                 ft.commit();
@@ -191,6 +189,14 @@ public class RegisterFragment extends Fragment {
                         }
                     });
         }
+    }
+
+    private void updatePrefManager() {
+        SpyDayApplication.getInstance().getPrefManager()
+                .updateUserByFirebaseUID(SpyDayApplication.getInstance().getPrefManager()
+                        .getFirebaseAuth().getCurrentUser().getUid());
+        SpyDayApplication.getInstance().getPrefManager().updateDatabasePref();
+        SpyDayApplication.getInstance().getPrefManager().fetchUserData();
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
