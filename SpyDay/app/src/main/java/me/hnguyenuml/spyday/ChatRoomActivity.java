@@ -50,23 +50,6 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
 
         mIsTyping = (TextView)findViewById(R.id.chatroom_istyping);
         mMessageInput = (EditText) findViewById(R.id.chatroom_inputtext);
-        mMessageInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
         mEmoBtn = (ImageButton) findViewById(R.id.chatroom_emobtn);
         mEmoBtn.setOnClickListener(this);
         mEmoBtn.setSelected(true);
@@ -75,6 +58,22 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         transformSendBtn(mMessageInput);
         mSendBtn.setOnClickListener(this);
 
+        mMessageInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                transformSendBtn(mMessageInput);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -101,11 +100,26 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
                 emoButtonClicked(v);
                 return;
             case R.id.chatroom_sendbtn:
+                sendMessage(v);
                 return;
             default:
                 return;
 
         }
+    }
+
+    private void sendMessage(View view) {
+        String msg;
+        msg = mMessageInput.getText().toString();
+        if (msg.isEmpty()) {
+            return;
+        }
+        ListMessagesFragment mfragment = (ListMessagesFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.container);
+        if (mfragment != null) {
+            mfragment.addMessage(msg);
+        }
+        mMessageInput.setText("");
     }
 
     public void emoButtonClicked(View view) {
