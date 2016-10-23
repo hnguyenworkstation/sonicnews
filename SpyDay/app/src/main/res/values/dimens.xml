@@ -13,4 +13,6 @@
     <dimen name="profile_image_height">120dp</dimen>
     <dimen name="image_tab_width">32dp</dimen>
 
+    <dimen name="chat_input">50dp</dimen>
+
 </resources>

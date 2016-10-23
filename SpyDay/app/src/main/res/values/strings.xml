@@ -37,6 +37,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- Chat Strings -->
+    <string name="chat_hint">Write a message...</string>
+
 
     <!-- Endpoint String-->
     <string name="DB_users">Users</string>
