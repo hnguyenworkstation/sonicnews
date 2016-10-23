@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="@dimen/margin_4"
+    android:layout_marginTop="@dimen/margin_8"
+    android:layout_marginLeft="@dimen/margin_8" >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/message.rootview">
+        <TextView
+            android:id="@+id/message.content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/bubble_left_white"
+            android:maxWidth="@dimen/message_width"
+            android:text="New Text New Text New Text New Text New Text New Text New Text New Text New Text "
+            android:lineSpacingMultiplier="@dimen/message_spacing"
+            android:textAppearance="@style/MessageText.Primary.Light" />
+        <ImageView
+            android:id="@+id/message.warningicon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/message.content"
+            android:visibility="visible"
+            android:paddingRight="@dimen/margin_16"
+            android:paddingLeft="@dimen/margin_16"
+            android:paddingBottom="@dimen/margin_12"
+            android:paddingTop="@dimen/margin_12" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/message.chatstatusview"
+        android:layout_below="@+id/message.rootview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/margin_8"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20:20"
+            android:id="@+id/message.status.time"
+            android:layout_alignParentRight="true" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/message.status.image"
+            android:layout_marginRight="@dimen/margin_4"
+            android:layout_toLeftOf="@+id/message.status.time"
+            android:layout_centerVertical="true"
+            android:visibility="gone"   />
+    </RelativeLayout>
+
+
+    <ImageView
+        android:id="@+id/message.checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/check_box"
+        android:padding="@dimen/margin_16"/>
+
+</RelativeLayout>

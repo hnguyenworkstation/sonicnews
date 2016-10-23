@@ -19,16 +19,17 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import me.hnguyenuml.spyday.ChatRoomActivity;
 import me.hnguyenuml.spyday.R;
 import me.hnguyenuml.spyday.UI.ChatRoom;
 import me.hnguyenuml.spyday.UI.ChatRoomsAdapter;
 import me.hnguyenuml.spyday.UI.RecycleViewItemDecoration;
 
-public class ListMessageFragment extends Fragment {
+public class ListChatRoomFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private String TAG = ListMessageFragment.class.getSimpleName();
+    private String TAG = ListChatRoomFragment.class.getSimpleName();
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private ArrayList<ChatRoom> listChatRoom;
     private ChatRoomsAdapter mAdapter;
@@ -40,11 +41,11 @@ public class ListMessageFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public ListMessageFragment() {
+    public ListChatRoomFragment() {
     }
 
-    public static ListMessageFragment newInstance(String param1, String param2) {
-        ListMessageFragment fragment = new ListMessageFragment();
+    public static ListChatRoomFragment newInstance(String param1, String param2) {
+        ListChatRoomFragment fragment = new ListChatRoomFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -65,7 +66,7 @@ public class ListMessageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_list_message, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_list_chatroom, container, false);
         listRecycleView = (RecyclerView) rootView.findViewById(R.id.chatroom_recycleview);
 
         Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.chatroom_toolbar);
@@ -100,6 +101,7 @@ public class ListMessageFragment extends Fragment {
                 listRecycleView, new ChatRoomsAdapter.ClickListener() {
             @Override
             public void onClick(View view, int position) {
+                startActivity(new Intent(getActivity(), ChatRoomActivity.class));
             }
 
             @Override

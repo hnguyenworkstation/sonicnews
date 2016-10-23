@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,12 +20,12 @@ import com.konifar.fab_transformation.FabTransformation;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.hnguyenuml.spyday.Fragments.ListMessageFragment;
+import me.hnguyenuml.spyday.Fragments.ListChatRoomFragment;
 import me.hnguyenuml.spyday.UI.SpyDayUtil;
 
 public class SpyDayActivity extends BaseActivity implements
         View.OnClickListener, View.OnTouchListener,
-        ListMessageFragment.OnFragmentInteractionListener {
+        ListChatRoomFragment.OnFragmentInteractionListener {
 
     private ViewPager mViewPager;
     private FloatingActionButton mFloatBtn;
@@ -74,7 +73,7 @@ public class SpyDayActivity extends BaseActivity implements
 
     private void setupViewPager(ViewPager viewPager) {
         adapter = new ViewPagerAdapter(this.getBaseContext(), getSupportFragmentManager());
-        adapter.addFragment(new ListMessageFragment(), "Messages");
+        adapter.addFragment(new ListChatRoomFragment(), "Messages");
         viewPager.setAdapter(adapter);
     }
 

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginLeft="@dimen/margin_8"
+    android:layout_marginRight="@dimen/message_spacing"
+    android:layout_marginTop="@dimen/margin_8">
+
+    <ImageView
+        android:id="@+id/message.avatar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="@dimen/margin_8"
+        android:background="@drawable/sticker_profile"
+        android:scaleType="centerInside"
+        android:src="@drawable/no_idea" />
+
+    <ImageView
+        android:id="@+id/sticker.image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/message.avatar"
+        android:layout_toRightOf="@+id/message.avatar"
+        android:src="@drawable/logo_image"/>
+
+    <RelativeLayout
+        android:id="@+id/message.chatstatusview"
+        android:layout_below="@+id/sticker.image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/message.avatar"
+        android:layout_marginLeft="@dimen/margin_8"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/message.status.image"
+            android:text="20:20"
+            android:id="@+id/item_chat_status_tv" />
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/message.checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/check_box"
+        android:padding="@dimen/margin_16"/>
+
+</RelativeLayout>

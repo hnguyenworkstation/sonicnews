@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_chat_room"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="MergeRootFrame"
+    tools:context="me.hnguyenuml.spyday.ChatRoomActivity">
+
+    <RelativeLayout
+        android:id="@+id/chatroom.emojiholder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <RelativeLayout
+            android:id="@+id/chatroom.emokeyboard"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/keyboard_height_default"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chatroom.inputholder"
+        android:layout_above="@id/chatroom.emojiholder"
+        android:clickable="false"
+        android:background="@drawable/chatroom_input">
+
+        <ImageButton
+            android:id="@+id/chatroom.emobtn"
+            android:layout_width="@dimen/chat_input"
+            android:layout_height="@dimen/chat_input"
+            android:layout_centerVertical="true"
+            android:background="@drawable/selector_btn"
+            android:src="@drawable/ic_smiley" />
+
+        <ImageButton
+            android:id="@+id/chatroom.sendbtn"
+            android:layout_width="@dimen/chat_input"
+            android:layout_height="@dimen/chat_input"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/selector_btn"
+            android:onClick="sendMessage"
+            android:src="@drawable/send_btn" />
+
+        <EditText
+            android:id="@+id/chatroom.inputtext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/chatroom.emobtn"
+            android:layout_toLeftOf="@id/chatroom.sendbtn"
+            android:layout_toRightOf="@id/chatroom.emobtn"
+            android:layout_toStartOf="@id/chatroom.sendbtn"
+            android:hint="@string/chatroom.inputhint"
+            android:textColorHint="@color/black_alpha_30" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/chatroom.inputholder"
+        android:clickable="false" />
+
+    <TextView
+        android:id="@+id/chatroom.istyping"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/chatroom.inputholder"
+        android:background="#88132423"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:text="@string/chatroom.istyping"
+        android:visibility="gone"
+        android:textColor="@android:color/white"/>
+
+</RelativeLayout>

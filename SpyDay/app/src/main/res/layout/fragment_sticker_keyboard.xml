@@ -1,0 +1,37 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/skeyboard.viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </android.support.v4.view.ViewPager>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/skeyboard.scroll"
+        android:background="@drawable/smalll_border"
+        android:paddingTop="1dp">
+
+        <ImageView
+            android:layout_width="@dimen/sticker_tab_height"
+            android:layout_height="@dimen/sticker_tab_height"
+            android:id="@+id/skeyboard.addbtn"
+            android:layout_alignParentRight="true"
+            android:background="@color/add_sticker_tab"
+            android:src="@drawable/ic_add_chat"
+            android:scaleType="centerInside"/>
+
+        <me.hnguyenuml.spyday.UI.SlidingTabLayout
+            android:id="@+id/skeyboard.scrolltab"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/sticker_tab_height"
+            android:layout_toLeftOf="@+id/skeyboard.addbtn"
+            android:measureAllChildren="false" />
+    </RelativeLayout>
+
+</RelativeLayout>

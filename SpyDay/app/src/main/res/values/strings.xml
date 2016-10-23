@@ -38,7 +38,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- Chat Strings -->
-    <string name="chat_hint">Write a message...</string>
+    <string name="chatroom.inputhint">Write a message...</string>
+    <string name="chatroom.istyping">is typing...</string>
 
 
     <!-- Endpoint String-->

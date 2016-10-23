@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginLeft="@dimen/margin_8"
+    android:layout_marginRight="@dimen/chat_avatar_marginright"
+    android:layout_marginTop="@dimen/margin_8">
+
+    <ImageView
+        android:id="@+id/message.avatar"
+        android:layout_width="@dimen/chat_avatar_width"
+        android:layout_height="@dimen/chat_avatar_width"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="@dimen/margin_8"
+        android:background="@drawable/chat_profile_avatar"
+        android:scaleType="centerCrop"
+        android:src="@drawable/logo_image" />
+
+    <TextView
+        android:id="@+id/message.content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/message.avatar"
+        android:layout_toRightOf="@+id/message.avatar"
+        android:background="@drawable/bubble_left_brown"
+        android:text="New Text"
+        android:lineSpacingMultiplier="@dimen/message_spacing"
+        android:textAppearance="@style/MessageText.Primary.Light"
+        android:textColor="@android:color/white" />
+
+    <ImageView
+        android:id="@+id/message.checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/check_box"
+        android:padding="@dimen/margin_16"/>
+
+    <RelativeLayout
+        android:id="@+id/message.chatstatusview"
+        android:layout_below="@+id/message.content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/message.avatar"
+        android:layout_marginLeft="@dimen/margin_8"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/message.status.image"
+            android:text="20:20"
+            android:id="@+id/item_chat_status_tv" />
+    </RelativeLayout>
+</RelativeLayout>
