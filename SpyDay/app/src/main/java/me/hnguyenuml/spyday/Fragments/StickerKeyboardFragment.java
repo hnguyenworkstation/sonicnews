@@ -85,7 +85,6 @@ public class StickerKeyboardFragment extends Fragment implements
         mSlidingTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
 
             @Override
@@ -112,7 +111,6 @@ public class StickerKeyboardFragment extends Fragment implements
         return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onClickSticker(uri);

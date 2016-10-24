@@ -25,8 +25,6 @@ public class EmojiAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // Get the data item for this position
-
         final ViewHolder viewHolder;
 
         if (convertView == null) {
