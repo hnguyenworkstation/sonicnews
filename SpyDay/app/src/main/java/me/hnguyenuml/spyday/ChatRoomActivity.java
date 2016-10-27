@@ -4,19 +4,15 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import me.hnguyenuml.spyday.Fragments.ListMessagesFragment;
@@ -127,24 +123,25 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         if (isShowingKeyboard) {
             mInputManager.hideSoftInputFromWindow(
-                    mMessageInput.getWindowToken(), 0);
+                    view.getWindowToken(), 0);
             isShowingEmoji = true;
         } else {
             if (mEmoView.getVisibility() == View.VISIBLE) {
                 mInputManager.showSoftInput(
                         mMessageInput, 0);
             } else {
-                showFragment(true);
+                showDefaultKeyboard(true);
             }
         }
     }
 
-    private void showFragment(boolean isShowFragment) {
+    private void showDefaultKeyboard(boolean isShowFragment) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        Fragment emo_fragment = getSupportFragmentManager().findFragmentById(R.id.chatroom_emokeyboard);
+        Fragment emo_fragment = getSupportFragmentManager()
+                .findFragmentById(R.id.chatroom_emokeyboard);
         if (emo_fragment != null) {
             ft.setCustomAnimations(R.anim.slide_in_from_bottom,
-                    R.anim.slide_out_to_bottom);
+                    R.anim.fix_anim);
             if (isShowFragment) {
                 mEmoView.setVisibility(View.VISIBLE);
                 ft.show(emo_fragment);
@@ -166,7 +163,8 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
                         R.anim.slide_out_to_bottom);
                 ft.add(R.id.chatroom_emokeyboard, new StickerKeyboardFragment());
                 mEmoBtn.setSelected(false);
-                ListMessagesFragment fm = (ListMessagesFragment) getSupportFragmentManager().findFragmentById(R.id.container);
+                ListMessagesFragment fm = (ListMessagesFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.container);
                 if (fm != null) {
                     fm.scrollToLast();
                 }
@@ -188,7 +186,7 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
     @Override
     public void onBackPressed() {
         if (mEmoView.getVisibility() == View.VISIBLE) {
-            showFragment(false);
+            showDefaultKeyboard(false);
             getWindow().setSoftInputMode(
                     WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         } else {
@@ -207,7 +205,7 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         Log.v(TAG, "on Show Keyboard");
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        showFragment(false);
+        showDefaultKeyboard(false);
         isShowingKeyboard = true;
         ListMessagesFragment fm = (ListMessagesFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.container);
@@ -221,7 +219,7 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         Log.v(TAG, "On Hide Keyboard");
         isShowingKeyboard = false;
         if (isShowingEmoji) {
-            showFragment(true);
+            showDefaultKeyboard(true);
             isShowingEmoji = false;
         }
     }

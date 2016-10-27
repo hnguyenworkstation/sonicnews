@@ -118,7 +118,7 @@ public class MapsActivity extends BaseActivity
             }
         });
 
-        if (fetchLocation()) {
+            if (fetchLocation()) {
             updateCurrenInfo();
         }
     }

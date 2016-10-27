@@ -10,12 +10,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
-
-import com.konifar.fab_transformation.FabTransformation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,16 +24,26 @@ import me.hnguyenuml.spyday.Fragments.ListChatRoomFragment;
 import me.hnguyenuml.spyday.UI.SpyDayUtil;
 
 public class SpyDayActivity extends BaseActivity implements
-        View.OnClickListener, View.OnTouchListener,
-        ListChatRoomFragment.OnFragmentInteractionListener {
+        View.OnClickListener, ListChatRoomFragment.OnFragmentInteractionListener {
 
     private ViewPager mViewPager;
-    private FloatingActionButton mFloatBtn;
+
     private View rootLayout;
-    private View mBottomToolbar;
     private boolean isTransforming;
     private ViewPagerAdapter adapter;
 
+
+    private FloatingActionButton mFloatBtn;
+    private FloatingActionButton fab_1;
+    private FloatingActionButton fab_2;
+    private FloatingActionButton fab_3;
+
+    private Animation showFabAnim1;
+    private Animation closeFabAnim1;
+    private Animation showFabAnim2;
+    private Animation closeFabAnim2;
+    private Animation showFabAnim3;
+    private Animation closeFabAnim3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +71,7 @@ public class SpyDayActivity extends BaseActivity implements
                 });
             }
         }
-        mBottomToolbar = findViewById(R.id.fab_toolbar);
+
         mViewPager = (ViewPager) findViewById(R.id.spyViewPager);
 
         if (mViewPager != null)
@@ -69,6 +79,23 @@ public class SpyDayActivity extends BaseActivity implements
 
         mFloatBtn = (FloatingActionButton) findViewById(R.id.spyFloatBtn);
         mFloatBtn.setOnClickListener(this);
+
+        fab_1 = (FloatingActionButton) findViewById(R.id.fab_1);
+        fab_2 = (FloatingActionButton) findViewById(R.id.fab_2);
+        fab_3 = (FloatingActionButton) findViewById(R.id.fab_3);
+
+        fab_1.setOnClickListener(this);
+        fab_2.setOnClickListener(this);
+        fab_3.setOnClickListener(this);
+
+        showFabAnim1 = AnimationUtils.loadAnimation(getApplication(), R.anim.show_fab1);
+        closeFabAnim1 = AnimationUtils.loadAnimation(getApplication(), R.anim.hide_fab1);
+
+        showFabAnim2 = AnimationUtils.loadAnimation(getApplication(), R.anim.show_fab2);
+        closeFabAnim2 = AnimationUtils.loadAnimation(getApplication(), R.anim.hide_fab2);
+
+        showFabAnim3 = AnimationUtils.loadAnimation(getApplication(), R.anim.show_fab3);
+        closeFabAnim3 = AnimationUtils.loadAnimation(getApplication(), R.anim.hide_fab3);
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -102,9 +129,11 @@ public class SpyDayActivity extends BaseActivity implements
             case R.id.spyFloatBtn:
                 SpyDayUtil.showToast("Float Clicked", getBaseContext());
                 // case float button
-                if (mFloatBtn.getVisibility() == View.VISIBLE) {
-                    FabTransformation.with(mFloatBtn).transformTo(mBottomToolbar);
-                    mFloatBtn.setVisibility(View.GONE);
+                if (isTransforming) {
+                    hideFab();
+                    isTransforming = false;
+                } else {
+                    transformFab();
                     isTransforming = true;
                 }
                 break;
@@ -113,29 +142,60 @@ public class SpyDayActivity extends BaseActivity implements
         }
     }
 
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        if (mFloatBtn.getVisibility() != View.VISIBLE && isTransforming) {
-            FabTransformation.with(mFloatBtn)
-                .setListener(new FabTransformation.OnTransformListener() {
-                    @Override
-                    public void onStartTransform() {
-                        isTransforming = true;
-                    }
+    private void transformFab() {
+        FrameLayout.LayoutParams layoutParams
+                = (FrameLayout.LayoutParams) fab_1.getLayoutParams();
+        layoutParams.rightMargin += (int) (fab_1.getWidth() * 1.7);
+        layoutParams.bottomMargin +=  (int) (fab_1.getHeight() * 0.25);
+        fab_1.setLayoutParams(layoutParams);
+        fab_1.setClickable(true);
+        fab_1.startAnimation(showFabAnim1);
 
-                    @Override
-                    public void onEndTransform() {
-                        isTransforming = false;
-                    }
-                })
-                .transformFrom(mBottomToolbar);
-        }
-        return false;
+        FrameLayout.LayoutParams layoutParams2 = (FrameLayout.LayoutParams) fab_2.getLayoutParams();
+        layoutParams2.rightMargin += (int) (fab_2.getWidth() * 1.5);
+        layoutParams2.bottomMargin += (int) (fab_2.getHeight() * 1.5);
+        fab_2.setLayoutParams(layoutParams2);
+        fab_2.startAnimation(showFabAnim2);
+        fab_2.setClickable(true);
+
+        //Floating Action Button 3
+        FrameLayout.LayoutParams layoutParams3 = (FrameLayout.LayoutParams) fab_3.getLayoutParams();
+        layoutParams3.rightMargin += (int) (fab_3.getWidth() * 0.25);
+        layoutParams3.bottomMargin += (int) (fab_3.getHeight() * 1.7);
+        fab_3.setLayoutParams(layoutParams3);
+        fab_3.startAnimation(showFabAnim3);
+        fab_3.setClickable(true);
+    }
+
+    private void hideFab() {
+        FrameLayout.LayoutParams layoutParams
+                = (FrameLayout.LayoutParams) fab_1.getLayoutParams();
+        layoutParams.rightMargin -= (int) (fab_1.getWidth() * 1.7);
+        layoutParams.bottomMargin -=  (int) (fab_1.getHeight() * 0.25);
+        fab_1.setLayoutParams(layoutParams);
+        fab_1.setClickable(true);
+        fab_1.startAnimation(closeFabAnim1);
+
+        //Floating Action Button 2
+        FrameLayout.LayoutParams layoutParams2 = (FrameLayout.LayoutParams) fab_2.getLayoutParams();
+        layoutParams2.rightMargin -= (int) (fab_2.getWidth() * 1.5);
+        layoutParams2.bottomMargin -= (int) (fab_2.getHeight() * 1.5);
+        fab_2.setLayoutParams(layoutParams2);
+        fab_2.startAnimation(closeFabAnim2);
+        fab_2.setClickable(false);
+
+        //Floating Action Button 3
+        FrameLayout.LayoutParams layoutParams3 = (FrameLayout.LayoutParams) fab_3.getLayoutParams();
+        layoutParams3.rightMargin -= (int) (fab_3.getWidth() * 0.25);
+        layoutParams3.bottomMargin -= (int) (fab_3.getHeight() * 1.7);
+        fab_3.setLayoutParams(layoutParams3);
+        fab_3.startAnimation(closeFabAnim3);
+        fab_3.setClickable(false);
+
     }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
