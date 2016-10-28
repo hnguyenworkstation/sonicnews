@@ -101,7 +101,11 @@ public class ListChatRoomFragment extends Fragment {
                 listRecycleView, new ChatRoomsAdapter.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                startActivity(new Intent(getActivity(), ChatRoomActivity.class));
+                ChatRoom chatRoom = listChatRoom.get(position);
+                Intent intent = new Intent(getActivity(), ChatRoomActivity.class);
+                intent.putExtra("chat_room_id", chatRoom.getId());
+                intent.putExtra("name", chatRoom.getName());
+                startActivity(intent);
             }
 
             @Override

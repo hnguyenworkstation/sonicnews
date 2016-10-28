@@ -27,7 +27,6 @@
         <activity
             android:name=".SpyDayActivity"
             android:launchMode="singleTask" >
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -47,7 +46,9 @@
             android:value="@integer/google_play_services_version" />
 
         <activity android:name=".MyProfileActivity" />
-        <activity android:name=".ChatRoomActivity"></activity>
+        <activity android:name=".ChatRoomActivity"
+            android:launchMode="singleInstance"
+            ></activity>
     </application>
 
 </manifest>

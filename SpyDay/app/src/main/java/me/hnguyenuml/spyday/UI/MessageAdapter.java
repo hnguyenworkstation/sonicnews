@@ -10,17 +10,21 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+
 import java.util.List;
 
+import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.R;
 import me.hnguyenuml.spyday.UserContent.Message;
 
 /**
  * Created by Hung Nguyen on 10/23/2016.
- * Implemented based on FrankNT's ChatAdapter
+ * Implemented based on FrankNT's MessageAdapter
  */
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
+public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAdapter.ViewHolder >{
+
     private List<Message> mDataset;
     public boolean isDeleteMsg = false;
     public boolean isSelectAll = false;
@@ -109,11 +113,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
         public boolean onLongClick(View view) {
             return true;
         }
-
-
     }
 
-    public ChatAdapter(List<Message> myDataset) {
+    public MessageAdapter(List<Message> myDataset) {
+        super(Message.class, R.layout.message_from_friend, MessageAdapter.ViewHolder.class,
+                SpyDayApplication.getInstance().getPrefManager().getFirebaseDatabase());
         mDataset = myDataset;
     }
 
@@ -122,7 +126,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
     }
 
     @Override
-    public ChatAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MessageAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = null;
         switch (viewType) {
             case Message.TYPE_MESSAGE_FROM_ME:
@@ -310,6 +314,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
 
 
         }
+    }
+
+    @Override
+    protected void populateViewHolder(ViewHolder viewHolder, Message model, int position) {
+        // Todo: Setting up view of each message
     }
 
     private void setBackgroundResource(View v, boolean isSticker, int idResource) {

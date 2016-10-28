@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.hnguyenuml.spyday.R;
-import me.hnguyenuml.spyday.UI.ChatAdapter;
+import me.hnguyenuml.spyday.UI.MessageAdapter;
 import me.hnguyenuml.spyday.UI.CustomScrollingHandler;
 import me.hnguyenuml.spyday.UserContent.Message;
 
@@ -35,7 +35,7 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
     private View rootView;
 
     private RecyclerView mRecyclerView;
-    private ChatAdapter mChatAdapter;
+    private MessageAdapter mMessageAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<Message> messageList = new ArrayList<>();
     private boolean mEmptyConversation;
@@ -89,9 +89,9 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
             messageList.add(item);
         }
 
-        mChatAdapter = new ChatAdapter(messageList);
+        mMessageAdapter = new MessageAdapter(messageList);
 
-        mChatAdapter.setOnChatScreenClickListener(new ChatAdapter.OnClickChatScreenListener() {
+        mMessageAdapter.setOnChatScreenClickListener(new MessageAdapter.OnClickChatScreenListener() {
             @Override
             public void onErrorMessageClick(View view) {
             }
@@ -103,7 +103,7 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
                 if (item != null) {
                     boolean isSet = item.getVisibilityDate();
                     item.setVisibilityDate(!isSet);
-                    mChatAdapter.notifyDataSetChanged();
+                    mMessageAdapter.notifyDataSetChanged();
                 }
                 mPreviousPositionItemClick = position;
             }
@@ -115,13 +115,13 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
                 if (item != null) {
                     boolean isSet = item.getVisibilityDate();
                     item.setVisibilityDate(!isSet);
-                    mChatAdapter.notifyDataSetChanged();
+                    mMessageAdapter.notifyDataSetChanged();
                 }
                 mPreviousPositionItemClick = position;
             }
         });
 
-        mRecyclerView.setAdapter(mChatAdapter);
+        mRecyclerView.setAdapter(mMessageAdapter);
         mRecyclerView.scrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
         mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             @Override
@@ -210,7 +210,7 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
                 messageList.add(item);
             }
 
-            mChatAdapter.notifyDataSetChanged();
+            mMessageAdapter.notifyDataSetChanged();
         }
         mRecyclerView.postDelayed(new Runnable() {
             @Override
@@ -242,7 +242,7 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
         item.setVisibilityStatus(true);
         messageList.add(item);
 
-        mChatAdapter.notifyDataSetChanged();
+        mMessageAdapter.notifyDataSetChanged();
         mRecyclerView.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -273,7 +273,7 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
         item.setVisibilityStatus(true);
         messageList.add(item);
 
-        mChatAdapter.notifyDataSetChanged();
+        mMessageAdapter.notifyDataSetChanged();
         mRecyclerView.postDelayed(new Runnable() {
             @Override
             public void run() {

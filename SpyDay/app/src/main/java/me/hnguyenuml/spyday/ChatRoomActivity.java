@@ -1,6 +1,7 @@
 package me.hnguyenuml.spyday;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -16,10 +17,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import me.hnguyenuml.spyday.Fragments.ListMessagesFragment;
 import me.hnguyenuml.spyday.Fragments.StickerItemFragment;
 import me.hnguyenuml.spyday.Fragments.StickerKeyboardFragment;
+import me.hnguyenuml.spyday.UI.ChatRoom;
+import me.hnguyenuml.spyday.UI.ChatRoomsAdapter;
+import me.hnguyenuml.spyday.UserContent.Message;
 
 public class ChatRoomActivity extends BaseInputActivity implements View.OnClickListener ,
         StickerKeyboardFragment.OnClickStickerListener,
@@ -28,10 +35,14 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         StickerKeyboardFragment.OnFragmentInteractionListener {
 
     private static final String TAG = ChatRoomActivity.class.getSimpleName();
+    private String chatroomID;
+    private String chatroomTitle;
     private EditText mMessageInput;
     private ImageButton mEmoBtn;
     private ImageButton mSendBtn;
     private InputMethodManager mInputManager;
+    private ChatRoomsAdapter mChatRoomAdapter;
+    private ArrayList<Message> mListMessages;
     private TextView mIsTyping;
     private View emojiView;
 
@@ -43,18 +54,26 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
 
-        emojiView = findViewById(R.id.chatroom_emokeyboard);
-        mInputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        // get current intent
+        Intent intent = getIntent();
+        chatroomID = intent.getStringExtra("chat_room_id");
+        chatroomTitle = intent.getStringExtra("name");
 
-        mIsTyping = (TextView)findViewById(R.id.chatroom_istyping);
-        mMessageInput = (EditText) findViewById(R.id.chatroom_inputtext);
-        mEmoBtn = (ImageButton) findViewById(R.id.chatroom_emobtn);
-        mEmoBtn.setOnClickListener(this);
-        mEmoBtn.setSelected(true);
+        if (chatroomID == null) {
+            Toast.makeText(getApplicationContext(),
+                    "Chat room not found!", Toast.LENGTH_SHORT).show();
+            finish();
+        }
 
-        mSendBtn = (ImageButton) findViewById(R.id.chatroom_sendbtn);
+        // Setting up the chat system
+        initChatSystem();
+
+        // Setting up chat UI
+        initChatUI();
+
+        mListMessages = new ArrayList<>();
+
         transformSendBtn(mMessageInput);
-        mSendBtn.setOnClickListener(this);
 
         mMessageInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -78,13 +97,30 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
                     .add(R.id.chatroom_container, ListMessagesFragment.newInstance(TAG, "Read Messages"))
                     .commit();
         }
+    }
 
+    private void initChatSystem() {
         Toolbar chatToolbar = (Toolbar) findViewById(R.id.chatroom_toolbar);
-        chatToolbar.setTitle("Chat");
         setSupportActionBar(chatToolbar);
         // Enable the Up button
         ActionBar ab = getSupportActionBar();
+        assert ab != null;
         ab.setDisplayHomeAsUpEnabled(true);
+        ab.setTitle(chatroomTitle);
+    }
+
+    private void initChatUI() {
+        emojiView = findViewById(R.id.chatroom_emokeyboard);
+        mInputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        mIsTyping = (TextView)findViewById(R.id.chatroom_istyping);
+        mMessageInput = (EditText) findViewById(R.id.chatroom_inputtext);
+        mEmoBtn = (ImageButton) findViewById(R.id.chatroom_emobtn);
+        mEmoBtn.setOnClickListener(this);
+        mEmoBtn.setSelected(true);
+
+        mSendBtn = (ImageButton) findViewById(R.id.chatroom_sendbtn);
+        mSendBtn.setOnClickListener(this);
     }
 
     private void transformSendBtn(EditText currentInput) {
@@ -186,7 +222,8 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
     public void onClickSticker(Uri uri) {
         boolean isTicker = true;
         boolean isMe = true;
-        ListMessagesFragment fm = (ListMessagesFragment) getSupportFragmentManager().findFragmentById(R.id.chatroom_container);
+        ListMessagesFragment fm = (ListMessagesFragment)
+                getSupportFragmentManager().findFragmentById(R.id.chatroom_container);
         if (fm != null) {
             fm.sendMessage(isTicker, isMe);
         }

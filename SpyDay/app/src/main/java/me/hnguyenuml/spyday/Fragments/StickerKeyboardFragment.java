@@ -140,7 +140,7 @@ public class StickerKeyboardFragment extends Fragment implements
     }
 
     private void initSlideBarAnimation(View v) {
-        horizontalBar = v.findViewById(R.id.skeyboard_scrolltab);
+        horizontalBar = v.findViewById(R.id.skeyboard_scroll);
         mAnimationIn = AnimationUtils.loadAnimation(getActivity(),
                 R.anim.slide_bottom_up);
         mAnimationOut = AnimationUtils.loadAnimation(getActivity(),
