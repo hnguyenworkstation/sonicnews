@@ -36,11 +36,11 @@ public class User {
     }
 
     public String getUserUID() {
-        return user_uid;
+        return this.user_uid;
     }
 
     public void setUserUID(String userUID) {
-        user_uid = userUID;
+        this.user_uid = userUID;
     }
 
     public String getUserName() {

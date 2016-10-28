@@ -13,14 +13,22 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
+import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
 import me.hnguyenuml.spyday.ChatRoomActivity;
 import me.hnguyenuml.spyday.R;
+import me.hnguyenuml.spyday.Static.Endpoint;
 import me.hnguyenuml.spyday.UI.ChatRoom;
 import me.hnguyenuml.spyday.UI.ChatRoomsAdapter;
 import me.hnguyenuml.spyday.UI.RecycleViewItemDecoration;
@@ -29,6 +37,9 @@ public class ListChatRoomFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+
+
     private String TAG = ListChatRoomFragment.class.getSimpleName();
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private ArrayList<ChatRoom> listChatRoom;
@@ -75,16 +86,6 @@ public class ListChatRoomFragment extends Fragment {
         tempActivity.setTitle("Messages");
 
         listChatRoom = new ArrayList<>();
-        listChatRoom.add(new ChatRoom("1", "Hung Nguyen", "hello adasdasd",
-                Calendar.getInstance().getTime().toString(), 2));
-        listChatRoom.add(new ChatRoom("2", "Hung Nguyen", "helloasdasd ",
-                Calendar.getInstance().getTime().toString(), 2));
-        listChatRoom.add(new ChatRoom("3", "Hung Nguyen", "helloasdafasf",
-                Calendar.getInstance().getTime().toString(), 2));
-        listChatRoom.add(new ChatRoom("4", "Hung Nguyen", "hello asf afs",
-                Calendar.getInstance().getTime().toString(), 2));
-        listChatRoom.add(new ChatRoom("5", "Hung Nguyen", "helloa asfasf",
-                Calendar.getInstance().getTime().toString(), 2));
 
         mAdapter = new ChatRoomsAdapter(this.getContext(), listChatRoom);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
@@ -119,7 +120,76 @@ public class ListChatRoomFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.list_message_menu, menu);
+        inflater.inflate(R.menu.list_chatroom_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.menuchatroom_search:
+                return true;
+            case R.id.menuchatroom_add:
+                attempToCreateRoom();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void attempToCreateRoom() {
+        String id1 = SpyDayApplication.getInstance()
+                .getPrefManager().getFirebaseAuth().getCurrentUser().getUid();
+        String id2 = "xw5Ac0tHh4M2ZOLpJrfNBi8hlEF2";
+
+        // concat two ids
+        String newID = id1 + id2;
+
+        DatabaseReference chatRef = SpyDayApplication.getInstance()
+                .getPrefManager().getFirebaseDatabase();
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+        try {
+            chatRef = chatRef.child(Endpoint.DB_CHATROOM);
+            chatRef.child(newID).child(Endpoint.DB_CHATROOM_CREATED).setValue(sdf.format(cal.getTime()));
+            chatRef.child(newID).child(Endpoint.DB_CHATROOM_TYPE).setValue(Endpoint.TYPE_SINGLE);
+            chatRef.child(newID).child(Endpoint.DB_CHATROOM_USER1)
+                    .setValue(id1);
+            chatRef.child(newID).child(Endpoint.DB_CHATROOM_USER2)
+                    .setValue(id2);
+            chatRef.push();
+
+            pushUserChatroom(id1, id2, newID);
+
+            Toast.makeText(getContext(), "Success to create chat room" , Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Failed to create chat room" , Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // If no error found
+        fetchChatRooms();
+    }
+
+    private void fetchChatRooms() {
+
+    }
+
+    private void pushUserChatroom(String person1ID, String person2ID, String chatroomID) {
+        // update current user
+        DatabaseReference userRef = SpyDayApplication.getInstance().getPrefManager()
+                .getUserDatabase();
+        userRef = userRef.child(SpyDayApplication.getInstance().getPrefManager()
+                .getFirebaseAuth().getCurrentUser().getUid());
+        userRef.child(Endpoint.USER_AVAILABLE_CHATROOM).child(person2ID).setValue(chatroomID);
+        userRef.push();
+
+        // now update user 2
+        userRef = SpyDayApplication.getInstance().getPrefManager()
+                .getUserDatabase();
+        userRef = userRef.child(person2ID);
+        userRef.child(Endpoint.USER_AVAILABLE_CHATROOM).child(person1ID).setValue(chatroomID);
+        userRef.push();
     }
 
     // TODO: Rename method, update argument and hook method into UI event

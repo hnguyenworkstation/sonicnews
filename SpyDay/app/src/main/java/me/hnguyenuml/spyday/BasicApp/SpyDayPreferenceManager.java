@@ -14,6 +14,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import me.hnguyenuml.spyday.R;
+import me.hnguyenuml.spyday.Static.Endpoint;
 import me.hnguyenuml.spyday.UserContent.User;
 
 /**
@@ -40,7 +41,7 @@ public class SpyDayPreferenceManager {
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_USER_EMAIL = "user_email";
     private static final String KEY_NOTIFICATIONS = "notifications";
-    private final String DB_USER = "Users";
+
     private FirebaseAuth mFirebaseAuth;
     private StorageReference mFirebaseStorage;
     private DatabaseReference mFirebaseDatabase;
@@ -55,7 +56,7 @@ public class SpyDayPreferenceManager {
 
         mFirebaseStorage = FirebaseStorage.getInstance().getReference();
         mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
-        mUserDatabase = FirebaseDatabase.getInstance().getReference(DB_USER);
+        mUserDatabase = FirebaseDatabase.getInstance().getReference(Endpoint.DB_USER);
         mUser = new User();
     }
 

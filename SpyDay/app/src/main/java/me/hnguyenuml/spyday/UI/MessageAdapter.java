@@ -62,6 +62,7 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
                     }
                 });
             }
+
             this.mViewType = viewType;
             this.mCheck = (ImageView) v.findViewById(R.id.message_checkbox);
             if (mCheck != null) {

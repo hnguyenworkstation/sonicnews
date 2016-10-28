@@ -23,6 +23,10 @@ public class ChatRoom implements Serializable {
         this.unReadCount = unreadCount;
     }
 
+    public ChatRoom(String id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }

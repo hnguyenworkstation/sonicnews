@@ -27,10 +27,6 @@
         <activity
             android:name=".SpyDayActivity"
             android:launchMode="singleTask" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity android:name=".BaseActivity" />
         <activity
@@ -39,6 +35,10 @@
             android:launchMode="singleTask"
             android:theme="@style/Theme.Transparent" />
         <activity android:name=".SplashScreenActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
 
         <meta-data
