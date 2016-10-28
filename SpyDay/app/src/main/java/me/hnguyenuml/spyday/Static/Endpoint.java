@@ -17,6 +17,9 @@ public class Endpoint {
     public static final String DB_CHATROOM_TYPE = "type";
     public static final String DB_CHATROOM_LISTMESSAGES = "list_messages";
 
+    public static final String CHATROOM_ID = "chatroom_id";
+    public static final String CHATROOM_LASTMESSAGE = "";
+
     public static final String TYPE_SINGLE = "single";
     public static final String TYPE_GROUP = "group";
 }

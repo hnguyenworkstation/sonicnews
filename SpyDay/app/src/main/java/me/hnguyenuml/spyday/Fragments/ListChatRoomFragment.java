@@ -18,7 +18,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -172,7 +175,25 @@ public class ListChatRoomFragment extends Fragment {
     }
 
     private void fetchChatRooms() {
+        DatabaseReference userRef = SpyDayApplication.getInstance().getPrefManager().getUserDatabase();
 
+        userRef.child(SpyDayApplication.getInstance().getPrefManager().getUser().getUserUID())
+                .child(Endpoint.USER_AVAILABLE_CHATROOM)
+                .addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds: dataSnapshot.getChildren()) {
+                    ChatRoom newcr = new ChatRoom(ds.getValue().toString());
+                    newcr.setName(ds.getKey());
+                    listChatRoom.add(newcr);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void pushUserChatroom(String person1ID, String person2ID, String chatroomID) {
@@ -181,14 +202,20 @@ public class ListChatRoomFragment extends Fragment {
                 .getUserDatabase();
         userRef = userRef.child(SpyDayApplication.getInstance().getPrefManager()
                 .getFirebaseAuth().getCurrentUser().getUid());
-        userRef.child(Endpoint.USER_AVAILABLE_CHATROOM).child(person2ID).setValue(chatroomID);
+        userRef.child(Endpoint.USER_AVAILABLE_CHATROOM)
+                .child(person2ID)
+                .child(Endpoint.CHATROOM_ID)
+                .setValue(chatroomID);
         userRef.push();
 
         // now update user 2
         userRef = SpyDayApplication.getInstance().getPrefManager()
                 .getUserDatabase();
         userRef = userRef.child(person2ID);
-        userRef.child(Endpoint.USER_AVAILABLE_CHATROOM).child(person1ID).setValue(chatroomID);
+        userRef.child(Endpoint.USER_AVAILABLE_CHATROOM)
+                .child(person1ID)
+                .child(Endpoint.CHATROOM_ID)
+                .setValue(chatroomID);
         userRef.push();
     }
 
