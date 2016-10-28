@@ -69,7 +69,7 @@ public class ListChatRoomFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_list_chatroom, container, false);
         listRecycleView = (RecyclerView) rootView.findViewById(R.id.chatroom_recycleview);
 
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.chatroom_toolbar);
+        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.listchatroom_toolbar);
         AppCompatActivity tempActivity = (AppCompatActivity) this.getActivity();
         tempActivity.setSupportActionBar(toolbar);
         tempActivity.setTitle("Messages");

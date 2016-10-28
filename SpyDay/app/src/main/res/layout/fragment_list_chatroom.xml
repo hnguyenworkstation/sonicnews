@@ -6,7 +6,7 @@
 
     <android.support.v7.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/chatroom_toolbar"
+        android:id="@+id/listchatroom_toolbar"
         android:layout_width="match_parent"
         android:layout_alignParentStart="true"
         android:background="?attr/colorPrimary"
@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chatroom_recycleview"
-        android:layout_below="@id/chatroom_toolbar"
+        android:layout_below="@id/listchatroom_toolbar"
         android:scrollbars="vertical"
         />
 </RelativeLayout>
