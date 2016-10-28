@@ -139,12 +139,12 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         switch (v.getId()) {
             case R.id.chatroom_emobtn:
                 emoButtonClicked(v);
-                return;
+                break;
             case R.id.chatroom_sendbtn:
                 sendMessage(v);
-                return;
+                break;
             default:
-                return;
+                break;
 
         }
     }
@@ -168,7 +168,7 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         if (isShowingKeyboard) {
             mInputManager.hideSoftInputFromWindow(
-                    view.getWindowToken(), 0);
+                    view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             isShowingEmoji = true;
         } else {
             if (mEmoView.getVisibility() == View.VISIBLE) {
@@ -184,14 +184,15 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment emo_fragment = getSupportFragmentManager()
                 .findFragmentById(R.id.chatroom_emokeyboard);
+        ListMessagesFragment fm = (ListMessagesFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.chatroom_container);
+
         if (emo_fragment != null) {
             ft.setCustomAnimations(R.anim.slide_in_from_bottom,
                     R.anim.fix_anim);
             if (isShowFragment) {
                 mEmoView.setVisibility(View.VISIBLE);
                 ft.show(emo_fragment);
-                ListMessagesFragment fm = (ListMessagesFragment) getSupportFragmentManager()
-                        .findFragmentById(R.id.chatroom_container);
                 if (fm != null) {
                     fm.scrollToLast();
                 }
@@ -208,11 +209,8 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
                         R.anim.slide_out_to_bottom);
                 ft.add(R.id.chatroom_emokeyboard, new StickerKeyboardFragment());
                 mEmoBtn.setSelected(false);
-                ListMessagesFragment fm = (ListMessagesFragment) getSupportFragmentManager()
-                        .findFragmentById(R.id.chatroom_container);
-                if (fm != null) {
+                if (fm != null)
                     fm.scrollToLast();
-                }
             }
         }
         ft.commit();

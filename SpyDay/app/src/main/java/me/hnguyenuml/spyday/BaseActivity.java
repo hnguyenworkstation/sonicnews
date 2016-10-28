@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+
 /**
  * Created by Hung Nguyen on 10/23/2016.
  */
