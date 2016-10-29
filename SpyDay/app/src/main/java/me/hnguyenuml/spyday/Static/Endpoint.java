@@ -8,6 +8,8 @@ public class Endpoint {
     // Users
     public static final String DB_USER = "Users";
     public static final String USER_AVAILABLE_CHATROOM = "available_chatrooms";
+    public static final String USER_NICKNAME = "userNickName";
+    public static final String USER_NAME = "userName";
 
     // Chat Rooms
     public static final String DB_CHATROOM = "Chatrooms";
