@@ -45,6 +45,7 @@ public class ListChatRoomFragment extends Fragment {
     private String TAG = ListChatRoomFragment.class.getSimpleName();
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private ArrayList<ChatRoom> listChatRoom;
+    private ArrayList<String> listRoomIDs;
     private ChatRoomsAdapter mAdapter;
     private RecyclerView listRecycleView;
 
@@ -88,6 +89,7 @@ public class ListChatRoomFragment extends Fragment {
         tempActivity.setTitle("Messages");
 
         listChatRoom = new ArrayList<>();
+        listRoomIDs = new ArrayList<>();
 
         mAdapter = new ChatRoomsAdapter(this.getContext(), listChatRoom);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
@@ -172,6 +174,12 @@ public class ListChatRoomFragment extends Fragment {
 
         // If no error found
         fetchRoomIds();
+
+        // clear the list and re-insert the list rooms
+        listChatRoom.clear();
+        listChatRoom.add(new ChatRoom("abc","Spy Master", "hello", Calendar.getInstance().getTime().toString(), 10));
+
+        mAdapter.notifyDataSetChanged();
     }
 
     private void fetchRoomIds() {
@@ -185,7 +193,7 @@ public class ListChatRoomFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds: dataSnapshot.getChildren()) {
                     String roomID = ds.child(Endpoint.CHATROOM_ID).getValue().toString();
-                    listRoomId[0] = roomID;
+                    addRoomIdToList(roomID);
                 }
             }
 
@@ -196,9 +204,12 @@ public class ListChatRoomFragment extends Fragment {
         });
     }
 
+    private void addRoomIdToList(String ID) {
+        listRoomIDs.add(ID);
+    }
+
     private void fetchChatrooms(String id) {
         final String tempid = id;
-        final ChatRoom chatroom[] = new ChatRoom[1];
 
         DatabaseReference chatroomRef = SpyDayApplication.getInstance()
                 .getPrefManager().getFirebaseDatabase();
@@ -217,8 +228,8 @@ public class ListChatRoomFragment extends Fragment {
                     nickname = getUserNickname(dataSnapshot.child(Endpoint.DB_CHATROOM_USER1)
                             .getValue().toString());
                 }
-                ChatRoom newcr = new ChatRoom(tempid, nickname, null, time_created, 0);
-                chatroom[0] = newcr;
+                ChatRoom newcr = new ChatRoom(tempid, "Hung Nguyen", null, time_created, 0);
+                addChatRoomToList(newcr);
             }
 
             @Override
@@ -227,6 +238,12 @@ public class ListChatRoomFragment extends Fragment {
             }
         });
     }
+
+    private void addChatRoomToList(ChatRoom room) {
+        listChatRoom.add(room);
+    }
+
+
 
     private String getUserNickname(String id) {
         DatabaseReference userRef = SpyDayApplication.getInstance()

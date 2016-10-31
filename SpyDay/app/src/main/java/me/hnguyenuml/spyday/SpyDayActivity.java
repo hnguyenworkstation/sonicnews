@@ -20,11 +20,13 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.hnguyenuml.spyday.Fragments.EventAroundFragment;
 import me.hnguyenuml.spyday.Fragments.ListChatRoomFragment;
 import me.hnguyenuml.spyday.UI.SpyDayUtil;
 
 public class SpyDayActivity extends BaseActivity implements
-        View.OnClickListener, ListChatRoomFragment.OnFragmentInteractionListener {
+        View.OnClickListener, ListChatRoomFragment.OnFragmentInteractionListener,
+        EventAroundFragment.OnFragmentInteractionListener {
 
     private ViewPager mViewPager;
 
@@ -50,7 +52,7 @@ public class SpyDayActivity extends BaseActivity implements
         overridePendingTransition(R.anim.fix_anim, R.anim.fix_anim);
         setContentView(R.layout.activity_spy_day);
 
-        rootLayout = (View)findViewById(R.id.root_layout);
+        rootLayout = findViewById(R.id.root_layout);
         if (savedInstanceState == null) {
             rootLayout.setVisibility(View.INVISIBLE);
             ViewTreeObserver viewTreeObserver = rootLayout.getViewTreeObserver();
@@ -100,6 +102,7 @@ public class SpyDayActivity extends BaseActivity implements
 
     private void setupViewPager(ViewPager viewPager) {
         adapter = new ViewPagerAdapter(this.getBaseContext(), getSupportFragmentManager());
+        adapter.addFragment(new EventAroundFragment(), "EVAround");
         adapter.addFragment(new ListChatRoomFragment(), "Messages");
         viewPager.setAdapter(adapter);
     }
