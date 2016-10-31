@@ -1,6 +1,7 @@
 package me.hnguyenuml.spyday.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,14 +9,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import me.hnguyenuml.spyday.AddEventActivity;
 import me.hnguyenuml.spyday.R;
 
 public class EventAroundFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -47,6 +49,7 @@ public class EventAroundFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -54,13 +57,26 @@ public class EventAroundFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_event_around, container, false);
-
         Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.evaround_toolbar);
+        toolbar.inflateMenu(R.menu.event_around_menu);
         AppCompatActivity tempActivity = (AppCompatActivity) this.getActivity();
         tempActivity.setSupportActionBar(toolbar);
         tempActivity.setTitle("Event Around");
 
         return rootView;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.evaround_add) {
+            Intent intent = new Intent(getActivity(), AddEventActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void onButtonPressed(Uri uri) {

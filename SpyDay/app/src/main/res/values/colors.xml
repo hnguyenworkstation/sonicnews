@@ -7,6 +7,7 @@
     <color name="blue_accent500">#03A9F4</color>
     <color name="black_alpha_12">#1F000000</color>
     <color name="black_alpha_30">#4D000000</color>
+    <color name="gray_alpha">#c2c2c2</color>
 
     <color name="white">#FFFFFF</color>
     <color name="red1">#990000</color>

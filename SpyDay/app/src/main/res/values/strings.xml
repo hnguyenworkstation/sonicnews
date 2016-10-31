@@ -45,4 +45,8 @@
     <!-- Endpoint String-->
     <string name="DB_users">Users</string>
     <string name="SR_profileImage">ProfileImages</string>
+
+    <!-- Add Event String-->
+    <string name="ev_title">Title ...</string>
+    <string name="ev_desc">Description...</string>
 </resources>
