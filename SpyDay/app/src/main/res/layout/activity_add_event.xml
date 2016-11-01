@@ -48,6 +48,7 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/add_image_button"
                     android:adjustViewBounds="true"
+                    android:id="@+id/addev.addimagebtn"
                     android:scaleType="centerCrop"/>
             </RelativeLayout>
 

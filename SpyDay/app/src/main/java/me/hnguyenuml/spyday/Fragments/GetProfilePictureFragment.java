@@ -140,7 +140,6 @@ public class GetProfilePictureFragment extends Fragment {
                 .getPrefManager()
                 .getFirebaseStorage().child(getString(R.string.SR_profileImage))
                 .child(temp.getUserUID());
-
         Bitmap bitmap = null;
         try {
             bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), mImageURI);

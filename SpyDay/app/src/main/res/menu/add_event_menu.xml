@@ -6,8 +6,8 @@
     tools:context=".AddEventActivity">
 
     <item
-        android:id="@+id/addev.post"
-        android:title="Post"
+        android:id="@+id/addev.menu.post"
+        android:title="POST"
         app:showAsAction="always"
         android:orderInCategory="1"/>
 </menu>

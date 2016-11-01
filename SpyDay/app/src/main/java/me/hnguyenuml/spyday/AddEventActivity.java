@@ -3,6 +3,8 @@ package me.hnguyenuml.spyday;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,7 +18,11 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.Static.Endpoint;
@@ -38,6 +44,7 @@ public class AddEventActivity extends BaseActivity {
         setContentView(R.layout.activity_add_event);
 
         mInstance = SpyDayApplication.getInstance();
+        mProgress = new ProgressDialog(this);
 
         mToolbar = (Toolbar) findViewById(R.id.addev_toolbar);
         setSupportActionBar(mToolbar);
@@ -45,7 +52,7 @@ public class AddEventActivity extends BaseActivity {
         assert ab != null;
         ab.setDisplayHomeAsUpEnabled(true);
 
-        mAddImageBtn = (ImageButton) findViewById(R.id.addev_addimage);
+        mAddImageBtn = (ImageButton) findViewById(R.id.addev_addimagebtn);
         mAddImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,11 +83,23 @@ public class AddEventActivity extends BaseActivity {
     }
 
     @Override
+    public boolean onSupportNavigateUp() {
+        getSupportFragmentManager().popBackStack();
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.addev_post) {
+        if (id == R.id.addev_menu_post) {
+            Toast.makeText(getBaseContext(), "POST", Toast.LENGTH_SHORT).show();
             attempPostingEvent();
+        }
+
+        if (id == android.R.id.home){
+            getSupportFragmentManager().popBackStack(null,
+                    FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
 
         return super.onOptionsItemSelected(item);
@@ -104,13 +123,15 @@ public class AddEventActivity extends BaseActivity {
                 mProgress.show();
                 DatabaseReference tRef = mInstance.getPrefManager().getFirebaseDatabase();
                 tRef = tRef.child(Endpoint.DB_EVENT).push();
-                tRef.child(Endpoint.EVENT_ID).setValue(mInstance.getPrefManager().getUser().getUserUID());
+                tRef.child(Endpoint.EVENT_ID).setValue(mInstance.getPrefManager()
+                        .getFirebaseAuth().getCurrentUser().getUid());
+                tRef.child(Endpoint.EVENT_IMAGE).setValue(null);
                 tRef.child(Endpoint.EVENT_TITLE).setValue(title);
                 tRef.child(Endpoint.EVENT_DESC).setValue(desc);
                 tRef.child(Endpoint.EVENT_CREATED_AT).setValue(mInstance.getNow());
                 onFinishPosting();
             } catch (Exception e){
-                Toast.makeText(getBaseContext(), "failed posting: " + e.getMessage(), Toast.LENGTH_LONG);
+                Toast.makeText(getBaseContext(), "failed posting: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         } else {
             showRequiredFields();
@@ -125,7 +146,39 @@ public class AddEventActivity extends BaseActivity {
     }
 
     private void postEventWithImages() {
-
+        StorageReference sRef = mInstance.getPrefManager().getFirebaseStorage();
+        sRef = sRef.child(Endpoint.SR_EVENT);
+        sRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                String title = mTitle.getText().toString();
+                String desc = mDesc.getText().toString();
+                mProgress.setMessage("Posting your event....");
+                if (!TextUtils.isEmpty(title) && !TextUtils.isEmpty(desc)) {
+                    try {
+                        mProgress.show();
+                        DatabaseReference tRef = mInstance.getPrefManager().getFirebaseDatabase();
+                        tRef = tRef.child(Endpoint.DB_EVENT).push();
+                        tRef.child(Endpoint.EVENT_ID).setValue(mInstance.getPrefManager()
+                                .getFirebaseAuth().getCurrentUser().getUid());
+                        tRef.child(Endpoint.EVENT_IMAGE).setValue(taskSnapshot.getDownloadUrl().toString());
+                        tRef.child(Endpoint.EVENT_TITLE).setValue(title);
+                        tRef.child(Endpoint.EVENT_DESC).setValue(desc);
+                        tRef.child(Endpoint.EVENT_CREATED_AT).setValue(mInstance.getNow());
+                    } catch (Exception e){
+                        Toast.makeText(getBaseContext(), "failed posting: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    showRequiredFields();
+                }
+                onFinishPosting();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getBaseContext(), "failed to post: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void showRequiredFields() {

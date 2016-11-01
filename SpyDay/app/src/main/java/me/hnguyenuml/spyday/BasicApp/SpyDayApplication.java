@@ -47,9 +47,9 @@ public class SpyDayApplication extends Application {
     }
 
     public String getNow() {
-        String now = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+        String now = String.valueOf(calendar.getTime());
 
-        return convertStingToDateFormat(now.toString());
+        return now;
     }
 
     public String convertStingToDateFormat(String dateStr) {
