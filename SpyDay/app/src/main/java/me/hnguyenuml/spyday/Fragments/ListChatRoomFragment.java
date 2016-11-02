@@ -28,17 +28,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.ChatRoomActivity;
 import me.hnguyenuml.spyday.R;
 import me.hnguyenuml.spyday.Static.Endpoint;
-import me.hnguyenuml.spyday.UI.ChatRoom;
+import me.hnguyenuml.spyday.UserContent.ChatRoom;
 import me.hnguyenuml.spyday.Adapters.ChatRoomsAdapter;
 import me.hnguyenuml.spyday.UI.RecycleViewItemDecoration;
 import me.hnguyenuml.spyday.UI.WrapContentLinearLayoutManager;
@@ -197,7 +194,7 @@ public class ListChatRoomFragment extends Fragment {
             mapRoom.put(Endpoint.DB_CHATROOM_CREATED, sdf.format(cal.getTime()));
             mapRoom.put(Endpoint.DB_CHATROOM_TYPE,Endpoint.TYPE_SINGLE);
             mapRoom.put(Endpoint.DB_CHATROOM_KEY, key);
-            chatRoomRef.push().updateChildren(mapRoom);
+            chatRoomRef.child(key).updateChildren(mapRoom);
             fetchChatrooms();
             Toast.makeText(getContext(), "Success to create chat room" , Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
@@ -226,16 +223,13 @@ public class ListChatRoomFragment extends Fragment {
     }
 
     private void appendNewChatroom(DataSnapshot snapshot) {
-        Iterator iter = snapshot.getChildren().iterator();
+        String id1 = snapshot.child(Endpoint.DB_CHATROOM_USER1).getValue().toString();
+        String id2 = snapshot.child(Endpoint.DB_CHATROOM_USER2).getValue().toString();
+        String key = snapshot.child(Endpoint.DB_CHATROOM_KEY).getValue().toString();
+        String time = snapshot.child(Endpoint.DB_CHATROOM_CREATED).getValue().toString();
+        String type = snapshot.child(Endpoint.DB_CHATROOM_TYPE).getValue().toString();
 
-        while (iter.hasNext()) {
-            String id1 = ((DataSnapshot)iter.next()).getValue().toString();
-            String id2 = ((DataSnapshot)iter.next()).getValue().toString();
-            String key = ((DataSnapshot)iter.next()).getValue().toString();
-            String time = ((DataSnapshot)iter.next()).getValue().toString();
-            String type = ((DataSnapshot)iter.next()).getValue().toString();
-
-            if (mInstance.getPrefManager().getFirebaseAuth().getCurrentUser().getUid().equals(id1)
+        if (mInstance.getPrefManager().getFirebaseAuth().getCurrentUser().getUid().equals(id1)
                     || mInstance.getPrefManager().getFirebaseAuth().getCurrentUser().getUid().equals(id2))
             {
                 ChatRoom newcr;
@@ -246,7 +240,6 @@ public class ListChatRoomFragment extends Fragment {
                 }
                 listChatRoom.add(newcr);
             }
-        }
     }
 
 

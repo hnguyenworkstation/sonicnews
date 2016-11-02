@@ -14,12 +14,61 @@ public class Message {
     public static final int TYPE_MESSAGE_DATE = 6;
 
     private int messageType;
+
     private String messageText;
     private String stickerUrl;
+    private String messageFromRoomId;
+
+    private String messageId;
+    private String messageFromUserId;
+    private String messageTimeStamp;
+
     private boolean isChecked = false;
     private boolean isWarning = false;
     private boolean mIsShowSentStatus = false;
     private boolean mIsShowDate = false;
+
+    public Message() {}
+
+    public Message(String roomId, String userId,
+                   String content, String time) {
+        this.messageFromRoomId = roomId;
+        this.messageFromUserId = userId;
+        this.messageText = content;
+        this.messageTimeStamp = time;
+    }
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
+    }
+
+    public String getMessageFromRoomId() {
+        return messageFromRoomId;
+    }
+
+    public void setMessageFromRoomId(String messageFromRoomId) {
+        this.messageFromRoomId = messageFromRoomId;
+    }
+
+    public String getMessageFromUserId() {
+        return messageFromUserId;
+    }
+
+    public void setMessageFromUserId(String messageFromUserId) {
+        this.messageFromUserId = messageFromUserId;
+    }
+
+    public String getMessageTimeStamp() {
+        return messageTimeStamp;
+    }
+
+    public void setMessageTimeStamp(String messageTimeStamp) {
+        this.messageTimeStamp = messageTimeStamp;
+    }
 
     public boolean getVisibilityStatus(){
         return this.mIsShowSentStatus;
@@ -36,7 +85,6 @@ public class Message {
     public void setVisibilityDate(boolean status){
         this.mIsShowDate = status;
     }
-
 
     public boolean isWarning(){
         return isWarning;

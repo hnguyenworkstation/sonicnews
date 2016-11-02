@@ -1,4 +1,4 @@
-package me.hnguyenuml.spyday.UI;
+package me.hnguyenuml.spyday.UserContent;
 
 import java.io.Serializable;
 

@@ -151,7 +151,7 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         ListMessagesFragment mfragment = (ListMessagesFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.chatroom_container);
         if (mfragment != null) {
-            mfragment.addMessage(msg);
+            mfragment.addMessage(msg, chatroomID);
         }
         mMessageInput.setText("");
     }

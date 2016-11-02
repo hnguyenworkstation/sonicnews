@@ -15,11 +15,22 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.firebase.database.DatabaseReference;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.R;
 import me.hnguyenuml.spyday.Adapters.MessageAdapter;
+import me.hnguyenuml.spyday.Static.Endpoint;
 import me.hnguyenuml.spyday.UI.CustomScrollingHandler;
 import me.hnguyenuml.spyday.UserContent.Message;
 
@@ -41,6 +52,13 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
     private boolean mEmptyConversation;
     private boolean mIsClearNoConversation;
     private int mPreviousPositionItemClick = -1;
+
+    private final DatabaseReference chatRoomRef = SpyDayApplication.getInstance()
+            .getPrefManager().getFirebaseDatabase().child(Endpoint.DB_CHATROOM);
+    private final int duration = 1000;
+    private final CustomScrollingHandler mLayoutManager = new CustomScrollingHandler(getActivity(),
+            LinearLayoutManager.VERTICAL, false, duration);
+    private final SpyDayApplication mInstance = SpyDayApplication.getInstance();
 
     public ListMessagesFragment() {
     }
@@ -69,25 +87,22 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
         rootView = inflater.inflate(R.layout.fragment_list_messages, container, false);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.listmessagefrag_recycler);
-        int duration = 1000;
-        CustomScrollingHandler mLayoutManager = new CustomScrollingHandler(getActivity(),
-                LinearLayoutManager.VERTICAL, false, duration);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         mEmptyConversation = false;
-        for (int i = 0; i < 20; i++) {
-            Message item = new Message();
-            if (i == 10 || i == 17) {
-                item.setMessageType(Message.TYPE_MESSAGE_DATE);
-            } else if (i % 3 == 0) {
-                item.setMessageType(Message.TYPE_MESSAGE_FROM_ME);
-                item.setMessageText("String abc  abc long long long long  abc long long long long  abc long long long long  abc long long long long " + i);
-            } else {
-                item.setMessageType(Message.TYPE_MESSAGE_FROM_FRIEND);
-                item.setMessageText("UUU String abc  abc long long long long  abc long long long long  abc long long long long  abc long long long long  abc long long long long  abc long long long long " + i);
-            }
-            messageList.add(item);
-        }
+//        for (int i = 0; i < 20; i++) {
+//            Message item = new Message();
+//            if (i == 10 || i == 17) {
+//                item.setMessageType(Message.TYPE_MESSAGE_DATE);
+//            } else if (i % 3 == 0) {
+//                item.setMessageType(Message.TYPE_MESSAGE_FROM_ME);
+//                item.setMessageText("String abc  abc long long long long  abc long long long long  abc long long long long  abc long long long long " + i);
+//            } else {
+//                item.setMessageType(Message.TYPE_MESSAGE_FROM_FRIEND);
+//                item.setMessageText("UUU String abc  abc long long long long  abc long long long long  abc long long long long  abc long long long long  abc long long long long  abc long long long long " + i);
+//            }
+//            messageList.add(item);
+//        }
 
         mMessageAdapter = new MessageAdapter(messageList);
 
@@ -118,6 +133,20 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
                     mMessageAdapter.notifyDataSetChanged();
                 }
                 mPreviousPositionItemClick = position;
+            }
+        });
+
+        mMessageAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver(){
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                int friendlyMessageCount = mMessageAdapter.getItemCount();
+                int lastVisiblePosition = mLayoutManager.findLastCompletelyVisibleItemPosition();
+                if (lastVisiblePosition == -1 ||
+                        (positionStart >= (friendlyMessageCount - 1) &&
+                                lastVisiblePosition == (positionStart - 1))) {
+                    mRecyclerView.scrollToPosition(positionStart);
+                }
             }
         });
 
@@ -198,18 +227,18 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
 
     public void setupAdapter() {
         if (!mEmptyConversation) {
-            for (int i = 0; i < 2; i++) {
-                Message item = new Message();
-                if (i % 2 == 0) {
-                    item.setMessageType(Message.TYPE_MESSAGE_FROM_ME);
-                    item.setMessageText("String abc long long long long  abc long long long long  abc long long long long  abc long long long long " + i);
-                } else {
-                    item.setMessageType(Message.TYPE_MESSAGE_FROM_FRIEND);
-                    item.setMessageText("UUU String abc  abc long long long long  abc long long long long  abc long long long long  abc long long long long  abc long long long long  abc long long long long " + i);
-                }
-                messageList.add(item);
-            }
-            mMessageAdapter.notifyDataSetChanged();
+//            for (int i = 0; i < 2; i++) {
+//                Message item = new Message();
+//                if (i % 2 == 0) {
+//                    item.setMessageType(Message.TYPE_MESSAGE_FROM_ME);
+//                    item.setMessageText("String abc long long long long  abc long long long long  abc long long long long  abc long long long long " + i);
+//                } else {
+//                    item.setMessageType(Message.TYPE_MESSAGE_FROM_FRIEND);
+//                    item.setMessageText("UUU String abc  abc long long long long  abc long long long long  abc long long long long  abc long long long long  abc long long long long  abc long long long long " + i);
+//                }
+//                messageList.add(item);
+//            }
+//            mMessageAdapter.notifyDataSetChanged();
         }
         mRecyclerView.postDelayed(new Runnable() {
             @Override
@@ -224,7 +253,7 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
 
     }
 
-    public void addMessage(String message) {
+    public void addMessage(String message, String roomID) {
         if (mEmptyConversation && !mIsClearNoConversation) {
             mIsClearNoConversation = true;
             messageList.clear();
@@ -248,6 +277,17 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
                 mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount());
             }
         }, 100);
+
+        postPlainMessageToServer(message, roomID);
+    }
+
+    private void postPlainMessageToServer(String message, String roomId) {
+        Message model = new Message(roomId,
+                mInstance.getPrefManager().getFirebaseAuth().getCurrentUser().getUid(),
+                message, Calendar.getInstance().getTime().toString());
+        Map<String, Object> map = new HashMap<>();
+        map.put(chatRoomRef.child(roomId).child(Endpoint.DB_CHATROOM_LISTMESSAGES).push().getKey(), model);
+        chatRoomRef.child(roomId).child(Endpoint.DB_CHATROOM_LISTMESSAGES).updateChildren(map);
     }
 
     public void sendMessage(boolean isSticker, boolean isMe) {
@@ -294,5 +334,25 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public static String getTimeStamp(String dateStr) {
+        String today =  String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String timestamp = "";
+        today = today.length() < 2 ? "0" + today : today;
+
+        try {
+            Date date = format.parse(dateStr);
+            SimpleDateFormat todayFormat = new SimpleDateFormat("dd");
+            String dateToday = todayFormat.format(date);
+            format = dateToday.equals(today) ? new SimpleDateFormat("hh:mm a") : new SimpleDateFormat("dd LLL, hh:mm a");
+            String tempdate = format.format(date);
+            timestamp = tempdate.toString();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return timestamp;
     }
 }
