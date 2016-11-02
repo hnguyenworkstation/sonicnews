@@ -27,6 +27,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
@@ -48,6 +51,7 @@ public class ListChatRoomFragment extends Fragment {
     private ArrayList<String> listRoomIDs;
     private ChatRoomsAdapter mAdapter;
     private RecyclerView listRecycleView;
+    private SpyDayApplication mInstance;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -82,6 +86,7 @@ public class ListChatRoomFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_list_chatroom, container, false);
         listRecycleView = (RecyclerView) rootView.findViewById(R.id.chatroom_recycleview);
+        mInstance = SpyDayApplication.getInstance();
 
         Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.listchatroom_toolbar);
         AppCompatActivity tempActivity = (AppCompatActivity) this.getActivity();
@@ -119,6 +124,8 @@ public class ListChatRoomFragment extends Fragment {
             }
         }));
 
+        fetchChatrooms();
+
         return rootView;
     }
 
@@ -153,18 +160,19 @@ public class ListChatRoomFragment extends Fragment {
                 .getPrefManager().getFirebaseDatabase();
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+        String key;
         try {
             chatRef = chatRef.child(Endpoint.DB_CHATROOM).push();
-            chatRef.child(newID).child(Endpoint.DB_CHATROOM_CREATED)
+            key = chatRef.getKey();
+            chatRef.child(Endpoint.DB_CHATROOM_CREATED)
                     .setValue(sdf.format(cal.getTime()));
-            chatRef.child(newID).child(Endpoint.DB_CHATROOM_TYPE)
+            chatRef.child(Endpoint.DB_CHATROOM_TYPE)
                     .setValue(Endpoint.TYPE_SINGLE);
-            chatRef.child(newID).child(Endpoint.DB_CHATROOM_USER1)
+            chatRef.child(Endpoint.DB_CHATROOM_USER1)
                     .setValue(id1);
-            chatRef.child(newID).child(Endpoint.DB_CHATROOM_USER2)
+            chatRef.child(Endpoint.DB_CHATROOM_USER2)
                     .setValue(id2);
-
-            pushUserChatroom(id1, id2, newID);
+            pushUserChatroom(id1, id2, key);
 
             Toast.makeText(getContext(), "Success to create chat room" , Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
@@ -172,8 +180,7 @@ public class ListChatRoomFragment extends Fragment {
             return;
         }
 
-        // If no error found
-        fetchRoomIds();
+        fetchChatrooms();
 
         // clear the list and re-insert the list rooms
         listChatRoom.clear();
@@ -182,54 +189,33 @@ public class ListChatRoomFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
     }
 
-    private void fetchRoomIds() {
-        DatabaseReference userRef = SpyDayApplication.getInstance()
-                .getPrefManager().getUserDatabase();
-        userRef.child(SpyDayApplication.getInstance().getPrefManager()
-                .getFirebaseAuth().getCurrentUser().getUid())
-                .child(Endpoint.USER_AVAILABLE_CHATROOM)
-                .addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds: dataSnapshot.getChildren()) {
-                    String roomID = ds.child(Endpoint.CHATROOM_ID).getValue().toString();
-                    addRoomIdToList(roomID);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void addRoomIdToList(String ID) {
-        listRoomIDs.add(ID);
-    }
-
-    private void fetchChatrooms(String id) {
-        final String tempid = id;
-
-        DatabaseReference chatroomRef = SpyDayApplication.getInstance()
+    private void fetchChatrooms() {
+        DatabaseReference chatRef = SpyDayApplication.getInstance()
                 .getPrefManager().getFirebaseDatabase();
-        chatroomRef.child(Endpoint.DB_CHATROOM)
-                .addValueEventListener(new ValueEventListener() {
+        chatRef = chatRef.child(Endpoint.DB_CHATROOM);
+        chatRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String time_created = dataSnapshot.child(Endpoint.DB_CHATROOM_CREATED).getValue().toString();
-                String nickname;
-                if (dataSnapshot.child(Endpoint.DB_CHATROOM_USER1).getValue().toString()
-                        == SpyDayApplication.getInstance().getPrefManager().getFirebaseAuth()
-                        .getCurrentUser().getUid()) {
-                    nickname = getUserNickname(dataSnapshot.child(Endpoint.DB_CHATROOM_USER2)
-                            .getValue().toString());
-                } else {
-                    nickname = getUserNickname(dataSnapshot.child(Endpoint.DB_CHATROOM_USER1)
-                            .getValue().toString());
+                Set<ChatRoom> set = new HashSet<>();
+                Iterator iter = dataSnapshot.getChildren().iterator();
+
+                while (iter.hasNext()) {
+                    DataSnapshot temp = (DataSnapshot) iter.next();
+                    String name;
+                    if (temp.child(Endpoint.DB_CHATROOM_USER1).getValue().toString()
+                            .equals(mInstance.getPrefManager().getUser().getUserUID())) {
+                        name = temp.child(Endpoint.DB_CHATROOM_USER2).getValue().toString();
+                    } else {
+                        name = temp.child(Endpoint.DB_CHATROOM_USER1).getValue().toString();
+                    }
+                    ChatRoom newroom = new ChatRoom(temp.getKey(), name, "Hello",
+                            temp.child(Endpoint.DB_CHATROOM_CREATED).getValue().toString(), 0);
+                    set.add(newroom);
                 }
-                ChatRoom newcr = new ChatRoom(tempid, "Hung Nguyen", null, time_created, 0);
-                addChatRoomToList(newcr);
+                listChatRoom.clear();
+                listChatRoom.addAll(set);
+
+                mAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -239,32 +225,6 @@ public class ListChatRoomFragment extends Fragment {
         });
     }
 
-    private void addChatRoomToList(ChatRoom room) {
-        listChatRoom.add(room);
-    }
-
-    private String getUserNickname(String id) {
-        DatabaseReference userRef = SpyDayApplication.getInstance()
-                .getPrefManager().getFirebaseDatabase();
-        final String tempNickname = null;
-        userRef = userRef.child(Endpoint.DB_USER).child(id);
-        final String[] nickName = new String[1];
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                 String nickname = dataSnapshot.child(Endpoint.USER_NICKNAME)
-                        .getValue().toString();
-                 nickName[0] = nickname;
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        return nickName[0];
-    }
 
     private void pushUserChatroom(String person1ID, String person2ID, String chatroomID) {
         // update current user
