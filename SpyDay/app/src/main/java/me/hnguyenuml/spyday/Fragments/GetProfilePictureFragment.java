@@ -156,6 +156,10 @@ public class GetProfilePictureFragment extends Fragment {
                     assert dbURI != null;
                     User user = new User(temp.getUserUID(), temp.getUserName(),
                             temp.getUserNickName(), dbURI.toString());
+
+                    SpyDayApplication.getInstance()
+                            .getPrefManager().storeUser(user);
+
                     SpyDayApplication.getInstance()
                             .getPrefManager()
                             .getUserDatabase()

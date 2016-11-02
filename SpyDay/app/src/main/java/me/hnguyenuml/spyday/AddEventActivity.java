@@ -141,7 +141,7 @@ public class AddEventActivity extends BaseActivity {
     private void onFinishPosting() {
         mProgress.hide();
         getFragmentManager().popBackStackImmediate();
-        Toast.makeText(getBaseContext(), "Posted", Toast.LENGTH_LONG);
+        Toast.makeText(getBaseContext(), "Posted", Toast.LENGTH_LONG).show();
         finish();
     }
 

@@ -243,8 +243,6 @@ public class ListChatRoomFragment extends Fragment {
         listChatRoom.add(room);
     }
 
-
-
     private String getUserNickname(String id) {
         DatabaseReference userRef = SpyDayApplication.getInstance()
                 .getPrefManager().getFirebaseDatabase();
