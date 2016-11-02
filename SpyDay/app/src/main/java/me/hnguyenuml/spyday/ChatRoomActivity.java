@@ -24,8 +24,7 @@ import java.util.ArrayList;
 import me.hnguyenuml.spyday.Fragments.ListMessagesFragment;
 import me.hnguyenuml.spyday.Fragments.StickerItemFragment;
 import me.hnguyenuml.spyday.Fragments.StickerKeyboardFragment;
-import me.hnguyenuml.spyday.UI.ChatRoom;
-import me.hnguyenuml.spyday.UI.ChatRoomsAdapter;
+import me.hnguyenuml.spyday.Adapters.ChatRoomsAdapter;
 import me.hnguyenuml.spyday.UserContent.Message;
 
 public class ChatRoomActivity extends BaseInputActivity implements View.OnClickListener ,

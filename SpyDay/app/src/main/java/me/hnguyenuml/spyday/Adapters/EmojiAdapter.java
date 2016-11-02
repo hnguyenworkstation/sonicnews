@@ -1,4 +1,4 @@
-package me.hnguyenuml.spyday.UI;
+package me.hnguyenuml.spyday.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;

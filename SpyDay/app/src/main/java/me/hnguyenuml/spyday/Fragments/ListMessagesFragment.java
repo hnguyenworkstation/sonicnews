@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.hnguyenuml.spyday.R;
-import me.hnguyenuml.spyday.UI.MessageAdapter;
+import me.hnguyenuml.spyday.Adapters.MessageAdapter;
 import me.hnguyenuml.spyday.UI.CustomScrollingHandler;
 import me.hnguyenuml.spyday.UserContent.Message;
 

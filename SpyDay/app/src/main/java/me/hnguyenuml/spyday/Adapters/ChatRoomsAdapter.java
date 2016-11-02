@@ -1,4 +1,4 @@
-package me.hnguyenuml.spyday.UI;
+package me.hnguyenuml.spyday.Adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.content.Context;
@@ -19,8 +19,9 @@ import java.util.Date;
 
 import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.R;
+import me.hnguyenuml.spyday.UI.ChatRoom;
 
-public class ChatRoomsAdapter extends FirebaseRecyclerAdapter<ChatRoom, ChatRoomsAdapter.ViewHolder> {
+public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.ViewHolder> {
 
     private Context mContext;
     private ArrayList<ChatRoom> chatRoomArrayList;
@@ -39,8 +40,6 @@ public class ChatRoomsAdapter extends FirebaseRecyclerAdapter<ChatRoom, ChatRoom
     }
 
     public ChatRoomsAdapter(Context mContext, ArrayList<ChatRoom> chatRoomArrayList) {
-        super(ChatRoom.class, R.layout.single_chat_room, ChatRoomsAdapter.ViewHolder.class,
-                SpyDayApplication.getInstance().getPrefManager().getFirebaseDatabase());
         this.mContext = mContext;
         this.chatRoomArrayList = chatRoomArrayList;
 
@@ -69,11 +68,6 @@ public class ChatRoomsAdapter extends FirebaseRecyclerAdapter<ChatRoom, ChatRoom
         }
 
         holder.timestamp.setText(getTimeStamp(chatRoom.getTimestamp()));
-    }
-
-    @Override
-    protected void populateViewHolder(ViewHolder viewHolder, ChatRoom model, int position) {
-
     }
 
     @Override

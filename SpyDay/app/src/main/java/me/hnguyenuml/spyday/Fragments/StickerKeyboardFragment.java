@@ -19,8 +19,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import me.hnguyenuml.spyday.R;
-import me.hnguyenuml.spyday.UI.EmojiAdapter;
-import me.hnguyenuml.spyday.UI.EmojiChatAdapter;
+import me.hnguyenuml.spyday.Adapters.EmojiChatAdapter;
 import me.hnguyenuml.spyday.UI.SlidingTabLayout;
 
 public class StickerKeyboardFragment extends Fragment implements

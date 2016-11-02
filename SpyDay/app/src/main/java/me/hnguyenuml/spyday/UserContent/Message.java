@@ -5,7 +5,6 @@ package me.hnguyenuml.spyday.UserContent;
  */
 
 public class Message {
-
     public static final int TYPE_MESSAGE_FROM_ME = 0;
     public static final int TYPE_MESSAGE_FROM_FRIEND = 1;
     public static final int TYPE_MESSAGE_HEADER = 2;

@@ -27,17 +27,19 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
-import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
 import me.hnguyenuml.spyday.ChatRoomActivity;
 import me.hnguyenuml.spyday.R;
 import me.hnguyenuml.spyday.Static.Endpoint;
 import me.hnguyenuml.spyday.UI.ChatRoom;
-import me.hnguyenuml.spyday.UI.ChatRoomsAdapter;
+import me.hnguyenuml.spyday.Adapters.ChatRoomsAdapter;
 import me.hnguyenuml.spyday.UI.RecycleViewItemDecoration;
 
 public class ListChatRoomFragment extends Fragment {
@@ -48,7 +50,6 @@ public class ListChatRoomFragment extends Fragment {
     private String TAG = ListChatRoomFragment.class.getSimpleName();
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private ArrayList<ChatRoom> listChatRoom;
-    private ArrayList<String> listRoomIDs;
     private ChatRoomsAdapter mAdapter;
     private RecyclerView listRecycleView;
     private SpyDayApplication mInstance;
@@ -58,6 +59,8 @@ public class ListChatRoomFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private final DatabaseReference chatRoomRef = SpyDayApplication.getInstance()
+            .getPrefManager().getFirebaseDatabase().child(Endpoint.DB_CHATROOM);
 
     public ListChatRoomFragment() {
     }
@@ -94,7 +97,6 @@ public class ListChatRoomFragment extends Fragment {
         tempActivity.setTitle("Messages");
 
         listChatRoom = new ArrayList<>();
-        listRoomIDs = new ArrayList<>();
 
         mAdapter = new ChatRoomsAdapter(this.getContext(), listChatRoom);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
@@ -126,6 +128,33 @@ public class ListChatRoomFragment extends Fragment {
 
         fetchChatrooms();
 
+        chatRoomRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                appendNewChatroom(dataSnapshot);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                appendNewChatroom(dataSnapshot);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         return rootView;
     }
 
@@ -141,7 +170,11 @@ public class ListChatRoomFragment extends Fragment {
             case R.id.menuchatroom_search:
                 return true;
             case R.id.menuchatroom_add:
-                attempToCreateRoom();
+                try {
+                    attempToCreateRoom();
+                } catch (Exception e) {
+
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -153,68 +186,36 @@ public class ListChatRoomFragment extends Fragment {
                 .getPrefManager().getFirebaseAuth().getCurrentUser().getUid();
         String id2 = "xw5Ac0tHh4M2ZOLpJrfNBi8hlEF2";
 
-        // concat two ids
-        String newID = id1 + id2;
-
-        DatabaseReference chatRef = SpyDayApplication.getInstance()
-                .getPrefManager().getFirebaseDatabase();
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
-        String key;
         try {
-            chatRef = chatRef.child(Endpoint.DB_CHATROOM).push();
-            key = chatRef.getKey();
-            chatRef.child(Endpoint.DB_CHATROOM_CREATED)
-                    .setValue(sdf.format(cal.getTime()));
-            chatRef.child(Endpoint.DB_CHATROOM_TYPE)
-                    .setValue(Endpoint.TYPE_SINGLE);
-            chatRef.child(Endpoint.DB_CHATROOM_USER1)
-                    .setValue(id1);
-            chatRef.child(Endpoint.DB_CHATROOM_USER2)
-                    .setValue(id2);
-            pushUserChatroom(id1, id2, key);
-
+            String key = chatRoomRef.push().getKey();
+            Map<String, Object> mapRoom = new HashMap<>();
+            mapRoom.put(Endpoint.DB_CHATROOM_USER1, id1);
+            mapRoom.put(Endpoint.DB_CHATROOM_USER2, id2);
+            mapRoom.put(Endpoint.DB_CHATROOM_CREATED, sdf.format(cal.getTime()));
+            mapRoom.put(Endpoint.DB_CHATROOM_TYPE,Endpoint.TYPE_SINGLE);
+            mapRoom.put(Endpoint.DB_CHATROOM_KEY, key);
+            chatRoomRef.push().updateChildren(mapRoom);
+            fetchChatrooms();
             Toast.makeText(getContext(), "Success to create chat room" , Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(getContext(), "Failed to create chat room" , Toast.LENGTH_SHORT).show();
             return;
         }
-
-        fetchChatrooms();
-
-        // clear the list and re-insert the list rooms
-        listChatRoom.clear();
-        listChatRoom.add(new ChatRoom("abc","Spy Master", "hello", Calendar.getInstance().getTime().toString(), 10));
-
-        mAdapter.notifyDataSetChanged();
     }
 
     private void fetchChatrooms() {
-        DatabaseReference chatRef = SpyDayApplication.getInstance()
-                .getPrefManager().getFirebaseDatabase();
-        chatRef = chatRef.child(Endpoint.DB_CHATROOM);
-        chatRef.addValueEventListener(new ValueEventListener() {
+        listChatRoom.clear();
+        chatRoomRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Set<ChatRoom> set = new HashSet<>();
-                Iterator iter = dataSnapshot.getChildren().iterator();
-
-                while (iter.hasNext()) {
-                    DataSnapshot temp = (DataSnapshot) iter.next();
-                    String name;
-                    if (temp.child(Endpoint.DB_CHATROOM_USER1).getValue().toString()
-                            .equals(mInstance.getPrefManager().getUser().getUserUID())) {
-                        name = temp.child(Endpoint.DB_CHATROOM_USER2).getValue().toString();
-                    } else {
-                        name = temp.child(Endpoint.DB_CHATROOM_USER1).getValue().toString();
-                    }
-                    ChatRoom newroom = new ChatRoom(temp.getKey(), name, "Hello",
-                            temp.child(Endpoint.DB_CHATROOM_CREATED).getValue().toString(), 0);
-                    set.add(newroom);
-                }
                 listChatRoom.clear();
-                listChatRoom.addAll(set);
+                for (DataSnapshot temp : dataSnapshot.getChildren()) {
+                    appendNewChatroom(temp);
+                }
 
+                mAdapter.notifyItemRangeChanged(0, listChatRoom.size()-1);
                 mAdapter.notifyDataSetChanged();
             }
 
@@ -223,6 +224,32 @@ public class ListChatRoomFragment extends Fragment {
 
             }
         });
+    }
+
+    private void appendNewChatroom(DataSnapshot snapshot) {
+        Iterator iter = snapshot.getChildren().iterator();
+
+        while (iter.hasNext()) {
+            String id1 = ((DataSnapshot)iter.next()).getValue().toString();
+            String id2 = ((DataSnapshot)iter.next()).getValue().toString();
+            String key = ((DataSnapshot)iter.next()).getValue().toString();
+            String time = ((DataSnapshot)iter.next()).getValue().toString();
+            String type = ((DataSnapshot)iter.next()).getValue().toString();
+
+            if (mInstance.getPrefManager().getFirebaseAuth().getCurrentUser().getUid().equals(id1)
+                    || mInstance.getPrefManager().getFirebaseAuth().getCurrentUser().getUid().equals(id2))
+            {
+                ChatRoom newcr;
+                if (mInstance.getPrefManager().getFirebaseAuth().getCurrentUser().getUid().equals(id1)) {
+                    newcr = new ChatRoom(key, id2, "Helloasd", time, 0);
+                } else {
+                    newcr = new ChatRoom(key, id1, "Helloasd", time, 0);
+                }
+                listChatRoom.add(newcr);
+            }
+        }
+
+        mAdapter.notifyItemInserted(listChatRoom.size());
     }
 
 
