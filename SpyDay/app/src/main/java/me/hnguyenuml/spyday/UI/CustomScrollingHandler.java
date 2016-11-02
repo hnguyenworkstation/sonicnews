@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 /**
  * Created by Hung Nguyen on 10/23/2016.
@@ -38,6 +39,15 @@ public class CustomScrollingHandler extends LinearLayoutManager {
         SmoothScroller smoothScroller = new SmoothScroller(recyclerView.getContext(), distanceInPixels, duration);
         smoothScroller.setTargetPosition(position);
         startSmoothScroll(smoothScroller);
+    }
+
+    @Override
+    public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+        try {
+            super.onLayoutChildren(recycler, state);
+        } catch (IndexOutOfBoundsException e) {
+            Log.e("probe", "meet a IOOBE in RecyclerView");
+        }
     }
 
     private class SmoothScroller extends LinearSmoothScroller {

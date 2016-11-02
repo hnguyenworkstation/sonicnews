@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import me.hnguyenuml.spyday.Adapters.MessageAdapter;
 import me.hnguyenuml.spyday.Fragments.ListMessagesFragment;
 import me.hnguyenuml.spyday.Fragments.StickerItemFragment;
 import me.hnguyenuml.spyday.Fragments.StickerKeyboardFragment;
@@ -40,8 +41,6 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
     private ImageButton mEmoBtn;
     private ImageButton mSendBtn;
     private InputMethodManager mInputManager;
-    private ChatRoomsAdapter mChatRoomAdapter;
-    private ArrayList<Message> mListMessages;
     private TextView mIsTyping;
     private View emojiView;
 
@@ -70,14 +69,10 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         // Setting up chat UI
         initChatUI();
 
-        mListMessages = new ArrayList<>();
-
         transformSendBtn(mMessageInput);
-
         mMessageInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
@@ -87,7 +82,6 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
 

@@ -41,6 +41,7 @@ import me.hnguyenuml.spyday.Static.Endpoint;
 import me.hnguyenuml.spyday.UI.ChatRoom;
 import me.hnguyenuml.spyday.Adapters.ChatRoomsAdapter;
 import me.hnguyenuml.spyday.UI.RecycleViewItemDecoration;
+import me.hnguyenuml.spyday.UI.WrapContentLinearLayoutManager;
 
 public class ListChatRoomFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
@@ -99,8 +100,8 @@ public class ListChatRoomFragment extends Fragment {
         listChatRoom = new ArrayList<>();
 
         mAdapter = new ChatRoomsAdapter(this.getContext(), listChatRoom);
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        final WrapContentLinearLayoutManager layoutManager =
+                new WrapContentLinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         listRecycleView.setLayoutManager(layoutManager);
         listRecycleView.addItemDecoration(new RecycleViewItemDecoration(
                 this.getContext()
@@ -108,23 +109,23 @@ public class ListChatRoomFragment extends Fragment {
         listRecycleView.setItemAnimator(new DefaultItemAnimator());
         listRecycleView.setAdapter(mAdapter);
 
-        listRecycleView.addOnItemTouchListener(new ChatRoomsAdapter.
-                RecyclerTouchListener(this.getContext(),
-                listRecycleView, new ChatRoomsAdapter.ClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                ChatRoom chatRoom = listChatRoom.get(position);
-                Intent intent = new Intent(getActivity(), ChatRoomActivity.class);
-                intent.putExtra("chat_room_id", chatRoom.getId());
-                intent.putExtra("name", chatRoom.getName());
-                startActivity(intent);
-            }
+        listRecycleView.addOnItemTouchListener(new ChatRoomsAdapter
+                .RecyclerTouchListener(getContext(), listRecycleView,
+                new ChatRoomsAdapter.ClickListener() {
+                    @Override
+                    public void onClick(View view, int position) {
+                        ChatRoom chatRoom = listChatRoom.get(position);
+                        Intent intent = new Intent(getActivity(), ChatRoomActivity.class);
+                        intent.putExtra("chat_room_id", chatRoom.getId());
+                        intent.putExtra("name", chatRoom.getName());
+                        startActivity(intent);
+                    }
 
-            @Override
-            public void onLongClick(View view, int position) {
-
-            }
-        }));
+                    @Override
+                    public void onLongClick(View view, int position) {
+                        Toast.makeText(getContext(), "Long Clicked at" + position, Toast.LENGTH_SHORT).show();
+                    }
+                }));
 
         fetchChatrooms();
 
@@ -214,8 +215,6 @@ public class ListChatRoomFragment extends Fragment {
                 for (DataSnapshot temp : dataSnapshot.getChildren()) {
                     appendNewChatroom(temp);
                 }
-
-                mAdapter.notifyItemRangeChanged(0, listChatRoom.size()-1);
                 mAdapter.notifyDataSetChanged();
             }
 
@@ -248,8 +247,6 @@ public class ListChatRoomFragment extends Fragment {
                 listChatRoom.add(newcr);
             }
         }
-
-        mAdapter.notifyItemInserted(listChatRoom.size());
     }
 
 
