@@ -43,7 +43,6 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
     private EditText mMessageInput;
     private ImageButton mEmoBtn;
     private ImageButton mSendBtn;
-    private ImageButton mOptions;
     private InputMethodManager mInputManager;
     private TextView mIsTyping;
     private View keyboardViewer;
@@ -77,7 +76,6 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         // Setting up chat UI
         initChatUI();
 
-        transformOptionBtn(mMessageInput);
         transformSendBtn(mMessageInput);
         mMessageInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -87,7 +85,6 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 transformSendBtn(mMessageInput);
-                transformOptionBtn(mMessageInput);
             }
 
             @Override
@@ -125,9 +122,6 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
 
         mSendBtn = (ImageButton) findViewById(R.id.chatroom_sendbtn);
         mSendBtn.setOnClickListener(this);
-
-        mOptions = (ImageButton) findViewById(R.id.chatroom_moreoptions);
-        mOptions.setOnClickListener(this);
     }
 
     private void transformSendBtn(EditText currentInput) {
@@ -141,15 +135,6 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         }
     }
 
-    private void transformOptionBtn(EditText currentInput) {
-        String currentMessage = currentInput.getText().toString();
-        if (currentMessage.length() > 0) {
-            mOptions.setVisibility(View.GONE);
-        } else {
-            mOptions.setVisibility(View.VISIBLE);
-        }
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -158,9 +143,6 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
                 break;
             case R.id.chatroom_sendbtn:
                 sendMessage(v);
-                break;
-            case R.id.chatroom_moreoptions:
-
                 break;
             default:
                 break;
