@@ -12,6 +12,8 @@ public class Message {
     public static final int TYPE_STICKER_FROM_ME = 4;
     public static final int TYPE_STICKER_FROM_FRIEND = 5;
     public static final int TYPE_MESSAGE_DATE = 6;
+    public static final int TYPE_MESSAGE_MAP_FROM_ME = 7;
+    public static final int TYPE_MESSAGE_MAP_FROM_FRIEND = 8;
 
     public static final int MODEL_PLAIN_MESSAGE = 50;
 
@@ -37,6 +39,8 @@ public class Message {
     private boolean mIsShowSentStatus = false;
     private boolean mIsShowDate = false;
 
+    private MapContent mMap;
+
     public Message() {}
 
     public Message(String roomId, String userId,
@@ -46,6 +50,11 @@ public class Message {
         this.messageText = content;
         this.messageTimeStamp = time;
         this.messageModel = model;
+    }
+
+    public Message(String roomId, String userId,
+                   MapContent mapContent, String time, int model) {
+
     }
 
     public int getMessageModel() {
