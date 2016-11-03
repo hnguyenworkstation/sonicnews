@@ -87,7 +87,7 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.chatroom_container, ListMessagesFragment.newInstance(TAG, "Read Messages"))
+                    .add(R.id.chatroom_container, ListMessagesFragment.newInstance(TAG, chatroomID))
                     .commit();
         }
     }
@@ -148,12 +148,20 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         if (msg.isEmpty()) {
             return;
         }
-        ListMessagesFragment mfragment = (ListMessagesFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.chatroom_container);
+        ListMessagesFragment mfragment = getMessageFragment();
+
         if (mfragment != null) {
-            mfragment.addMessage(msg, chatroomID);
+            mfragment.sendPlainMessage(msg, chatroomID);
         }
         mMessageInput.setText("");
+    }
+
+    private ListMessagesFragment getMessageFragment() {
+        ListMessagesFragment mfragment = (ListMessagesFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.chatroom_container);
+        mfragment.setRoomId(chatroomID);
+
+        return mfragment;
     }
 
     public void emoButtonClicked(View view) {
@@ -177,8 +185,7 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment emo_fragment = getSupportFragmentManager()
                 .findFragmentById(R.id.chatroom_emokeyboard);
-        ListMessagesFragment fm = (ListMessagesFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.chatroom_container);
+        ListMessagesFragment fm = getMessageFragment();
 
         if (emo_fragment != null) {
             ft.setCustomAnimations(R.anim.slide_in_from_bottom,
@@ -213,8 +220,7 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
     public void onClickSticker(Uri uri) {
         boolean isTicker = true;
         boolean isMe = true;
-        ListMessagesFragment fm = (ListMessagesFragment)
-                getSupportFragmentManager().findFragmentById(R.id.chatroom_container);
+        ListMessagesFragment fm = getMessageFragment();
         if (fm != null) {
             fm.sendMessage(isTicker, isMe);
         }
@@ -244,8 +250,7 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         showDefaultKeyboard(false);
         isShowingKeyboard = true;
-        ListMessagesFragment fm = (ListMessagesFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.chatroom_container);
+        ListMessagesFragment fm = getMessageFragment();
         if (fm != null) {
             fm.scrollToLast();
         }

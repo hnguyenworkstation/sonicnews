@@ -13,7 +13,16 @@ public class Message {
     public static final int TYPE_STICKER_FROM_FRIEND = 5;
     public static final int TYPE_MESSAGE_DATE = 6;
 
+    public static final int MODEL_PLAIN_MESSAGE = 50;
+
+    // Endpoint References
+    public static final String MESSAGE_MODEL = "messageModel";
+    public static final String MESSAGE_USERID = "messageFromUserId";
+    public static final String MESSAGE_CONTEXT = "messageText";
+    public static final String MESSAGE_TIMESTAMP = "messageTimeStamp";
+
     private int messageType;
+    private int messageModel;
 
     private String messageText;
     private String stickerUrl;
@@ -31,11 +40,20 @@ public class Message {
     public Message() {}
 
     public Message(String roomId, String userId,
-                   String content, String time) {
+                   String content, String time, int model) {
         this.messageFromRoomId = roomId;
         this.messageFromUserId = userId;
         this.messageText = content;
         this.messageTimeStamp = time;
+        this.messageModel = model;
+    }
+
+    public int getMessageModel() {
+        return messageModel;
+    }
+
+    public void setMessageModel(int messageModel) {
+        this.messageModel = messageModel;
     }
 
     public String getMessageId() {

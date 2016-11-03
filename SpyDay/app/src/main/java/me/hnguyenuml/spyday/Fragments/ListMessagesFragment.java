@@ -15,7 +15,11 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -52,6 +56,7 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
     private boolean mEmptyConversation;
     private boolean mIsClearNoConversation;
     private int mPreviousPositionItemClick = -1;
+    private String roomId;
 
     private final DatabaseReference chatRoomRef = SpyDayApplication.getInstance()
             .getPrefManager().getFirebaseDatabase().child(Endpoint.DB_CHATROOM);
@@ -77,7 +82,7 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            roomId = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -195,7 +200,80 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
             }
         });
 
+        fetchOldMessages();
+
+        chatRoomRef.child(roomId).addChildEventListener(
+                new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        getMessageFromDataList(dataSnapshot.child(Endpoint.DB_CHATROOM_LISTMESSAGES));
+                    }
+
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                        getMessageFromDataList(dataSnapshot.child(Endpoint.DB_CHATROOM_LISTMESSAGES));
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                }
+        );
+
         return rootView;
+    }
+
+    public void setRoomId(String id) {
+        this.roomId = id;
+    }
+
+    private void fetchOldMessages() {
+        DatabaseReference listRef = chatRoomRef.child(roomId);
+        listRef.addValueEventListener(
+            new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    messageList.clear();
+                    getMessageFromDataList(dataSnapshot.child(Endpoint.DB_CHATROOM_LISTMESSAGES));
+                    mMessageAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            }
+        );
+    }
+
+    private void getMessageFromDataList(DataSnapshot dataSnapshot) {
+        for(DataSnapshot ds: dataSnapshot.getChildren()) {
+            if (ds.child(Message.MESSAGE_MODEL).getValue().toString().equals(Message.MODEL_PLAIN_MESSAGE)){
+                Message message = new Message();
+                if(ds.child(Message.MESSAGE_USERID)
+                        .getValue().toString().equals(mInstance.getPrefManager()
+                                .getFirebaseAuth().getCurrentUser().getUid())){
+                    message.setMessageType(Message.TYPE_MESSAGE_FROM_ME);
+                } else {
+                    message.setMessageType(Message.TYPE_MESSAGE_FROM_FRIEND);
+                }
+                message.setMessageText(ds.child(Message.MESSAGE_CONTEXT).getValue().toString());
+                message.setMessageTimeStamp(ds.child(Message.MESSAGE_TIMESTAMP).getValue().toString());
+
+                messageList.add(message);
+            }
+        }
     }
 
     private void showStatus(int currentPos) {
@@ -253,7 +331,7 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
 
     }
 
-    public void addMessage(String message, String roomID) {
+    public void sendPlainMessage(String message, String roomID) {
         if (mEmptyConversation && !mIsClearNoConversation) {
             mIsClearNoConversation = true;
             messageList.clear();
@@ -284,7 +362,7 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
     private void postPlainMessageToServer(String message, String roomId) {
         Message model = new Message(roomId,
                 mInstance.getPrefManager().getFirebaseAuth().getCurrentUser().getUid(),
-                message, Calendar.getInstance().getTime().toString());
+                message, Calendar.getInstance().getTime().toString(), Message.MODEL_PLAIN_MESSAGE);
         Map<String, Object> map = new HashMap<>();
         map.put(chatRoomRef.child(roomId).child(Endpoint.DB_CHATROOM_LISTMESSAGES).push().getKey(), model);
         chatRoomRef.child(roomId).child(Endpoint.DB_CHATROOM_LISTMESSAGES).updateChildren(map);
