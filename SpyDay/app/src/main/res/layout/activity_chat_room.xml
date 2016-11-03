@@ -31,49 +31,11 @@
         android:layout_alignParentBottom="true">
 
         <RelativeLayout
-            android:id="@+id/chatroom.emokeyboard"
+            android:id="@+id/chatroom.keyboardholder"
             android:layout_width="match_parent"
             android:layout_height="@dimen/keyboard_height_default"
             android:visibility="gone" />
 
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/chatroom.inputoptions"
-        android:layout_above="@+id/chatroom.inputholder">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:orientation="horizontal"
-            android:gravity="right">
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_active_send"
-                android:id="@+id/chatroom.sb.addimage"/>
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_active_send"
-                android:id="@+id/chatroom.sb.addfile"/>
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_active_send"
-                android:id="@+id/chatroom.sb.addlocation"/>
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_active_send"
-                android:id="@+id/chatroom.sb.addcontact"/>
-        </LinearLayout>
     </RelativeLayout>
 
     <RelativeLayout
@@ -91,6 +53,14 @@
             android:layout_centerVertical="true"
             android:background="@drawable/selector_btn"
             android:src="@drawable/ic_smiley" />
+
+        <ImageButton
+            android:layout_width="@dimen/chat_input"
+            android:layout_height="@dimen/chat_input"
+            android:layout_toStartOf="@+id/chatroom.sendbtn"
+            android:src="@drawable/ic_close_light"
+            android:background="@drawable/selector_btn"
+            android:id="@+id/chatroom.moreoptions"/>
 
         <ImageButton
             android:id="@+id/chatroom.sendbtn"

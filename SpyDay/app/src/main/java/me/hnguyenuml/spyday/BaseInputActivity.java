@@ -1,7 +1,6 @@
 package me.hnguyenuml.spyday;
 
 import android.annotation.TargetApi;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -9,7 +8,6 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -22,20 +20,20 @@ import me.hnguyenuml.spyday.BasicApp.HardwareUtils;
 
 public abstract class BaseInputActivity extends AppCompatActivity {
     public static final String TAG = "SPYDAY";
-    protected RelativeLayout mEmoView;
+    protected RelativeLayout keyboardViewer;
     public static final String KEYBOARD_HEIGHT = "keyboard_height";
 
     @Override
     protected void onStart() {
         super.onStart();
-        mEmoView = (RelativeLayout) getEmoKeyboardView();
+        keyboardViewer = (RelativeLayout) getEmoKeyboardView();
 
         final ViewGroup groupViewLayout = (ViewGroup) findViewById(android.R.id.content);
         int savedHeight = PreferenceManager.getDefaultSharedPreferences(this)
                 .getInt(KEYBOARD_HEIGHT,
                         (int) getResources().getDimension(
                                 R.dimen.keyboard_height_default));
-        setEmoKeyboardHeight(mEmoView, savedHeight);
+        setEmoKeyboardHeight(keyboardViewer, savedHeight);
 
         groupViewLayout.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -67,7 +65,7 @@ public abstract class BaseInputActivity extends AppCompatActivity {
                         if (keyboardHeight > 100) {
                             if (AlphaKeyboardHeight != keyboardHeight) {
                                 AlphaKeyboardHeight = keyboardHeight;
-                                setEmoKeyboardHeight(mEmoView, AlphaKeyboardHeight);
+                                setEmoKeyboardHeight(keyboardViewer, AlphaKeyboardHeight);
 
                                 SharedPreferences preferences = PreferenceManager
                                         .getDefaultSharedPreferences(BaseInputActivity.this);

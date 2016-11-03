@@ -11,28 +11,31 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
-import me.hnguyenuml.spyday.Adapters.MessageAdapter;
+import me.hnguyenuml.spyday.Fragments.InputOptionsFragment;
 import me.hnguyenuml.spyday.Fragments.ListMessagesFragment;
 import me.hnguyenuml.spyday.Fragments.StickerItemFragment;
 import me.hnguyenuml.spyday.Fragments.StickerKeyboardFragment;
-import me.hnguyenuml.spyday.Adapters.ChatRoomsAdapter;
-import me.hnguyenuml.spyday.UserContent.Message;
+import me.hnguyenuml.spyday.UI.CustomPopupWindow;
 
 public class ChatRoomActivity extends BaseInputActivity implements View.OnClickListener ,
         StickerKeyboardFragment.OnClickStickerListener,
         StickerItemFragment.OnStickerItemFragmentInteractionListener,
         ListMessagesFragment.OnFragmentInteractionListener,
-        StickerKeyboardFragment.OnFragmentInteractionListener {
+        StickerKeyboardFragment.OnFragmentInteractionListener,
+        InputOptionsFragment.OnFragmentInteractionListener {
 
     private static final String TAG = ChatRoomActivity.class.getSimpleName();
     private String chatroomID;
@@ -40,9 +43,12 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
     private EditText mMessageInput;
     private ImageButton mEmoBtn;
     private ImageButton mSendBtn;
+    private ImageButton mOptions;
     private InputMethodManager mInputManager;
     private TextView mIsTyping;
-    private View emojiView;
+    private View keyboardViewer;
+    private LayoutInflater layoutInflater;
+    private RelativeLayout mRootLayout;
 
     private boolean isShowingKeyboard = false;
     private boolean isShowingEmoji = false;
@@ -51,6 +57,8 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
+
+        mRootLayout = (RelativeLayout) findViewById(R.id.activity_chat_room);
 
         // get current intent
         Intent intent = getIntent();
@@ -69,6 +77,7 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         // Setting up chat UI
         initChatUI();
 
+        transformOptionBtn(mMessageInput);
         transformSendBtn(mMessageInput);
         mMessageInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -78,6 +87,7 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 transformSendBtn(mMessageInput);
+                transformOptionBtn(mMessageInput);
             }
 
             @Override
@@ -103,17 +113,21 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
     }
 
     private void initChatUI() {
-        emojiView = findViewById(R.id.chatroom_emokeyboard);
+        keyboardViewer = findViewById(R.id.chatroom_keyboardholder);
         mInputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         mIsTyping = (TextView)findViewById(R.id.chatroom_istyping);
         mMessageInput = (EditText) findViewById(R.id.chatroom_inputtext);
+
         mEmoBtn = (ImageButton) findViewById(R.id.chatroom_emobtn);
         mEmoBtn.setOnClickListener(this);
         mEmoBtn.setSelected(true);
 
         mSendBtn = (ImageButton) findViewById(R.id.chatroom_sendbtn);
         mSendBtn.setOnClickListener(this);
+
+        mOptions = (ImageButton) findViewById(R.id.chatroom_moreoptions);
+        mOptions.setOnClickListener(this);
     }
 
     private void transformSendBtn(EditText currentInput) {
@@ -127,6 +141,15 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         }
     }
 
+    private void transformOptionBtn(EditText currentInput) {
+        String currentMessage = currentInput.getText().toString();
+        if (currentMessage.length() > 0) {
+            mOptions.setVisibility(View.GONE);
+        } else {
+            mOptions.setVisibility(View.VISIBLE);
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -136,10 +159,31 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
             case R.id.chatroom_sendbtn:
                 sendMessage(v);
                 break;
+            case R.id.chatroom_moreoptions:
+
+                break;
             default:
                 break;
 
         }
+    }
+
+    private void showPopupOption() {
+        layoutInflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        ViewGroup container = (ViewGroup) layoutInflater.inflate(R.layout.option_popup_window, null);
+
+        final CustomPopupWindow pWindow = new CustomPopupWindow(container, 400, 400, true);
+        pWindow.showAtLocation(mRootLayout, Gravity.NO_GRAVITY, 0, 550);
+
+        container.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                pWindow.dismiss();
+                return true;
+            }
+        });
+
     }
 
     private void sendMessage(View view) {
@@ -164,7 +208,7 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         return mfragment;
     }
 
-    public void emoButtonClicked(View view) {
+    private void emoButtonClicked(View view) {
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         if (isShowingKeyboard) {
@@ -172,42 +216,42 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
                     view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             isShowingEmoji = true;
         } else {
-            if (mEmoView.getVisibility() == View.VISIBLE) {
+            if (this.keyboardViewer.getVisibility() == View.VISIBLE) {
                 mInputManager.showSoftInput(
                         mMessageInput, 0);
             } else {
-                showDefaultKeyboard(true);
+                showEmoKeyboard(true);
             }
         }
     }
 
-    private void showDefaultKeyboard(boolean isShowFragment) {
+    private void showEmoKeyboard(boolean isShowFragment) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment emo_fragment = getSupportFragmentManager()
-                .findFragmentById(R.id.chatroom_emokeyboard);
+                .findFragmentById(R.id.chatroom_keyboardholder);
         ListMessagesFragment fm = getMessageFragment();
 
         if (emo_fragment != null) {
             ft.setCustomAnimations(R.anim.slide_in_from_bottom,
                     R.anim.fix_anim);
             if (isShowFragment) {
-                mEmoView.setVisibility(View.VISIBLE);
+                this.keyboardViewer.setVisibility(View.VISIBLE);
                 ft.show(emo_fragment);
                 if (fm != null) {
                     fm.scrollToLast();
                 }
                 mEmoBtn.setSelected(false);
             } else {
-                mEmoView.setVisibility(View.GONE);
+                this.keyboardViewer.setVisibility(View.GONE);
                 ft.hide(emo_fragment);
                 mEmoBtn.setSelected(true);
             }
         } else {
             if (isShowFragment) {
-                mEmoView.setVisibility(View.VISIBLE);
+                this.keyboardViewer.setVisibility(View.VISIBLE);
                 ft.setCustomAnimations(R.anim.slide_in_from_bottom,
                         R.anim.slide_out_to_bottom);
-                ft.add(R.id.chatroom_emokeyboard, new StickerKeyboardFragment());
+                ft.add(R.id.chatroom_keyboardholder, new StickerKeyboardFragment());
                 mEmoBtn.setSelected(false);
                 if (fm != null)
                     fm.scrollToLast();
@@ -228,8 +272,8 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
 
     @Override
     public void onBackPressed() {
-        if (mEmoView.getVisibility() == View.VISIBLE) {
-            showDefaultKeyboard(false);
+        if (this.keyboardViewer.getVisibility() == View.VISIBLE) {
+            showEmoKeyboard(false);
             getWindow().setSoftInputMode(
                     WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         } else {
@@ -239,8 +283,8 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
 
     @Override
     public View getEmoKeyboardView() {
-        emojiView = findViewById(R.id.chatroom_emokeyboard);
-        return emojiView;
+        keyboardViewer = findViewById(R.id.chatroom_keyboardholder);
+        return keyboardViewer;
     }
 
     @Override
@@ -248,7 +292,7 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         Log.v(TAG, "on Show Keyboard");
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        showDefaultKeyboard(false);
+        showEmoKeyboard(false);
         isShowingKeyboard = true;
         ListMessagesFragment fm = getMessageFragment();
         if (fm != null) {
@@ -261,7 +305,7 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         Log.v(TAG, "On Hide Keyboard");
         isShowingKeyboard = false;
         if (isShowingEmoji) {
-            showDefaultKeyboard(true);
+            showEmoKeyboard(true);
             isShowingEmoji = false;
         }
     }
