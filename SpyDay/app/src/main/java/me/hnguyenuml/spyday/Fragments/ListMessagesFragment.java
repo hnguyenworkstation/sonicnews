@@ -259,7 +259,7 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
 
     private void getMessageFromDataList(DataSnapshot dataSnapshot) {
         for(DataSnapshot ds: dataSnapshot.getChildren()) {
-            if (ds.child(Message.MESSAGE_MODEL).getValue().toString().equals(Message.MODEL_PLAIN_MESSAGE)){
+            if (ds.child(Message.MESSAGE_MODEL).getValue().toString().equals(String.valueOf(Message.MODEL_PLAIN_MESSAGE))){
                 Message message = new Message();
                 if(ds.child(Message.MESSAGE_USERID)
                         .getValue().toString().equals(mInstance.getPrefManager()
