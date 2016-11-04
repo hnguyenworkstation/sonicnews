@@ -40,6 +40,69 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:id="@+id/chatroom.inputoptions"
+        android:layout_above="@+id/chatroom.emojiholder"
+        android:background="@drawable/chatroom_input">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <ImageButton
+                android:layout_width="0dip"
+                android:layout_height="@dimen/chat_input"
+                android:src="@drawable/ic_camera_black"
+                android:background="@drawable/selector_btn"
+                android:layout_weight="1"
+                android:id="@+id/chatroom.opencamera"/>
+
+            <ImageButton
+                android:layout_width="0dip"
+                android:layout_height="@dimen/chat_input"
+                android:src="@drawable/ic_media_black"
+                android:background="@drawable/selector_btn"
+                android:layout_weight="1"
+                android:id="@+id/chatroom.opengallery"/>
+
+            <ImageButton
+                android:layout_width="0dip"
+                android:layout_height="@dimen/chat_input"
+                android:src="@drawable/ic_attach_file_black"
+                android:background="@drawable/selector_btn"
+                android:layout_weight="1"
+                android:id="@+id/chatroom.attachfile"/>
+
+            <ImageButton
+                android:layout_width="0dip"
+                android:layout_height="@dimen/chat_input"
+                android:src="@drawable/ic_face_black"
+                android:background="@drawable/selector_btn"
+                android:layout_weight="1"
+                android:id="@+id/chatroom.openiconkeyboard"/>
+
+            <ImageButton
+                android:layout_width="0dip"
+                android:layout_height="@dimen/chat_input"
+                android:src="@drawable/ic_location_black"
+                android:background="@drawable/selector_btn"
+                android:layout_weight="1"
+                android:id="@+id/chatroom.sendlocation"/>
+
+            <ImageButton
+                android:layout_width="0dip"
+                android:layout_height="@dimen/chat_input"
+                android:src="@drawable/ic_voice"
+                android:background="@drawable/selector_btn"
+                android:layout_weight="1"
+                android:id="@+id/chatroom.sendvoicerecord"/>
+        </TableRow>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chatroom.inputholder"
         android:layout_above="@id/chatroom.inputoptions"
@@ -78,62 +141,7 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:orientation="horizontal"
-        android:id="@+id/chatroom.inputoptions"
-        android:layout_above="@+id/chatroom.emojiholder"
-        android:background="@drawable/chatroom_input">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageButton
-                android:layout_width="0dip"
-                android:layout_height="@dimen/chat_input"
-                android:src="@drawable/ic_camera_black"
-                android:background="@drawable/selector_btn"
-                android:layout_weight="1"
-                android:id="@+id/chatroom.opencamera"/>
-
-            <ImageButton
-                android:layout_width="0dip"
-                android:layout_height="@dimen/chat_input"
-                android:src="@drawable/ic_media_black"
-                android:background="@drawable/selector_btn"
-                android:layout_weight="1"
-                android:id="@+id/chatroom.opengallery"/>
-
-            <ImageButton
-                android:layout_width="0dip"
-                android:layout_height="@dimen/chat_input"
-                android:src="@drawable/ic_emotion_black"
-                android:background="@drawable/selector_btn"
-                android:layout_weight="1"
-                android:id="@+id/chatroom.openiconkeyboard"/>
-
-            <ImageButton
-                android:layout_width="0dip"
-                android:layout_height="@dimen/chat_input"
-                android:src="@drawable/ic_location_black"
-                android:background="@drawable/selector_btn"
-                android:layout_weight="1"
-                android:id="@+id/chatroom.sendlocation"/>
-
-            <ImageButton
-                android:layout_width="0dip"
-                android:layout_height="@dimen/chat_input"
-                android:src="@drawable/ic_voice"
-                android:background="@drawable/selector_btn"
-                android:layout_weight="1"
-                android:id="@+id/chatroom.sendvoicerecord"/>
-
-
-        </TableRow>
-
-    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/chatroom.container"

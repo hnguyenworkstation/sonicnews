@@ -29,14 +29,6 @@
             android:layout_margin="@dimen/fab_margin"
             app:srcCompat="@android:drawable/ic_dialog_email"/>
 
-        <!-- You must wrap transform view in Circular reveal container -->
-        <io.codetail.widget.RevealFrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_alignParentBottom="true">
-        </io.codetail.widget.RevealFrameLayout>
-
         <include layout="@layout/fab_transform_layout" />
 
     </FrameLayout>

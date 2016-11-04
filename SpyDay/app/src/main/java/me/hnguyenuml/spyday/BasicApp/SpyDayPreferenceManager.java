@@ -85,6 +85,10 @@ public class SpyDayPreferenceManager {
         return mFirebaseAuth;
     }
 
+    public String getCurrentUID() {
+        return mFirebaseAuth.getCurrentUser().getUid();
+    }
+
     public void updateUserByFirebaseUID() {
         this.mUser = new User(mFirebaseAuth.getCurrentUser().getUid());
     }

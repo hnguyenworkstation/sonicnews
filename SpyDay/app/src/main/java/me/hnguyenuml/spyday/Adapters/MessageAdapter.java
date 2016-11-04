@@ -1,6 +1,7 @@
 package me.hnguyenuml.spyday.Adapters;
 
 import android.content.Context;
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
 import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.R;
 import me.hnguyenuml.spyday.UserContent.Message;
+import me.hnguyenuml.spyday.Utils.MapUtils;
 
 /**
  * Created by Hung Nguyen on 10/23/2016.
@@ -26,9 +29,9 @@ import me.hnguyenuml.spyday.UserContent.Message;
 public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAdapter.ViewHolder >{
 
     private List<Message> mDataset;
-    public boolean isDeleteMsg = false;
-    public boolean isSelectAll = false;
-    public int mFirstVisiblePosition;
+    private boolean isDeleteMsg = false;
+    private boolean isSelectAll = false;
+    private int mFirstVisiblePosition;
     private static OnClickChatScreenListener mListener;
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
@@ -36,22 +39,26 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
         private final ImageView mCheck;
         private ImageView mImgWarning;
 
-        public TextView mTextView;
-        public ImageView mAvatar;
-        public ImageView mImageView;
-        public ImageView mImageViewStatus;
-        public RelativeLayout mChatStatusView;
-        public Context mContext;
+        private TextView mTextView;
+        private ImageView mAvatar;
+        private ImageView mImageView;
+        private ImageView mImageViewStatus;
+        private RelativeLayout mChatStatusView;
+        private ImageView mImageContainer;
 
-        public ViewHolder(ViewGroup v, int viewType) {
+        private Context mContext;
+
+        private ViewHolder(ViewGroup v, int viewType) {
             super(v);
             mContext = v.getContext();
+
             this.mTextView = (TextView) v.findViewById(R.id.message_content);
             this.mAvatar = (ImageView) v.findViewById(R.id.message_avatar);
             this.mImageView = (ImageView) v.findViewById(R.id.sticker_image);
             this.mImgWarning = (ImageView) v.findViewById(R.id.message_warningicon);
             this.mChatStatusView = (RelativeLayout) v.findViewById(R.id.message_chatstatusview);
             this.mImageViewStatus = (ImageView) v.findViewById(R.id.message_status_image);
+            this.mImageContainer = (ImageView) v.findViewById(R.id.message_imagecontainer);
 
             if (this.mImgWarning != null) {
                 this.mImgWarning.setOnClickListener(new View.OnClickListener() {
@@ -108,11 +115,42 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
                     });
                 }
             }
+
+            if (this.mImageContainer != null) {
+                if (Message.isMyself(this.mViewType)) {
+
+                } else {
+
+                }
+                this.mImageContainer.setOnLongClickListener(this);
+                if (mListener != null) {
+                    this.mImageContainer.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mListener.onStickerMessageClick(v, getAdapterPosition() - 1);
+                        }
+                    });
+                }
+            }
         }
 
         @Override
         public boolean onLongClick(View view) {
             return true;
+        }
+
+        public void setImageFromURL(String url) {
+            if (mImageContainer == null) return;
+            Glide.with(mImageContainer.getContext()).load(url)
+                    .override(400, 250)
+                    .fitCenter()
+                    .into(mImageContainer);
+            mImageContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
         }
     }
 
@@ -158,6 +196,10 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
                 v = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_chat_date, parent, false);
                 break;
+            case Message.TYPE_MESSAGE_IMAGE_FROM_ME:
+                v = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.message_withimage_from_me, parent, false);
+                break;
             default:
                 break;
         }
@@ -193,7 +235,7 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
 
         } else {
             if (mDataset.get(position - 1).isMyself()) {
-                View bg = null;
+                View bg;
                 if (position > 15) {
                 } else {
                 }
@@ -212,6 +254,12 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
                         else
                             holder.mTextView.setTextColor(holder.mContext.getResources().getColor(R.color.black));
                         break;
+                    case Message.TYPE_MESSAGE_IMAGE_FROM_ME:
+                        bg = holder.mImageContainer;
+                        holder.setImageFromURL(MapUtils.getLocation(
+                                mDataset.get(position - 1).getMapContent().getLatitude(),
+                                mDataset.get(position - 1).getMapContent().getLongitude()));
+                        break;
                     default:
                         bg = holder.mTextView;
                         holder.mTextView.setText(mDataset.get(position - 1).getMessageText());
@@ -219,7 +267,7 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
                 }
 
 
-                if (!isSticker) {
+                if (!isSticker && (mDataset.get(position - 1).getMapContent() == null) ) {
                     if (position - 1 > 0) {
                         if (mDataset.get(position - 2).isMyself()) {
                             if (position < mDataset.size()) {
@@ -271,33 +319,34 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
                         holder.mTextView.setText(mDataset.get(position - 1).getMessageText());
                         break;
                     default:
-                        bg = holder.mTextView;
-                        holder.mTextView.setText(mDataset.get(position - 1).getMessageText());
                         break;
                 }
 
-                if (position - 1 > 0) {
-                    if (!mDataset.get(position - 2).isMyself()) {
-                        if (position < mDataset.size()) {
-                            if (!mDataset.get(position).isMyself()) {
-                                setBackgroundResource(bg, isSticker, R.drawable.bubble_brown);
-                                holder.mAvatar.setVisibility(View.INVISIBLE);
+                if (mDataset.get(position - 1).getMapContent() == null) {
+                    if (position - 1 > 0) {
+                        if (!mDataset.get(position - 2).isMyself()) {
+                            if (position < mDataset.size()) {
+                                if (!mDataset.get(position).isMyself()) {
+                                    setBackgroundResource(bg, isSticker, R.drawable.bubble_brown);
+                                    holder.mAvatar.setVisibility(View.INVISIBLE);
+                                } else {
+                                    setBackgroundResource(bg, isSticker, R.drawable.bubble_right_brown);
+                                    holder.mAvatar.setVisibility(View.INVISIBLE);
+                                }
                             } else {
                                 setBackgroundResource(bg, isSticker, R.drawable.bubble_right_brown);
                                 holder.mAvatar.setVisibility(View.INVISIBLE);
                             }
                         } else {
-                            setBackgroundResource(bg, isSticker, R.drawable.bubble_right_brown);
-                            holder.mAvatar.setVisibility(View.INVISIBLE);
+                            setBackgroundResource(bg, isSticker, R.drawable.bubble_left_brown);
+                            holder.mAvatar.setVisibility(View.VISIBLE);
                         }
                     } else {
                         setBackgroundResource(bg, isSticker, R.drawable.bubble_left_brown);
-                        holder.mAvatar.setVisibility(View.VISIBLE);
+                        holder.mAvatar.setVisibility(View.INVISIBLE);
                     }
-                } else {
-                    setBackgroundResource(bg, isSticker, R.drawable.bubble_left_brown);
-                    holder.mAvatar.setVisibility(View.INVISIBLE);
                 }
+
                 boolean isVisibleDateHistory = mDataset.get(position - 1).getVisibilityDate();
                 if (isVisibleDateHistory) {
                     holder.mChatStatusView.setVisibility(View.VISIBLE);

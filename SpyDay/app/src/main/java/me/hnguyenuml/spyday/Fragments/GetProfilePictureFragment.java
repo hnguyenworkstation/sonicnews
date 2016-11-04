@@ -29,7 +29,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.tangxiaolv.telegramgallery.GalleryActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,6 +37,7 @@ import me.hnguyenuml.spyday.R;
 import me.hnguyenuml.spyday.Adapters.MessageAdapter;
 import me.hnguyenuml.spyday.Static.Endpoint;
 import me.hnguyenuml.spyday.UI.CustomScrollingHandler;
+import me.hnguyenuml.spyday.UserContent.MapContent;
 import me.hnguyenuml.spyday.UserContent.Message;
 
 public class ListMessagesFragment extends Fragment implements AbsListView.OnItemClickListener {
@@ -259,7 +261,8 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
 
     private void getMessageFromDataList(DataSnapshot dataSnapshot) {
         for(DataSnapshot ds: dataSnapshot.getChildren()) {
-            if (ds.child(Message.MESSAGE_MODEL).getValue().toString().equals(String.valueOf(Message.MODEL_PLAIN_MESSAGE))){
+            if (ds.child(Message.MESSAGE_MODEL).getValue().toString()
+                    .equals(String.valueOf(Message.MODEL_PLAIN_MESSAGE))) {
                 Message message = new Message();
                 if(ds.child(Message.MESSAGE_USERID)
                         .getValue().toString().equals(mInstance.getPrefManager()
@@ -269,6 +272,27 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
                     message.setMessageType(Message.TYPE_MESSAGE_FROM_FRIEND);
                 }
                 message.setMessageText(ds.child(Message.MESSAGE_CONTEXT).getValue().toString());
+                message.setMessageTimeStamp(ds.child(Message.MESSAGE_TIMESTAMP).getValue().toString());
+
+                messageList.add(message);
+            } else if ( ds.child(Message.MESSAGE_MODEL).getValue().toString()
+                    .equals(String.valueOf(Message.MODEL_LOCATION_MESSAGE))) {
+                Message message = new Message();
+                if(ds.child(Message.MESSAGE_USERID)
+                        .getValue().toString().equals(mInstance.getPrefManager()
+                                .getFirebaseAuth().getCurrentUser().getUid())){
+                    message.setMessageType(Message.TYPE_MESSAGE_IMAGE_FROM_ME);
+                } else {
+                }
+
+                MapContent newMapContent = new MapContent();
+                Iterator temp = ds.child(Message.MESSAGE_MAPMODEL).getChildren().iterator();
+                while (temp.hasNext()) {
+                    newMapContent.setLatitude(((DataSnapshot)temp.next()).getValue().toString());
+                    newMapContent.setLatitude(((DataSnapshot)temp.next()).getValue().toString());
+                }
+
+                message.setMapContent(newMapContent);
                 message.setMessageTimeStamp(ds.child(Message.MESSAGE_TIMESTAMP).getValue().toString());
 
                 messageList.add(message);
@@ -357,6 +381,12 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
         }, 100);
 
         postPlainMessageToServer(message, roomID);
+    }
+
+    public void postMessageToServer(Message message) {
+        Map<String, Object> map = new HashMap<>();
+        map.put(chatRoomRef.child(roomId).child(Endpoint.DB_CHATROOM_LISTMESSAGES).push().getKey(), message);
+        chatRoomRef.child(roomId).child(Endpoint.DB_CHATROOM_LISTMESSAGES).updateChildren(map);
     }
 
     private void postPlainMessageToServer(String message, String roomId) {

@@ -12,13 +12,15 @@ public class Message {
     public static final int TYPE_STICKER_FROM_ME = 4;
     public static final int TYPE_STICKER_FROM_FRIEND = 5;
     public static final int TYPE_MESSAGE_DATE = 6;
-    public static final int TYPE_MESSAGE_MAP_FROM_ME = 7;
-    public static final int TYPE_MESSAGE_MAP_FROM_FRIEND = 8;
+    public static final int TYPE_MESSAGE_IMAGE_FROM_ME = 7;
+    public static final int TYPE_MESSAGE_IMAGE_FROM_FRIEND = 8;
 
     public static final int MODEL_PLAIN_MESSAGE = 50;
+    public static final int MODEL_LOCATION_MESSAGE = 51;
 
     // Endpoint References
     public static final String MESSAGE_MODEL = "messageModel";
+    public static final String MESSAGE_MAPMODEL = "mapContent";
     public static final String MESSAGE_USERID = "messageFromUserId";
     public static final String MESSAGE_CONTEXT = "messageText";
     public static final String MESSAGE_TIMESTAMP = "messageTimeStamp";
@@ -33,13 +35,15 @@ public class Message {
     private String messageId;
     private String messageFromUserId;
     private String messageTimeStamp;
+    private String messageLatitude;
+    private String messageLongitude;
 
     private boolean isChecked = false;
     private boolean isWarning = false;
     private boolean mIsShowSentStatus = false;
     private boolean mIsShowDate = false;
 
-    private MapContent mMap;
+    private MapContent mapContent;
 
     public Message() {}
 
@@ -54,7 +58,19 @@ public class Message {
 
     public Message(String roomId, String userId,
                    MapContent mapContent, String time, int model) {
+        this.messageFromRoomId = roomId;
+        this.messageFromUserId = userId;
+        this.mapContent = mapContent;
+        this.messageTimeStamp = time;
+        this.messageModel = model;
+    }
 
+    public MapContent getMapContent() {
+        return mapContent;
+    }
+
+    public void setMapContent(MapContent mapContent) {
+        this.mapContent = mapContent;
     }
 
     public int getMessageModel() {
@@ -122,7 +138,9 @@ public class Message {
     }
 
     public boolean isMyself() {
-        return messageType == TYPE_MESSAGE_FROM_ME || messageType == TYPE_STICKER_FROM_ME;
+        return messageType == TYPE_MESSAGE_FROM_ME
+                || messageType == TYPE_STICKER_FROM_ME
+                || messageType == TYPE_MESSAGE_IMAGE_FROM_ME;
     }
 
     public int getMessageType() {
@@ -150,7 +168,9 @@ public class Message {
     }
 
     public static boolean isMyself(int mViewType) {
-        return mViewType == TYPE_STICKER_FROM_ME || mViewType == TYPE_MESSAGE_FROM_ME;
+        return mViewType == TYPE_STICKER_FROM_ME
+                || mViewType == TYPE_MESSAGE_FROM_ME
+                || mViewType == TYPE_MESSAGE_IMAGE_FROM_ME;
     }
 
     public boolean isChecked() {

@@ -13,6 +13,9 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,11 +27,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.Calendar;
+
+import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.Fragments.InputOptionsFragment;
 import me.hnguyenuml.spyday.Fragments.ListMessagesFragment;
 import me.hnguyenuml.spyday.Fragments.StickerItemFragment;
 import me.hnguyenuml.spyday.Fragments.StickerKeyboardFragment;
 import me.hnguyenuml.spyday.UI.CustomPopupWindow;
+import me.hnguyenuml.spyday.UserContent.MapContent;
+import me.hnguyenuml.spyday.UserContent.Message;
 
 public class ChatRoomActivity extends BaseInputActivity implements View.OnClickListener ,
         StickerKeyboardFragment.OnClickStickerListener,
@@ -41,13 +55,26 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
     private String chatroomID;
     private String chatroomTitle;
     private EditText mMessageInput;
+
     private ImageButton mEmoBtn;
     private ImageButton mSendBtn;
+    private ImageButton mCameraBtn;
+    private ImageButton mGalleryBtn;
+    private ImageButton mAttachBtn;
+    private ImageButton mIconBtn;
+    private ImageButton mLocationBtn;
+    private ImageButton mRecordBtn;
+
     private InputMethodManager mInputManager;
     private TextView mIsTyping;
     private View keyboardViewer;
     private LayoutInflater layoutInflater;
     private RelativeLayout mRootLayout;
+
+    private static final int GALLERY_REQUEST = 1;
+    private static final int CAMERA_REQUEST = 2;
+    private static final int LOCATION_REQUEST = 3;
+    private static final int RECORDVOID_REQUEST = 4;
 
     private boolean isShowingKeyboard = false;
     private boolean isShowingEmoji = false;
@@ -109,6 +136,30 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
         ab.setTitle(chatroomTitle);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.chatroom_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.crmenu_phonecall:
+                Toast.makeText(this, "Phone Call", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.crmenu_videocall:
+                Toast.makeText(this, "Video Call", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.crmenu_more:
+                Toast.makeText(this, "More", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void initChatUI() {
         keyboardViewer = findViewById(R.id.chatroom_keyboardholder);
         mInputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -122,6 +173,24 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
 
         mSendBtn = (ImageButton) findViewById(R.id.chatroom_sendbtn);
         mSendBtn.setOnClickListener(this);
+
+        mCameraBtn = (ImageButton) findViewById(R.id.chatroom_opencamera);
+        mCameraBtn.setOnClickListener(this);
+
+        mGalleryBtn = (ImageButton) findViewById(R.id.chatroom_opengallery);
+        mGalleryBtn.setOnClickListener(this);
+
+        mAttachBtn = (ImageButton) findViewById(R.id.chatroom_attachfile);
+        mAttachBtn.setOnClickListener(this);
+
+        mIconBtn = (ImageButton) findViewById(R.id.chatroom_openiconkeyboard);
+        mIconBtn.setOnClickListener(this);
+
+        mLocationBtn = (ImageButton) findViewById(R.id.chatroom_sendlocation);
+        mLocationBtn.setOnClickListener(this);
+
+        mRecordBtn = (ImageButton) findViewById(R.id.chatroom_sendvoicerecord);
+        mRecordBtn.setOnClickListener(this);
     }
 
     private void transformSendBtn(EditText currentInput) {
@@ -144,9 +213,31 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
             case R.id.chatroom_sendbtn:
                 sendMessage(v);
                 break;
+            case R.id.chatroom_opencamera:
+                break;
+            case R.id.chatroom_opengallery:
+                break;
+            case R.id.chatroom_attachfile:
+                break;
+            case R.id.chatroom_openiconkeyboard:
+                break;
+            case R.id.chatroom_sendlocation:
+                openLocationIntent();
+                break;
+            case R.id.chatroom_sendvoicerecord:
+                break;
             default:
                 break;
 
+        }
+    }
+
+    private void openLocationIntent(){
+        try {
+            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+            startActivityForResult(builder.build(this), LOCATION_REQUEST);
+        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
         }
     }
 
@@ -166,6 +257,28 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
             }
         });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LOCATION_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlacePicker.getPlace(this, data);
+                if (place != null) {
+                    LatLng latLng = place.getLatLng();
+                    MapContent mapModel = new MapContent(String.valueOf(latLng.latitude)
+                            , String.valueOf(latLng.longitude));
+                    Message message = new Message(chatroomID,
+                            SpyDayApplication.getInstance().getPrefManager().getCurrentUID(),
+                            mapModel,
+                            String.valueOf(Calendar.getInstance().getTime().getTime()),
+                            Message.MODEL_LOCATION_MESSAGE);
+                    getMessageFragment().postMessageToServer(message);
+                } else {
+                    //PLACE IS NULL
+                }
+            }
+        }
     }
 
     private void sendMessage(View view) {
@@ -239,7 +352,7 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
                     fm.scrollToLast();
             }
         }
-        ft.commit();
+        ft.commitAllowingStateLoss();
     }
 
     @Override
@@ -295,5 +408,11 @@ public class ChatRoomActivity extends BaseInputActivity implements View.OnClickL
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString("WORKAROUND_FOR_BUG_19917_KEY", "WORKAROUND_FOR_BUG_19917_VALUE");
+        super.onSaveInstanceState(outState);
     }
 }
