@@ -34,4 +34,11 @@
     <color name="profile6">#c198f0</color>
     <color name="profile7">#90d78c</color>
     <color name="profile8">#ddd8de</color>
+
+    <!-- Event item color -->
+    <color name="event_fragment_bg">#d3d6db</color>
+    <color name="event_item_bg">#ffffff</color>
+    <color name="event_item_border">#c2c3c8</color>
+    <color name="event_link">#0a80d1</color>
+    <color name="event_timestamp">#a0a3a7</color>
 </resources>

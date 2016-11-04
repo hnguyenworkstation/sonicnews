@@ -23,6 +23,8 @@ public class MapUtils {
         return isConnected;
     }
 
+
+
     public static String getLocation(String latitudeFinal,String longitudeFinal) {
         return "https://maps.googleapis.com/maps/api/staticmap?center=" + latitudeFinal + ","
                 + longitudeFinal +"&zoom=18&size=280x280&markers=color:red|" + latitudeFinal + "," + longitudeFinal;
