@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -95,11 +96,12 @@ public class AddEventActivity extends BaseActivity {
         if (id == R.id.addev_menu_post) {
             Toast.makeText(getBaseContext(), "POST", Toast.LENGTH_SHORT).show();
             attempPostingEvent();
+            return true;
         }
 
         if (id == android.R.id.home){
-            getSupportFragmentManager().popBackStack(null,
-                    FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

@@ -36,7 +36,6 @@
         <activity android:name=".SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -48,8 +47,12 @@
         <activity android:name=".MyProfileActivity" />
         <activity
             android:name=".ChatRoomActivity"
-            android:launchMode="singleInstance" />
-        <activity android:name=".AddEventActivity"></activity>
+            android:launchMode="singleInstance"
+            android:parentActivityName=".SpyDayActivity"/>
+        <activity
+            android:name=".AddEventActivity"
+            android:launchMode="singleInstance"
+            android:parentActivityName=".SpyDayActivity" />
     </application>
 
 </manifest>

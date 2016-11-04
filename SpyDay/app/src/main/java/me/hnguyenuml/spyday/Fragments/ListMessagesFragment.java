@@ -1,6 +1,7 @@
 package me.hnguyenuml.spyday.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -138,6 +139,22 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
                     boolean isSet = item.getVisibilityDate();
                     item.setVisibilityDate(!isSet);
                     mMessageAdapter.notifyDataSetChanged();
+                }
+                mPreviousPositionItemClick = position;
+            }
+
+            @Override
+            public void onMessageImageClick(View view, int position) {
+                showStatus(position);
+                Message item = messageList.get(position);
+                if (item != null) {
+                    if (item.getMapContent() != null) {
+                        String latitude = item.getMapContent().getLatitude();
+                        String longitude = item.getMapContent().getLongitude();
+                        String uri = String.format("geo:%s,%s?z=17&q=%s,%s", latitude,longitude,latitude,longitude);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                        startActivity(intent);
+                    }
                 }
                 mPreviousPositionItemClick = position;
             }
@@ -286,13 +303,14 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
                                 .getFirebaseAuth().getCurrentUser().getUid())){
                     message.setMessageType(Message.TYPE_MESSAGE_IMAGE_FROM_ME);
                 } else {
+                    message.setMessageType(Message.TYPE_MESSAGE_IMAGE_FROM_FRIEND);
                 }
 
                 MapContent newMapContent = new MapContent();
                 Iterator temp = ds.child(Message.MESSAGE_MAPMODEL).getChildren().iterator();
                 while (temp.hasNext()) {
                     newMapContent.setLatitude(((DataSnapshot)temp.next()).getValue().toString());
-                    newMapContent.setLatitude(((DataSnapshot)temp.next()).getValue().toString());
+                    newMapContent.setLongitude(((DataSnapshot)temp.next()).getValue().toString());
                 }
 
                 message.setMapContent(newMapContent);

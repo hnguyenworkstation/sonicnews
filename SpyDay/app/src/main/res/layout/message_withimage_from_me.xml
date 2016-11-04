@@ -31,8 +31,8 @@
                 android:layout_height="wrap_content"
                 android:minWidth="250dp"
                 android:minHeight="200dp"
-                android:maxWidth="450dp"
-                android:maxHeight="350dp"
+                android:maxWidth="350dp"
+                android:maxHeight="250dp"
                 android:background="#000"
                 android:text="Hello" />
 
@@ -81,7 +81,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
         android:src="@drawable/check_box"
         android:padding="@dimen/margin_16"/>
 

@@ -17,18 +17,32 @@
         android:scaleType="centerCrop"
         android:src="@drawable/logo_image" />
 
-    <TextView
-        android:id="@+id/message.content"
-        android:layout_width="wrap_content"
+    <me.himanshusoni.chatmessageview.ChatMessageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/message.container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/message.avatar"
-        android:layout_toRightOf="@+id/message.avatar"
-        android:background="@drawable/bubble_left_brown"
-        android:text="New Text"
-        android:lineSpacingMultiplier="@dimen/message_spacing"
-        android:textAppearance="@style/MessageText.Primary.Light"
-        android:textColor="@android:color/white" />
+        android:layout_toRightOf="@id/message.avatar"
+        app:cmv_backgroundColor="@color/add_sticker_tab"
+        app:cmv_backgroundColorPressed="#FFBABABA"
+        app:cmv_cornerRadius="3dp"
+        app:cmv_arrowGravity="start"
+        app:cmv_arrowMargin="3dp"
+        app:cmv_arrowPosition="left"
+        app:cmv_contentPadding="10dp"
+        app:cmv_showArrow="true">
+
+        <ImageView
+            android:id="@+id/message.imagecontainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="250dp"
+            android:minHeight="200dp"
+            android:maxWidth="350dp"
+            android:maxHeight="250dp"
+            android:background="#000"
+            android:text="Hello" />
+    </me.himanshusoni.chatmessageview.ChatMessageView>
 
     <ImageView
         android:id="@+id/message.checkbox"
@@ -51,7 +65,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/message.status.image"
             android:text="20:20"
             android:id="@+id/message.status.time" />
     </RelativeLayout>
