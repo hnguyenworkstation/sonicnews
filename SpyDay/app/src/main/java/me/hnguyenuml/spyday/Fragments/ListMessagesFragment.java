@@ -209,11 +209,13 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                         getMessageFromDataList(dataSnapshot.child(Endpoint.DB_CHATROOM_LISTMESSAGES));
+                        scrollToLast();
                     }
 
                     @Override
                     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                         getMessageFromDataList(dataSnapshot.child(Endpoint.DB_CHATROOM_LISTMESSAGES));
+                        scrollToLast();
                     }
 
                     @Override
@@ -249,6 +251,7 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
                     messageList.clear();
                     getMessageFromDataList(dataSnapshot.child(Endpoint.DB_CHATROOM_LISTMESSAGES));
                     mMessageAdapter.notifyDataSetChanged();
+                    scrollToLast();
                 }
 
                 @Override
