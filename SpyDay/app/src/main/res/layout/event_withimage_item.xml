@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/event_item_bg"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="@dimen/event_item_margin"
+        android:layout_marginRight="@dimen/event_item_margin"
+        android:layout_marginTop="@dimen/event_item_margin"
+        android:background="@drawable/event_rounded_corner_bg"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/event_item_padding_top_bottom"
+        android:paddingTop="@dimen/event_item_padding_top_bottom" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="@dimen/event_item_padding_left_right"
+            android:paddingRight="@dimen/event_item_padding_left_right" >
+
+            <com.android.volley.toolbox.NetworkImageView
+                android:id="@+id/event.profileimg"
+                android:layout_width="@dimen/event_item_profile_pic"
+                android:layout_height="@dimen/event_item_profile_pic"
+                android:scaleType="fitCenter" >
+            </com.android.volley.toolbox.NetworkImageView>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/event_item_profile_info_padd" >
+
+                <TextView
+                    android:id="@+id/event.username"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/event_item_profile_name"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/event.timestamp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/event_timestamp"
+                    android:textSize="@dimen/event_item_timestamp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/event.statusmsg"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="@dimen/event_item_status_pad_left_right"
+            android:paddingRight="@dimen/event_item_status_pad_left_right"
+            android:paddingTop="@dimen/event_item_status_pad_top" />
+
+        <TextView
+            android:id="@+id/event.urlview"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:linksClickable="true"
+            android:paddingBottom="10dp"
+            android:paddingLeft="@dimen/event_item_status_pad_left_right"
+            android:paddingRight="@dimen/event_item_status_pad_left_right"
+            android:textColorLink="@color/event_link" />
+
+        <me.hnguyenuml.spyday.UserContent.EventImageView
+            android:id="@+id/event.image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:src="@drawable/add_image_button"
+            android:scaleType="fitXY"
+            android:visibility="visible" />
+    </LinearLayout>
+
+</LinearLayout>

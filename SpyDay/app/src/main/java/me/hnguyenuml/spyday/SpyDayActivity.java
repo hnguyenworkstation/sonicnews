@@ -2,20 +2,27 @@ package me.hnguyenuml.spyday;
 
 import android.animation.Animator;
 import android.content.Context;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +41,6 @@ public class SpyDayActivity extends BaseActivity implements
     private boolean isTransforming;
     private ViewPagerAdapter adapter;
 
-
     private FloatingActionButton mFloatBtn;
     private FloatingActionButton fab_1;
     private FloatingActionButton fab_2;
@@ -46,6 +52,18 @@ public class SpyDayActivity extends BaseActivity implements
     private Animation closeFabAnim2;
     private Animation showFabAnim3;
     private Animation closeFabAnim3;
+
+    private Toolbar mToolbar;
+    private TabLayout mTabLayout;
+
+    private final int EVENT_AROUND_POS = 0;
+    private final int CHATROOM_POS = 1;
+
+    private final int[] mTabsIcons = {
+            R.drawable.ic_add_chat,
+            R.drawable.ic_add_chat,
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +116,29 @@ public class SpyDayActivity extends BaseActivity implements
 
         showFabAnim3 = AnimationUtils.loadAnimation(getApplication(), R.anim.show_fab3);
         closeFabAnim3 = AnimationUtils.loadAnimation(getApplication(), R.anim.hide_fab3);
+
+        mToolbar = (Toolbar) findViewById(R.id.spyday_toolbar);
+        setSupportActionBar(mToolbar);
+
+        mTabLayout = (TabLayout) findViewById(R.id.spyday_tablayout);
+        mTabLayout.setupWithViewPager(mViewPager);
+        if (mTabLayout != null) {
+            mTabLayout.setupWithViewPager(mViewPager);
+            for (int i = 0; i < mTabLayout.getTabCount(); i++) {
+                mTabLayout.getTabAt(i).setIcon(mTabsIcons[i]);
+            }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        int position = mViewPager.getCurrentItem();
+        if (position == EVENT_AROUND_POS) {
+            getMenuInflater().inflate(R.menu.event_around_menu, menu);
+        } else if (position == CHATROOM_POS) {
+            getMenuInflater().inflate(R.menu.list_chatroom_menu, menu);
+        }
+        return true;
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -105,6 +146,29 @@ public class SpyDayActivity extends BaseActivity implements
         adapter.addFragment(new EventAroundFragment(), "EVAround");
         adapter.addFragment(new ListChatRoomFragment(), "Messages");
         viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                invalidateFragmentMenus(position);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                invalidateFragmentMenus(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
+    private void invalidateFragmentMenus(int position){
+        for(int i = 0; i < adapter.getCount(); i++){
+            adapter.getItem(i).setHasOptionsMenu(i == position);
+        }
+        invalidateOptionsMenu(); //or respectively its support method.
     }
 
     private void circularRevealActivity() {
@@ -201,7 +265,7 @@ public class SpyDayActivity extends BaseActivity implements
     public void onFragmentInteraction(Uri uri) {
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
+    private class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitle = new ArrayList<>();
 
@@ -224,7 +288,7 @@ public class SpyDayActivity extends BaseActivity implements
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mFragmentTitle.get(position);
+            return null;
         }
 
         public void addFragment(Fragment fragment, String title) {

@@ -79,7 +79,13 @@ public class ListChatRoomFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.list_chatroom_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -88,11 +94,6 @@ public class ListChatRoomFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_list_chatroom, container, false);
         listRecycleView = (RecyclerView) rootView.findViewById(R.id.chatroom_recycleview);
         mInstance = SpyDayApplication.getInstance();
-
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.listchatroom_toolbar);
-        AppCompatActivity tempActivity = (AppCompatActivity) this.getActivity();
-        tempActivity.setSupportActionBar(toolbar);
-        tempActivity.setTitle("Messages");
 
         listChatRoom = new ArrayList<>();
 
@@ -154,11 +155,6 @@ public class ListChatRoomFragment extends Fragment {
         });
 
         return rootView;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.list_chatroom_menu, menu);
     }
 
     @Override
