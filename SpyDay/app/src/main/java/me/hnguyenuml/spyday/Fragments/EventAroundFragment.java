@@ -142,7 +142,7 @@ public class EventAroundFragment extends Fragment {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        updateLocalEvent();
+                        fetchLocalEvent();
                         mSwipeRefLayout.setRefreshing(false);
                     }
                 }, 1500);
@@ -208,7 +208,6 @@ public class EventAroundFragment extends Fragment {
                 mRecyclerView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        // scroll to the top
                         mRecyclerView.smoothScrollToPosition(0);
                     }
                 }, 100);
