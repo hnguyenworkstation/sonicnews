@@ -8,6 +8,12 @@
     <dimen name="tab_height">48dp</dimen>
     <dimen name="tab_padding">12dp</dimen>
 
+    <!-- Actionbar Dimen -->
+    <dimen name="actionbar_size">50dp</dimen>
+    <dimen name="actionbar_margin">2dp</dimen>
+    <dimen name="actionbar_username_size">14sp</dimen>
+    <dimen name="actionbar_nickname_size">9sp</dimen>
+
     <dimen name="profile_cover_height">300dp</dimen>
     <dimen name="profile_image_width">120dp</dimen>
     <dimen name="profile_image_height">120dp</dimen>

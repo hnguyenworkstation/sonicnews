@@ -208,7 +208,7 @@ public class EventAroundFragment extends Fragment {
                 mRecyclerView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mRecyclerView.smoothScrollToPosition(0);
+                        mRecyclerView.scrollToPosition(0);
                     }
                 }, 100);
             }

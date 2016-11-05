@@ -12,7 +12,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -120,6 +122,8 @@ public class SpyDayActivity extends BaseActivity implements
         mToolbar = (Toolbar) findViewById(R.id.spyday_toolbar);
         setSupportActionBar(mToolbar);
 
+        initActionBar();
+
         mTabLayout = (TabLayout) findViewById(R.id.spyday_tablayout);
         mTabLayout.setupWithViewPager(mViewPager);
         if (mTabLayout != null) {
@@ -128,6 +132,20 @@ public class SpyDayActivity extends BaseActivity implements
                 mTabLayout.getTabAt(i).setIcon(mTabsIcons[i]);
             }
         }
+    }
+
+    private void initActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions(actionBar.getDisplayOptions()
+                | ActionBar.DISPLAY_SHOW_CUSTOM);
+
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setTitle(null);
+
+        LayoutInflater inflator = (LayoutInflater) this .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflator.inflate(R.layout.actionbar_profile, null);
+
+        actionBar.setCustomView(v);
     }
 
     @Override
