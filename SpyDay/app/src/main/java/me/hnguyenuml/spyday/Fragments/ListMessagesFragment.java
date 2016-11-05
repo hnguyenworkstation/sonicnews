@@ -215,7 +215,7 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
                         setupAdapter();
                         swipeRefreshLayout.setRefreshing(false);
                     }
-                }, 2500);
+                }, 1500);
             }
         });
 

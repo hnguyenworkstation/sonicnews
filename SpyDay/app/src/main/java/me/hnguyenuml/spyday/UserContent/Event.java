@@ -5,15 +5,23 @@ package me.hnguyenuml.spyday.UserContent;
  */
 
 public class Event {
-    private int id;
-    private String name, status, image, profilePic, timeStamp, url;
+
+    public static final int TYPE_IMAGE_EVENT = 0;
+    private String id;
+    private String name;
+    private String status;
+    private String image;
+    private String profilePic;
+    private String timeStamp;
+    private String url;
+
+    private int type;
 
     public Event() {
     }
 
-    public Event(int id, String name, String image, String status,
+    public Event(String id, String name, String image, String status,
                     String profilePic, String timeStamp, String url) {
-        super();
         this.id = id;
         this.name = name;
         this.image = image;
@@ -23,11 +31,19 @@ public class Event {
         this.url = url;
     }
 
-    public int getId() {
+    public int getType() {
+        return TYPE_IMAGE_EVENT;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

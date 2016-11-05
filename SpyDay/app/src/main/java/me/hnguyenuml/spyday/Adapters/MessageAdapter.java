@@ -14,8 +14,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 
 import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
@@ -41,7 +39,6 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
         private final ImageView mCheck;
         private ImageView mImgWarning;
 
-        private TextView mTimeView;
         private TextView mTextView;
         private ImageView mAvatar;
         private ImageView mImageView;
@@ -54,13 +51,13 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
         private ViewHolder(ViewGroup v, int viewType) {
             super(v);
             mContext = v.getContext();
+
             this.mTextView = (TextView) v.findViewById(R.id.message_content);
             this.mAvatar = (ImageView) v.findViewById(R.id.message_avatar);
             this.mImageView = (ImageView) v.findViewById(R.id.sticker_image);
             this.mImgWarning = (ImageView) v.findViewById(R.id.message_warningicon);
             this.mChatStatusView = (RelativeLayout) v.findViewById(R.id.message_chatstatusview);
             this.mImageViewStatus = (ImageView) v.findViewById(R.id.message_status_image);
-            this.mTimeView = (TextView) v.findViewById(R.id.message_status_time);
             this.mImageContainer = (ImageView) v.findViewById(R.id.message_imagecontainer);
 
             if (this.mImgWarning != null) {
@@ -69,7 +66,7 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
                     public void onClick(View v) {
                         if (mListener != null)
                             mListener.onErrorMessageClick(v);
-                        }
+                    }
                 });
             }
 
@@ -130,7 +127,7 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
                     this.mImageContainer.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            mListener.onMessageImageClick(v, getAdapterPosition() - 1);
+                            mListener.onStickerMessageClick(v, getAdapterPosition() - 1);
                         }
                     });
                 }
@@ -145,9 +142,15 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
         public void setImageFromURL(String url) {
             if (mImageContainer == null) return;
             Glide.with(mImageContainer.getContext()).load(url)
-                    .override(400, 300)
-                    .centerCrop()
+                    .override(400, 2500)
+                    .fitCenter()
                     .into(mImageContainer);
+            mImageContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
         }
     }
 
@@ -196,10 +199,6 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
             case Message.TYPE_MESSAGE_IMAGE_FROM_ME:
                 v = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.message_withimage_from_me, parent, false);
-                break;
-            case Message.TYPE_MESSAGE_IMAGE_FROM_FRIEND:
-                v = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.message_withimage_from_friend, parent, false);
                 break;
             default:
                 break;
@@ -260,8 +259,6 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
                         holder.setImageFromURL(MapUtils.getLocation(
                                 mDataset.get(position - 1).getMapContent().getLatitude(),
                                 mDataset.get(position - 1).getMapContent().getLongitude()));
-                        holder.mTimeView.setText(mDataset.get(position - 1).getMessageTimeStamp());
-                        holder.mChatStatusView.setVisibility(View.INVISIBLE);
                         break;
                     default:
                         bg = holder.mTextView;
@@ -321,14 +318,6 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
                         bg = holder.mTextView;
                         holder.mTextView.setText(mDataset.get(position - 1).getMessageText());
                         break;
-                    case Message.TYPE_MESSAGE_IMAGE_FROM_FRIEND:
-                        bg = holder.mImageContainer;
-                        holder.setImageFromURL(MapUtils.getLocation(
-                                mDataset.get(position - 1).getMapContent().getLatitude(),
-                                mDataset.get(position - 1).getMapContent().getLongitude()));
-                        holder.mTimeView.setText(mDataset.get(position - 1).getMessageTimeStamp());
-                        holder.mChatStatusView.setVisibility(View.INVISIBLE);
-                        break;
                     default:
                         break;
                 }
@@ -372,6 +361,8 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
             } else {
                 holder.mCheck.setVisibility(View.GONE);
             }
+
+
         }
     }
 

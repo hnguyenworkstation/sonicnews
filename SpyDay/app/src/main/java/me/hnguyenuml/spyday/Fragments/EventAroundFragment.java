@@ -6,10 +6,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +28,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +46,8 @@ import me.hnguyenuml.spyday.Adapters.EventAdapter;
 import me.hnguyenuml.spyday.AddEventActivity;
 import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.R;
+import me.hnguyenuml.spyday.Static.Endpoint;
+import me.hnguyenuml.spyday.UI.CustomScrollingHandler;
 import me.hnguyenuml.spyday.UserContent.Event;
 
 public class EventAroundFragment extends Fragment {
@@ -47,7 +55,7 @@ public class EventAroundFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     private static final String TAG = EventAroundFragment.class.getSimpleName();
-    private ListView listView;
+    private RecyclerView mRecyclerView;
     private EventAdapter listAdapter;
     private List<Event> feedItems;
     private String URL_FEED = "http://api.androidhive.info/feed/feed.json";
@@ -57,7 +65,14 @@ public class EventAroundFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-    private RecyclerView mRecycler;
+    private SwipeRefreshLayout mSwipeRefLayout;
+
+    private final SpyDayApplication mInstance = SpyDayApplication.getInstance();
+    private final DatabaseReference mRootRef = mInstance.getPrefManager().getFirebaseDatabase().child(Endpoint.DB_EVENT);
+
+    private final int duration = 1000;
+    private final CustomScrollingHandler mLayoutManager = new CustomScrollingHandler(getActivity(),
+            LinearLayoutManager.VERTICAL, false, duration);
 
     public EventAroundFragment() {
 
@@ -90,102 +105,128 @@ public class EventAroundFragment extends Fragment {
 
         initUI(rootView);
 
-        initCacheCatcher();
+        fetchLocalEvent();
+
+        updateLocalEvent();
 
         return rootView;
     }
 
     private void initUI(View rootView) {
-        listView = (ListView) rootView.findViewById(R.id.evaround_listview);
-        feedItems = new ArrayList<Event>();
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.evaround_recyclerview);
 
+        feedItems = new ArrayList<>();
         listAdapter = new EventAdapter(getActivity(), feedItems);
-        listView.setAdapter(listAdapter);
+        listAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                int friendlyMessageCount = listAdapter.getItemCount();
+                int lastVisiblePosition = mLayoutManager.findLastCompletelyVisibleItemPosition();
+                if (lastVisiblePosition == -1 ||
+                        (positionStart >= (friendlyMessageCount - 1) &&
+                                lastVisiblePosition == (positionStart - 1))) {
+                    mRecyclerView.scrollToPosition(positionStart);
+                }
+            }
+        });
+
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(listAdapter);
+
+        mSwipeRefLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.evaround_swiperef);
+        mSwipeRefLayout.setColorSchemeResources(R.color.orange1, R.color.green1, R.color.blue1);
+        mSwipeRefLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateLocalEvent();
+                        mSwipeRefLayout.setRefreshing(false);
+                    }
+                }, 1500);
+            }
+        });
     }
+
+    private void updateLocalEvent() {
+        mRootRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                String id = dataSnapshot.child("id").getValue().toString();
+                String image = dataSnapshot.child("image").getValue().toString();
+                String name = dataSnapshot.child("name").getValue().toString();
+                String profilePic = dataSnapshot.child("profilePic").getValue().toString();
+                String status = dataSnapshot.child("status").getValue().toString();
+                String timeStamp = dataSnapshot.child("timeStamp").getValue().toString();
+                String url = dataSnapshot.child("url").getValue().toString();
+
+                Event event = new Event(id, name, image, status, profilePic, timeStamp, url);
+                feedItems.add(0, event);
+                listAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void fetchLocalEvent() {
+        mRootRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                feedItems.clear();
+                for (DataSnapshot ds: dataSnapshot.getChildren()) {
+                    String id = ds.child("id").getValue().toString();
+                    String image = ds.child("image").getValue().toString();
+                    String name = ds.child("name").getValue().toString();
+                    String profilePic = ds.child("profilePic").getValue().toString();
+                    String status = ds.child("status").getValue().toString();
+                    String timeStamp = ds.child("timeStamp").getValue().toString();
+                    String url = ds.child("url").getValue().toString();
+
+                    Event event = new Event(id, name, image, status, profilePic, timeStamp, url);
+                    feedItems.add(event);
+                }
+
+                listAdapter.notifyDataSetChanged();
+                mRecyclerView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // scroll to the top
+                        mRecyclerView.smoothScrollToPosition(0);
+                    }
+                }, 100);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.event_around_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    private void initCacheCatcher() {
-        // We first check for cached request
-        Cache cache = SpyDayApplication.getInstance().getRequestQueue().getCache();
-        Cache.Entry entry = cache.get(URL_FEED);
-        if (entry != null) {
-            // fetch the data from cache
-            try {
-                String data = new String(entry.data, "UTF-8");
-                try {
-                    parseJsonFeed(new JSONObject(data));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-        } else {
-            // making fresh volley request and getting json
-            JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                    (Request.Method.GET, URL_FEED, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            VolleyLog.d(TAG, "Response: " + response.toString());
-                            if (response != null) {
-                                parseJsonFeed(response);
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            VolleyLog.d(TAG, "Error: " + error.getMessage());
-                        }
-                    });
-
-            // Adding request to volley request queue
-            SpyDayApplication.getInstance().addToRequestQueue(jsObjRequest);
-        }
-    }
-
-    /**
-     * Parsing json reponse and passing the data to feed view list adapter
-     * */
-    private void parseJsonFeed(JSONObject response) {
-        try {
-            JSONArray feedArray = response.getJSONArray("feed");
-
-            for (int i = 0; i < feedArray.length(); i++) {
-                JSONObject feedObj = (JSONObject) feedArray.get(i);
-
-                Event item = new Event();
-                item.setId(feedObj.getInt("id"));
-                item.setName(feedObj.getString("name"));
-
-                // Image might be null sometimes
-                String image = feedObj.isNull("image") ? null : feedObj
-                        .getString("image");
-                item.setImge(image);
-                item.setStatus(feedObj.getString("status"));
-                item.setProfilePic(feedObj.getString("profilePic"));
-                item.setTimeStamp(feedObj.getString("timeStamp"));
-
-                // url might be null sometimes
-                String feedUrl = feedObj.isNull("url") ? null : feedObj
-                        .getString("url");
-                item.setUrl(feedUrl);
-
-                feedItems.add(item);
-            }
-
-            // notify data changes to list adapater
-            listAdapter.notifyDataSetChanged();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

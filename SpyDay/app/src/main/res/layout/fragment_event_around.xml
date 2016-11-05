@@ -5,9 +5,15 @@
     android:orientation="vertical"
     tools:context="me.hnguyenuml.spyday.Fragments.EventAroundFragment">
 
-    <ListView
-        android:id="@+id/evaround.listview"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:divider="@null" />
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/evaround.swiperef"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/evaround.recyclerview"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:divider="@null" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>
