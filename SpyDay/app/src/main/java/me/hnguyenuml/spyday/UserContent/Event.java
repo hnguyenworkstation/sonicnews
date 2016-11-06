@@ -7,6 +7,19 @@ package me.hnguyenuml.spyday.UserContent;
 public class Event {
 
     public static final int TYPE_IMAGE_EVENT = 0;
+
+    public static final String EVENT_DATABASE = "Events";
+    public static final String EVENT_ID = "id";
+    public static final String EVENT_NAME = "name";
+    public static final String EVENT_STATUS = "status";
+    public static final String EVENT_IMAGE = "image";
+    public static final String EVENT_PROFILEPIC = "profilePic";
+    public static final String EVENT_TIMESTAMP = "timeStamp";
+    public static final String EVENT_URL = "url";
+    public static final String EVENT_LIKECOUNT = "likeCount";
+    public static final String EVENT_COMMENTCOUNT = "commentCount";
+    public static final String EVENT_STORAGE = "Event_Images";
+
     private String id;
     private String name;
     private String status;
@@ -14,6 +27,8 @@ public class Event {
     private String profilePic;
     private String timeStamp;
     private String url;
+    private int likecount;
+    private int commentcount;
 
     private int type;
 
@@ -21,7 +36,7 @@ public class Event {
     }
 
     public Event(String id, String name, String image, String status,
-                    String profilePic, String timeStamp, String url) {
+                    String profilePic, String timeStamp, String url, int likecount, int commentcount) {
         this.id = id;
         this.name = name;
         this.image = image;
@@ -29,6 +44,24 @@ public class Event {
         this.profilePic = profilePic;
         this.timeStamp = timeStamp;
         this.url = url;
+        this.likecount = likecount;
+        this.commentcount = commentcount;
+    }
+
+    public int getCommentcount() {
+        return commentcount;
+    }
+
+    public void setCommentcount(int commentcount) {
+        this.commentcount = commentcount;
+    }
+
+    public int getLikecount() {
+        return likecount;
+    }
+
+    public void setLikecount(int likecount) {
+        this.likecount = likecount;
     }
 
     public int getType() {

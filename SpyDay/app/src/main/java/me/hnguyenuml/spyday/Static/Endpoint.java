@@ -25,13 +25,4 @@ public class Endpoint {
 
     public static final String TYPE_SINGLE = "single";
     public static final String TYPE_GROUP = "group";
-
-    // Event
-    public static final String DB_EVENT = "Events";
-    public static final String SR_EVENT = "Event_Images";
-    public static final String EVENT_TITLE = "evTitle";
-    public static final String EVENT_DESC = "evDesc";
-    public static final String EVENT_ID = "evUID";
-    public static final String EVENT_CREATED_AT = "evCreated";
-    public static final String EVENT_IMAGE = "evImageURL";
 }

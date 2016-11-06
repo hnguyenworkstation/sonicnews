@@ -3,12 +3,14 @@ package me.hnguyenuml.spyday.Fragments;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -48,6 +50,7 @@ import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.R;
 import me.hnguyenuml.spyday.Static.Endpoint;
 import me.hnguyenuml.spyday.UI.CustomScrollingHandler;
+import me.hnguyenuml.spyday.UI.WrapContentLinearLayoutManager;
 import me.hnguyenuml.spyday.UserContent.Event;
 
 public class EventAroundFragment extends Fragment {
@@ -58,7 +61,6 @@ public class EventAroundFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private EventAdapter listAdapter;
     private List<Event> feedItems;
-    private String URL_FEED = "http://api.androidhive.info/feed/feed.json";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -68,11 +70,11 @@ public class EventAroundFragment extends Fragment {
     private SwipeRefreshLayout mSwipeRefLayout;
 
     private final SpyDayApplication mInstance = SpyDayApplication.getInstance();
-    private final DatabaseReference mRootRef = mInstance.getPrefManager().getFirebaseDatabase().child(Endpoint.DB_EVENT);
+    private final DatabaseReference mRootRef = mInstance.getPrefManager()
+            .getFirebaseDatabase().child(Event.EVENT_DATABASE);
 
     private final int duration = 1000;
-    private final CustomScrollingHandler mLayoutManager = new CustomScrollingHandler(getActivity(),
-            LinearLayoutManager.VERTICAL, false, duration);
+    private WrapContentLinearLayoutManager mLayoutManager;
 
     public EventAroundFragment() {
 
@@ -107,12 +109,11 @@ public class EventAroundFragment extends Fragment {
 
         fetchLocalEvent();
 
-        updateLocalEvent();
-
         return rootView;
     }
 
     private void initUI(View rootView) {
+        mLayoutManager = new WrapContentLinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.evaround_recyclerview);
 
         feedItems = new ArrayList<>();
@@ -121,13 +122,7 @@ public class EventAroundFragment extends Fragment {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
-                int friendlyMessageCount = listAdapter.getItemCount();
-                int lastVisiblePosition = mLayoutManager.findLastCompletelyVisibleItemPosition();
-                if (lastVisiblePosition == -1 ||
-                        (positionStart >= (friendlyMessageCount - 1) &&
-                                lastVisiblePosition == (positionStart - 1))) {
-                    mRecyclerView.scrollToPosition(positionStart);
-                }
+                mRecyclerView.scrollToPosition(positionStart);
             }
         });
 
@@ -143,27 +138,31 @@ public class EventAroundFragment extends Fragment {
                     @Override
                     public void run() {
                         fetchLocalEvent();
-                        mSwipeRefLayout.setRefreshing(false);
+                        mSwipeRefLayout.setRefreshing(true);
                     }
                 }, 1500);
             }
         });
-    }
 
-    private void updateLocalEvent() {
         mRootRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                String id = dataSnapshot.child("id").getValue().toString();
-                String image = dataSnapshot.child("image").getValue().toString();
-                String name = dataSnapshot.child("name").getValue().toString();
-                String profilePic = dataSnapshot.child("profilePic").getValue().toString();
-                String status = dataSnapshot.child("status").getValue().toString();
-                String timeStamp = dataSnapshot.child("timeStamp").getValue().toString();
-                String url = dataSnapshot.child("url").getValue().toString();
+                String id = dataSnapshot.child(Event.EVENT_ID).getValue().toString();
+                String image = null;
+                if (dataSnapshot.child(Event.EVENT_ID).getValue() != null)
+                    image = dataSnapshot.child(Event.EVENT_IMAGE).getValue().toString();
+                String name = dataSnapshot.child(Event.EVENT_NAME).getValue().toString();
+                String profilePic = dataSnapshot.child(Event.EVENT_PROFILEPIC).getValue().toString();
+                String status = dataSnapshot.child(Event.EVENT_STATUS).getValue().toString();
+                String timeStamp = dataSnapshot.child(Event.EVENT_TIMESTAMP).getValue().toString();
+                String url = dataSnapshot.child(Event.EVENT_URL).getValue().toString();
+                int likeCount = Integer.parseInt(dataSnapshot.child(Event.EVENT_LIKECOUNT).getValue().toString());
+                int commentCount = Integer.parseInt(dataSnapshot.child(Event.EVENT_COMMENTCOUNT).getValue().toString());
 
-                Event event = new Event(id, name, image, status, profilePic, timeStamp, url);
-                feedItems.add(0, event);
+                Event event = new Event(id, name, image, status,
+                        profilePic, timeStamp, url, likeCount, commentCount);
+                event.setType(Event.TYPE_IMAGE_EVENT);
+                feedItems.add(event);
                 listAdapter.notifyDataSetChanged();
             }
 
@@ -191,21 +190,27 @@ public class EventAroundFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 feedItems.clear();
-                listAdapter.notifyItemRangeChanged(0,feedItems.size()-1);
                 for (DataSnapshot ds: dataSnapshot.getChildren()) {
                     String id = ds.child("id").getValue().toString();
-                    String image = ds.child("image").getValue().toString();
+                    String image = null;
+                    if (ds.child("image").getValue() != null)
+                        image = ds.child("image").getValue().toString();
                     String name = ds.child("name").getValue().toString();
                     String profilePic = ds.child("profilePic").getValue().toString();
                     String status = ds.child("status").getValue().toString();
                     String timeStamp = ds.child("timeStamp").getValue().toString();
                     String url = ds.child("url").getValue().toString();
+                    int likeCount = Integer.parseInt(ds.child(Event.EVENT_LIKECOUNT).getValue().toString());
+                    int commentCount = Integer.parseInt(ds.child(Event.EVENT_COMMENTCOUNT).getValue().toString());
 
-                    Event event = new Event(id, name, image, status, profilePic, timeStamp, url);
+                    Event event = new Event(id, name, image, status,
+                            profilePic, timeStamp, url, likeCount, commentCount);
+                    event.setType(Event.TYPE_IMAGE_EVENT);
                     feedItems.add(event);
+
+                    listAdapter.notifyDataSetChanged();
                 }
 
-                listAdapter.notifyDataSetChanged();
                 mRecyclerView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -229,6 +234,8 @@ public class EventAroundFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -249,10 +256,18 @@ public class EventAroundFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        Log.e("DEBUG", "onResume of EventAroundFragment");
+        fetchLocalEvent();
+        super.onResume();
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
+            fetchLocalEvent();
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");

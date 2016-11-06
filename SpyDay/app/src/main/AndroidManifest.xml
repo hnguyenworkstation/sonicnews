@@ -26,8 +26,7 @@
         <activity android:name=".MapsActivity"
             android:launchMode="singleTask"/>
         <activity
-            android:name=".SpyDayActivity"
-            android:launchMode="singleTask"></activity>
+            android:name=".SpyDayActivity"></activity>
         <activity android:name=".BaseActivity" />
         <activity
             android:name=".LoginActivity"

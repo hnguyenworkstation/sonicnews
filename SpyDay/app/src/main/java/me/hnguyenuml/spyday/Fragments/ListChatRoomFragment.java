@@ -200,7 +200,6 @@ public class ListChatRoomFragment extends Fragment {
     }
 
     private void fetchChatrooms() {
-        listChatRoom.clear();
         chatRoomRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

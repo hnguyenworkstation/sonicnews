@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/event_item_bg"
+    android:background="@color/white_transparent"
     android:orientation="vertical" >
 
     <LinearLayout
@@ -80,5 +80,57 @@
             android:scaleType="fitXY"
             android:visibility="visible" />
     </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/event_item_margin"
+        android:layout_marginRight="@dimen/event_item_margin">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="end"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1000"
+                android:textStyle="bold"
+                android:id="@+id/event.commentcount"
+                android:background="@drawable/corner_input"/>
+
+            <ImageButton
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+                android:layout_weight="1"
+                android:background="@drawable/selector_btn"
+                android:layout_width="@dimen/event_media_button_size"
+                android:layout_height="@dimen/event_media_button_size"
+                android:id="@+id/event.commentbtn"
+                android:src="@drawable/ic_comment_dark"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1000"
+                android:textStyle="bold"
+                android:id="@+id/event.likecount"
+                android:background="@drawable/corner_input"/>
+
+            <ImageButton
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+                android:layout_weight="1"
+                android:background="@drawable/selector_btn"
+                android:layout_width="@dimen/event_media_button_size"
+                android:layout_height="@dimen/event_media_button_size"
+                android:id="@+id/event.likebtn"
+                android:src="@drawable/ic_like_dark"/>
+
+        </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>

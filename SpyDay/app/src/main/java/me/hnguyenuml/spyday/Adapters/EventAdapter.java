@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -23,6 +24,7 @@ import java.util.List;
 import me.hnguyenuml.spyday.BasicApp.SpyDayApplication;
 import me.hnguyenuml.spyday.R;
 import me.hnguyenuml.spyday.Static.Endpoint;
+import me.hnguyenuml.spyday.UserContent.ChatRoom;
 import me.hnguyenuml.spyday.UserContent.Event;
 import me.hnguyenuml.spyday.UserContent.EventImageView;
 import me.hnguyenuml.spyday.UserContent.Message;
@@ -39,24 +41,30 @@ public class EventAdapter extends FirebaseRecyclerAdapter<Event, EventAdapter.Vi
     private final SpyDayApplication mInstance = SpyDayApplication.getInstance();
     private ImageLoader imageLoader = SpyDayApplication.getInstance().getImageLoader();
 
-    static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView mUsername;
-        TextView mTimeStamp;
-        TextView mStatusMsg;
-        TextView mURL;
-        NetworkImageView mProfilePic;
-        EventImageView mEventImageView;
-        Context mContext;
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private TextView mUsername;
+        private TextView mTimeStamp;
+        private TextView mStatusMsg;
+        private TextView mURL;
+        private NetworkImageView mProfilePic;
+        private EventImageView mEventImageView;
+        private final int mViewType;
+        private Context mContext;
+        private ImageButton mLikeBtn;
+        private ImageButton mCommentBtn;
 
-        ViewHolder(View v) {
+        ViewHolder(ViewGroup v, int viewType) {
             super(v);
             mContext = v.getContext();
+            this.mViewType = viewType;
             this.mUsername = (TextView) v.findViewById(R.id.event_username);
             this.mTimeStamp = (TextView) v.findViewById(R.id.event_timestamp);
             this.mStatusMsg = (TextView) v.findViewById(R.id.event_statusmsg);
             this.mURL = (TextView) v.findViewById(R.id.event_urlview);
-                this.mProfilePic = (NetworkImageView) v.findViewById(R.id.event_profileimg);
+            this.mProfilePic = (NetworkImageView) v.findViewById(R.id.event_profileimg);
             this.mEventImageView = (EventImageView) v.findViewById(R.id.event_image);
+            this.mLikeBtn = (ImageButton) v.findViewById(R.id.event_likebtn);
+            this.mCommentBtn = (ImageButton) v.findViewById(R.id.event_commentbtn);
         }
 
         @Override
@@ -79,12 +87,10 @@ public class EventAdapter extends FirebaseRecyclerAdapter<Event, EventAdapter.Vi
                         .inflate(R.layout.event_withimage_item, parent, false);
                 break;
             default:
-                v = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.event_withimage_item, parent, false);
                 break;
         }
 
-        EventAdapter.ViewHolder vh = new EventAdapter.ViewHolder(v);
+        EventAdapter.ViewHolder vh = new EventAdapter.ViewHolder((ViewGroup) v, viewType);
         return vh;
     }
 
@@ -96,11 +102,15 @@ public class EventAdapter extends FirebaseRecyclerAdapter<Event, EventAdapter.Vi
     }
 
     @Override
-    protected void populateViewHolder(ViewHolder viewHolder, Event model, int position) {
-        Log.v("test", "pos: " + (position));
-        if (position == feedItems.size()) return;
+    protected void populateViewHolder(ViewHolder viewHolder, Event event, int position) {
 
-        model = feedItems.get(position);
+    }
+
+    @Override
+    public void onBindViewHolder(final EventAdapter.ViewHolder viewHolder, int position) {
+        Log.v("test", "pos: " + (position));
+
+        Event tempEv = feedItems.get(position);
 
         if (inflater == null)
             inflater = (LayoutInflater) activity
@@ -109,17 +119,17 @@ public class EventAdapter extends FirebaseRecyclerAdapter<Event, EventAdapter.Vi
         if (imageLoader == null)
             imageLoader = SpyDayApplication.getInstance().getImageLoader();
 
-        viewHolder.mUsername.setText(model.getName());
+        viewHolder.mUsername.setText(tempEv.getName());
 
         // Converting timestamp into x ago format
         CharSequence timeAgo = DateUtils.getRelativeTimeSpanString(
-                Long.parseLong(model.getTimeStamp()),
+                Long.parseLong(tempEv.getTimeStamp()),
                 System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS);
         viewHolder.mTimeStamp.setText(timeAgo);
 
         // Chcek for empty status message
-        if (!TextUtils.isEmpty(model.getStatus())) {
-            viewHolder.mStatusMsg.setText(model.getStatus());
+        if (!TextUtils.isEmpty(tempEv.getStatus())) {
+            viewHolder.mStatusMsg.setText(tempEv.getStatus());
             viewHolder.mStatusMsg.setVisibility(View.VISIBLE);
         } else {
             // status is empty, remove from view
@@ -127,9 +137,9 @@ public class EventAdapter extends FirebaseRecyclerAdapter<Event, EventAdapter.Vi
         }
 
         // Checking for null feed url
-        if (model.getUrl() != null) {
-            viewHolder.mURL.setText(Html.fromHtml("<a href=\"" + model.getUrl() + "\">"
-                    + model.getUrl() + "</a> "));
+        if (tempEv.getUrl() != null) {
+            viewHolder.mURL.setText(Html.fromHtml("<a href=\"" + tempEv.getUrl() + "\">"
+                    + tempEv.getUrl() + "</a> "));
 
             // Making url clickable
             viewHolder.mURL.setMovementMethod(LinkMovementMethod.getInstance());
@@ -140,22 +150,22 @@ public class EventAdapter extends FirebaseRecyclerAdapter<Event, EventAdapter.Vi
         }
 
         // user profile pic
-        viewHolder.mProfilePic.setImageUrl(model.getProfilePic(), imageLoader);
+        viewHolder.mProfilePic.setImageUrl(tempEv.getProfilePic(), imageLoader);
 
         // Feed image
-        if (model.getImge() != null) {
-            viewHolder.mEventImageView.setImageUrl(model.getImge(), imageLoader);
+        if (tempEv.getImge() != null) {
+            viewHolder.mEventImageView.setImageUrl(tempEv.getImge(), imageLoader);
             viewHolder.mEventImageView.setVisibility(View.VISIBLE);
             viewHolder.mEventImageView
-                .setResponseObserver(new EventImageView.ResponseObserver() {
-                    @Override
-                    public void onError() {
-                    }
+                    .setResponseObserver(new EventImageView.ResponseObserver() {
+                        @Override
+                        public void onError() {
+                        }
 
-                    @Override
-                    public void onSuccess() {
-                    }
-                });
+                        @Override
+                        public void onSuccess() {
+                        }
+                    });
         } else {
             viewHolder.mEventImageView.setVisibility(View.GONE);
         }

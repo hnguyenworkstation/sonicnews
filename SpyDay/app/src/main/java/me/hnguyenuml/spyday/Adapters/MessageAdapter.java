@@ -228,7 +228,7 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Log.v("test", "pos: " + (position - 1));
         if (position == 0) {
-
+            // header
         } else if (position == mDataset.size() + 1) {
             // Footer
         } else if (mDataset.get(position - 1).getMessageType() == Message.TYPE_MESSAGE_DATE) {
