@@ -2,7 +2,9 @@ package me.hnguyenuml.spyday;
 
 import android.animation.Animator;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
@@ -17,14 +19,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +62,11 @@ public class SpyDayActivity extends BaseActivity implements
 
     private Toolbar mToolbar;
     private TabLayout mTabLayout;
+    private TextView mActionProfileName;
+    private TextView mActionProfileNickname;
+    private ImageView mActionProfileImg;
+    private ImageButton mActionProfileBtn;
+    private Intent mapIntent;
 
     private final int EVENT_AROUND_POS = 0;
     private final int CHATROOM_POS = 1;
@@ -71,6 +81,8 @@ public class SpyDayActivity extends BaseActivity implements
         super.onCreate(savedInstanceState);
         overridePendingTransition(R.anim.fix_anim, R.anim.fix_anim);
         setContentView(R.layout.activity_spy_day);
+
+        mapIntent = new Intent(SpyDayActivity.this, MapsActivity.class);
 
         rootLayout = findViewById(R.id.root_layout);
         if (savedInstanceState == null) {
@@ -142,8 +154,21 @@ public class SpyDayActivity extends BaseActivity implements
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setTitle(null);
 
-        LayoutInflater inflator = (LayoutInflater) this .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflator = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflator.inflate(R.layout.actionbar_profile, null);
+
+        mActionProfileBtn = (ImageButton) v.findViewById(R.id.actionbar_mapbutton);
+        mActionProfileBtn.setOnClickListener(this);
+        mActionProfileImg = (ImageView) v.findViewById(R.id.actionbar_profileimage);
+        mActionProfileImg.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                Toast.makeText(getBaseContext(), "Profile Clicked", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+        mActionProfileName = (TextView) v.findViewById(R.id.actionbar_profilename);
+        mActionProfileNickname = (TextView) v.findViewById(R.id.actionbar_nickname);
 
         actionBar.setCustomView(v);
     }
@@ -221,6 +246,12 @@ public class SpyDayActivity extends BaseActivity implements
                     transformFab();
                     isTransforming = true;
                 }
+                break;
+            case R.id.actionbar_mapbutton:
+                mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(mapIntent);
+                Toast.makeText(getBaseContext(), "Map Clicked", Toast.LENGTH_SHORT).show();
+
                 break;
             default:
                 break;

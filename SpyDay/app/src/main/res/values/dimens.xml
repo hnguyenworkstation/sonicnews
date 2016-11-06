@@ -11,8 +11,9 @@
     <!-- Actionbar Dimen -->
     <dimen name="actionbar_size">50dp</dimen>
     <dimen name="actionbar_margin">2dp</dimen>
-    <dimen name="actionbar_username_size">14sp</dimen>
-    <dimen name="actionbar_nickname_size">9sp</dimen>
+    <dimen name="actionbar_margin_profile">15dp</dimen>
+    <dimen name="actionbar_username_size">22sp</dimen>
+    <dimen name="actionbar_nickname_size">14sp</dimen>
 
     <dimen name="profile_cover_height">300dp</dimen>
     <dimen name="profile_image_width">120dp</dimen>

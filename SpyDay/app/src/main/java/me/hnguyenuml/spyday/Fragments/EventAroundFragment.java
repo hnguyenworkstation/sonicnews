@@ -191,6 +191,7 @@ public class EventAroundFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 feedItems.clear();
+                listAdapter.notifyItemRangeChanged(0,feedItems.size()-1);
                 for (DataSnapshot ds: dataSnapshot.getChildren()) {
                     String id = ds.child("id").getValue().toString();
                     String image = ds.child("image").getValue().toString();
