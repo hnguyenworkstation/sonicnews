@@ -67,6 +67,7 @@ public class SpyDayActivity extends BaseActivity implements
     private ImageView mActionProfileImg;
     private ImageButton mActionProfileBtn;
     private Intent mapIntent;
+    private Intent myProfileIntent;
 
     private final int EVENT_AROUND_POS = 0;
     private final int CHATROOM_POS = 1;
@@ -83,6 +84,7 @@ public class SpyDayActivity extends BaseActivity implements
         setContentView(R.layout.activity_spy_day);
 
         mapIntent = new Intent(SpyDayActivity.this, MapsActivity.class);
+        myProfileIntent = new Intent(SpyDayActivity.this, MyProfileActivity.class);
 
         rootLayout = findViewById(R.id.root_layout);
         if (savedInstanceState == null) {
@@ -164,6 +166,8 @@ public class SpyDayActivity extends BaseActivity implements
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 Toast.makeText(getBaseContext(), "Profile Clicked", Toast.LENGTH_SHORT).show();
+                myProfileIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(myProfileIntent);
                 return true;
             }
         });

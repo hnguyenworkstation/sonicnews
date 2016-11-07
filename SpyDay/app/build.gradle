@@ -42,6 +42,7 @@ dependencies {
     compile 'me.himanshusoni.chatmessageview:chat-message-view:1.0.3'
     compile 'com.daimajia.swipelayout:library:1.2.0@aar'
     compile 'com.mcxiaoke.volley:library:1.0.19'
+    compile 'com.squareup.picasso:picasso:2.5.2'
 
     testCompile 'junit:junit:4.12'
 }
