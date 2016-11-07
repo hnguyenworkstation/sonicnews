@@ -16,12 +16,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/myprofile.recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
         <android.support.design.widget.AppBarLayout
             android:id="@+id/myprofile.appbarlayout"
             android:layout_width="match_parent"
@@ -203,21 +197,29 @@
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp">
+                android:layout_height="48dp"
+                android:id="@+id/myprofile.frametab">
 
                 <android.support.design.widget.TabLayout
                     android:id="@+id/myprofile.tablayout"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:background="?attr/colorAccent"
+                    android:background="@color/profile5"
                     app:tabGravity="fill"
                     app:tabIndicatorColor="#5be5ad"
                     app:tabIndicatorHeight="4dp"
                     app:tabMode="fixed" />
 
             </FrameLayout>
-
         </android.support.design.widget.AppBarLayout>
+
+        <me.hnguyenuml.spyday.UI.CustomViewPager
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/myprofile.viewpager"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        </me.hnguyenuml.spyday.UI.CustomViewPager>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/myprofile.floatbtn"

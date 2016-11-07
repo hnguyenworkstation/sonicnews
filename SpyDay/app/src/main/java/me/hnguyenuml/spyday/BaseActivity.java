@@ -2,7 +2,10 @@ package me.hnguyenuml.spyday;
 
 import android.content.BroadcastReceiver;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
+import android.view.View;
 
 
 /**
@@ -22,4 +25,5 @@ public class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mInstance = this;
     }
+
 }

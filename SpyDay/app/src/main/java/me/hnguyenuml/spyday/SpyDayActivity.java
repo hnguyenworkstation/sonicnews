@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -34,6 +35,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.hnguyenuml.spyday.Adapters.ViewPagerAdapter;
 import me.hnguyenuml.spyday.Fragments.EventAroundFragment;
 import me.hnguyenuml.spyday.Fragments.ListChatRoomFragment;
 import me.hnguyenuml.spyday.UI.SpyDayUtil;
@@ -166,15 +168,28 @@ public class SpyDayActivity extends BaseActivity implements
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 Toast.makeText(getBaseContext(), "Profile Clicked", Toast.LENGTH_SHORT).show();
-                myProfileIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(myProfileIntent);
+                triggerMyProfileAcitivty(view);
                 return true;
             }
         });
+
         mActionProfileName = (TextView) v.findViewById(R.id.actionbar_profilename);
         mActionProfileNickname = (TextView) v.findViewById(R.id.actionbar_nickname);
 
         actionBar.setCustomView(v);
+    }
+
+    private void triggerMyProfileAcitivty(final View v) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                int[] startingLocation = new int[2];
+                v.getLocationOnScreen(startingLocation);
+                startingLocation[0] += v.getWidth() / 2;
+                MyProfileActivity.startUserProfileFromLocation(startingLocation, SpyDayActivity.this);
+                overridePendingTransition(0, 0);
+            }
+        }, 200);
     }
 
     @Override
@@ -316,37 +331,5 @@ public class SpyDayActivity extends BaseActivity implements
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-    }
-
-    private class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitle = new ArrayList<>();
-
-        public Context mContext;
-
-        public ViewPagerAdapter(Context mContext, FragmentManager manager) {
-            super(manager);
-            this.mContext = mContext;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragmentList.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragmentList.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return null;
-        }
-
-        public void addFragment(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitle.add(title);
-        }
     }
 }

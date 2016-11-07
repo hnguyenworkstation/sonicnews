@@ -45,7 +45,9 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".MyProfileActivity" >
+        <activity android:name=".MyProfileActivity"
+            android:launchMode="singleInstance"
+            android:parentActivityName=".SpyDayActivity">
         </activity>
 
         <activity
