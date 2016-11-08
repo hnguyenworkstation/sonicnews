@@ -120,12 +120,7 @@ public class EventAdapter extends FirebaseRecyclerAdapter<Event, EventAdapter.Vi
             imageLoader = SpyDayApplication.getInstance().getImageLoader();
 
         viewHolder.mUsername.setText(tempEv.getName());
-
-        // Converting timestamp into x ago format
-        CharSequence timeAgo = DateUtils.getRelativeTimeSpanString(
-                Long.parseLong(tempEv.getTimeStamp()),
-                System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS);
-        viewHolder.mTimeStamp.setText(timeAgo);
+        viewHolder.mTimeStamp.setText(ChatRoomsAdapter.getTimeStamp(tempEv.getTimeStamp()));
 
         // Chcek for empty status message
         if (!TextUtils.isEmpty(tempEv.getStatus())) {
