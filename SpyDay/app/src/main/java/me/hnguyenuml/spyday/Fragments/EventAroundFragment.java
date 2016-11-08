@@ -107,8 +107,6 @@ public class EventAroundFragment extends Fragment {
 
         initUI(rootView);
 
-        fetchLocalEvent();
-
         return rootView;
     }
 
@@ -138,7 +136,7 @@ public class EventAroundFragment extends Fragment {
                     @Override
                     public void run() {
                         fetchLocalEvent();
-                        mSwipeRefLayout.setRefreshing(true);
+                        mSwipeRefLayout.setRefreshing(false);
                     }
                 }, 1500);
             }

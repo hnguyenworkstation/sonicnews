@@ -350,18 +350,7 @@ public class ListMessagesFragment extends Fragment implements AbsListView.OnItem
 
     public void setupAdapter() {
         if (!mEmptyConversation) {
-//            for (int i = 0; i < 2; i++) {
-//                Message item = new Message();
-//                if (i % 2 == 0) {
-//                    item.setMessageType(Message.TYPE_MESSAGE_FROM_ME);
-//                    item.setMessageText("String abc long long long long  abc long long long long  abc long long long long  abc long long long long " + i);
-//                } else {
-//                    item.setMessageType(Message.TYPE_MESSAGE_FROM_FRIEND);
-//                    item.setMessageText("UUU String abc  abc long long long long  abc long long long long  abc long long long long  abc long long long long  abc long long long long  abc long long long long " + i);
-//                }
-//                messageList.add(item);
-//            }
-//            mMessageAdapter.notifyDataSetChanged();
+
         }
         mRecyclerView.postDelayed(new Runnable() {
             @Override

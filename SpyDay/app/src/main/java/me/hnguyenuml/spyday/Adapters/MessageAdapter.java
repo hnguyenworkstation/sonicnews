@@ -123,11 +123,11 @@ public class MessageAdapter extends FirebaseRecyclerAdapter< Message ,MessageAda
 
                 }
                 this.mImageContainer.setOnLongClickListener(this);
-                if (mListener != null) {
+                if (mListener != null ) {
                     this.mImageContainer.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            mListener.onStickerMessageClick(v, getAdapterPosition() - 1);
+                            mListener.onMessageImageClick(v, getAdapterPosition() - 1);
                         }
                     });
                 }

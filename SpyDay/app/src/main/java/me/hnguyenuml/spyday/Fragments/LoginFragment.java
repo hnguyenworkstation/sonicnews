@@ -61,6 +61,7 @@ import me.hnguyenuml.spyday.BasicApp.SpyDayPreferenceManager;
 import me.hnguyenuml.spyday.MapsActivity;
 import me.hnguyenuml.spyday.R;
 import me.hnguyenuml.spyday.SpyDayActivity;
+import me.hnguyenuml.spyday.Static.Endpoint;
 import me.hnguyenuml.spyday.UserContent.User;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -71,10 +72,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final int REQUEST_READ_CONTACTS = 0;
-
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
 
     private static final String TAG = LoginFragment.class.getSimpleName();
 
@@ -95,8 +92,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
     private ImageView mCloseBtn;
 
     private OnFragmentInteractionListener mListener;
-
     private LocationManager mLocationManager;
+    private final SpyDayApplication mInstance = SpyDayApplication.getInstance();
 
     private final LocationListener mLocationListener = new LocationListener() {
         @Override
@@ -291,40 +288,45 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
         } else {
             showProgress(true);
             //authenticate user
-            SpyDayApplication.getInstance().getPrefManager().getFirebaseAuth()
+            mInstance.getPrefManager().getFirebaseAuth()
                     .signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            showProgress(false);
-                            if (!task.isSuccessful()) {
-                                Toast.makeText(getActivity(), "Authentication failed.", Toast.LENGTH_LONG).show();
-                            } else {
-                                DatabaseReference mDatabase = SpyDayApplication.getInstance()
-                                        .getPrefManager().getUserDatabase();
-                                mDatabase.child(SpyDayApplication.getInstance()
-                                        .getPrefManager().getFirebaseAuth().getCurrentUser().getUid())
-                                        .addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                User newUser = dataSnapshot.getValue(User.class);
-                                                Log.d(TAG, "User name: " + newUser.getUserName()
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        showProgress(false);
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(getActivity(), "Authentication failed.", Toast.LENGTH_LONG).show();
+                        } else {
+                            DatabaseReference mDatabase = SpyDayApplication.getInstance()
+                                    .getPrefManager().getUserDatabase();
+                            mDatabase.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        for (DataSnapshot ds: dataSnapshot.getChildren()) {
+                                            if (ds.getKey().equals(
+                                                    mInstance.getPrefManager().getFirebaseAuth().getCurrentUser().getUid()
+                                            )) {
+                                                User newUser = new User();
+                                                newUser.setUserName(ds.child(Endpoint.USER_NAME).getValue().toString());
+                                                newUser.setUserNickName(ds.child(Endpoint.USER_NICKNAME).getValue().toString());
+                                                Log.wtf(TAG, "User name: " + newUser.getUserName()
                                                         + ", email " + newUser.getUserNickName());
-                                                SpyDayApplication.getInstance()
-                                                        .getPrefManager().storeUser(newUser);
+                                                mInstance.getPrefManager().storeUser(newUser);
                                             }
+                                        }
+                                    }
 
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
 
-                                            }
-                                        });
-                                Intent intent = new Intent(getActivity(), MapsActivity.class);
-                                startActivity(intent);
-                                getActivity().finish();
-                            }
+                                    }
+                                });
+                            Intent intent = new Intent(getActivity(), MapsActivity.class);
+                            startActivity(intent);
+                            getActivity().finish();
                         }
-                    });
+                    }
+                });
         }
     }
 
@@ -427,10 +429,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
         int IS_PRIMARY = 1;
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mEmail;
@@ -450,14 +448,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener,
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
             }
 
             // TODO: register the new account here.
